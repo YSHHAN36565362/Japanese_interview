@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "merge-data": "node scripts/merge-data.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.5",

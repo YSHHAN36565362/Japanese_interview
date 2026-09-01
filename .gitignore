@@ -11,3 +11,10 @@ node_modules/
 # next dev가 자동 생성하는 AI 에이전트 안내 파일 (커밋 불필요)
 AGENTS.md
 CLAUDE.md
+
+# 질문 데이터 초안/개인 준비 자료 (readme_5.md 참고) — 개인정보가 섞여 있을 수 있어 커밋하지 않는다.
+# 앞으로는 이 draft 폴더 하나에 모아두는 것을 권장한다.
+data/drafts/
+data/Question data/
+data/questions_ver1.json
+data/readme_4 복사본.md
