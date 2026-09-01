@@ -19,6 +19,7 @@ export default function RoomControls({
   audioRecording,
   onToggleAudioRecording,
   onPrimaryAction,
+  onEndFollowUp,
   onEnd,
   saving,
 }: {
@@ -38,11 +39,13 @@ export default function RoomControls({
   audioRecording: boolean
   onToggleAudioRecording: () => void
   onPrimaryAction: () => void
+  onEndFollowUp: () => void
   onEnd: () => void
   saving: boolean
 }) {
   const primaryLabel = phase === 'listening' ? '답변 완료' : phase === 'answerReview' ? '다음 질문' : '답변 완료'
   const primaryDisabled = phase !== 'listening' && phase !== 'answerReview'
+  const endFollowUpDisabled = phase !== 'answerReview' || saving
 
   return (
     <footer className="room-controls" data-testid="room-controls">
@@ -101,6 +104,14 @@ export default function RoomControls({
       </div>
 
       <div className="room-controls-right">
+        <button
+          className="room-control-btn end-followup"
+          onClick={onEndFollowUp}
+          disabled={endFollowUpDisabled}
+          title="지금까지의 꼬리질문을 마치고 다른 대분류 질문으로 넘어갑니다"
+        >
+          꼬리질문 종료
+        </button>
         <button className="btn btn-primary" onClick={onPrimaryAction} disabled={primaryDisabled || saving}>
           {saving ? '저장 중...' : primaryLabel}
         </button>

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MacWindow from '@/components/MacWindow'
 import LogoutButton from '@/components/LogoutButton'
+import { formatKST } from '@/lib/formatDate'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -68,7 +69,7 @@ export default async function DashboardPage() {
           {(sessions ?? []).map((s: any) => (
             <li key={s.id}>
               <Link href={`/interview/result/${s.id}`}>
-                {new Date(s.created_at).toLocaleString('ko-KR')} · {s.mode} · 답변 {s.session_answers?.[0]?.count ?? 0}개
+                {formatKST(s.created_at)} · {s.mode} · 답변 {s.session_answers?.[0]?.count ?? 0}개
               </Link>
             </li>
           ))}

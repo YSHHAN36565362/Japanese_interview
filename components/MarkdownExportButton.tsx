@@ -1,5 +1,7 @@
 'use client'
 
+import { formatKST } from '@/lib/formatDate'
+
 type AnswerRow = {
   corrected_answer_text: string | null
   duration_seconds: number | null
@@ -26,7 +28,7 @@ export default function MarkdownExportButton({
     lines.push('# 면접 세션 리포트')
     lines.push('')
     lines.push(`- 모드: ${session.mode}`)
-    lines.push(`- 일시: ${new Date(session.created_at).toLocaleString('ko-KR')}`)
+    lines.push(`- 일시: ${formatKST(session.created_at)}`)
     lines.push('')
 
     answers.forEach((a, i) => {

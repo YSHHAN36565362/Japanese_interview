@@ -129,7 +129,8 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
   }
 
   // 답변 확정: 정규화 → 규칙 기반 평가 → 저장 → 꼬리질문 판단 → 다음 질문
-  const confirmAnswer = useCallback(async () => {
+  // skipFollowUp이 true면("꼬리질문 종료" 버튼) 꼬리질문 판단을 건너뛰고 바로 다음 대분류 질문으로 넘어간다.
+  const confirmAnswer = useCallback(async (opts?: { skipFollowUp?: boolean }) => {
     if (!currentQuestion || !userId) return
     setPhase('saving')
     setSaving(true)
@@ -165,7 +166,9 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       customTermsRef.current = [...customTermsRef.current, { spoken_variation: suggestion.from, correct_term: suggestion.to }]
     }
 
-    if (!isFollowUp) {
+    if (!opts?.skipFollowUp) {
+      // isFollowUp 여부와 무관하게 항상 꼬리질문을 우선 확인한다 (꼬리질문 체인이 계속 이어질 수 있음).
+      // 같은 대상 질문은 askedFollowUpsRef가 한 번만 나오도록 막아주므로 무한 루프 걱정은 없다.
       const followUpQuestion = await decideFollowUp(
         currentQuestion.id,
         finalText,
@@ -188,6 +191,9 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     goToNextInQueue()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion, userId, draftTranscript, interimTranscript, isFollowUp, suggestion, sessionId])
+
+  // "꼬리질문 종료" 버튼: 지금 답변은 저장하되, 꼬리질문 판단은 건너뛰고 바로 다음 대분류 질문으로.
+  const endFollowUp = useCallback(() => confirmAnswer({ skipFollowUp: true }), [confirmAnswer])
 
   const requestEnd = useCallback(() => {
     setPhase('completed')
@@ -226,6 +232,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     setInterimTranscript,
     handleSpeechError,
     confirmAnswer,
+    endFollowUp,
     requestEnd,
   }
 }

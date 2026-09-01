@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import MarkdownExportButton from '@/components/MarkdownExportButton'
 import MacWindow from '@/components/MacWindow'
 import { getQuestionById } from '@/lib/questionBank'
+import { formatKST } from '@/lib/formatDate'
 
 export default async function ResultPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params
@@ -43,7 +44,7 @@ export default async function ResultPage({ params }: { params: Promise<{ session
     <MacWindow title="voice-interview-jp — result">
       <h1 style={{ marginTop: 0 }}>세션 리포트</h1>
       <p className="muted">
-        모드: {session.mode} · {new Date(session.created_at).toLocaleString('ko-KR')}
+        모드: {session.mode} · {formatKST(session.created_at)}
       </p>
 
       <div className="stat-row">

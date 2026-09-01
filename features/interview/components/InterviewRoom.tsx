@@ -147,6 +147,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                 isFollowUp={machine.isFollowUp}
                 interimTranscript={machine.interimTranscript}
                 showSubtitle={subtitleOn}
+                blurQuestion={mode === 'real'}
                 onReplay={handleReplay}
               />
               <SelfPreview
@@ -228,6 +229,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
             audioRecording={audioRecorder.recording}
             onToggleAudioRecording={() => (audioRecorder.recording ? audioRecorder.stop() : audioRecorder.start())}
             onPrimaryAction={handlePrimaryAction}
+            onEndFollowUp={machine.endFollowUp}
             onEnd={handleEnd}
             saving={machine.saving}
           />

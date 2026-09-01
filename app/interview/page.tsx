@@ -55,19 +55,14 @@ export default function InterviewModeSelectPage() {
       {starting ? (
         <LoadingDots label="세션을 준비하고 있습니다..." />
       ) : (
-        <div className="mode-grid">
+        <div className="mode-grid mode-grid-3d">
           {MODES.map((m) => (
-            <button key={m.id} className="mode-card" disabled={starting} onClick={() => startSession(m.id)}>
-              <div className="mode-card-titlebar">
-                <span className="mac-dot red" />
-                <span className="mac-dot yellow" />
-                <span className="mac-dot green" />
-              </div>
-              <div className="mode-card-body">
-                <h3>{m.label}</h3>
-                <p className="muted small">{m.desc}</p>
-              </div>
-            </button>
+            <div key={m.id} className="mode-3d-item">
+              <button className="btn-3d" disabled={starting} onClick={() => startSession(m.id)}>
+                {m.label}
+              </button>
+              <p className="muted small mode-3d-desc">{m.desc}</p>
+            </div>
           ))}
         </div>
       )}
