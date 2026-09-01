@@ -1618,20 +1618,6 @@ a {
   max-width: 160px;
 }
 
-.room-voice-refresh-btn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 11px;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
-}
-
-.room-voice-refresh-btn:hover {
-  color: var(--room-text-primary);
-}
-
 .room-question-ja {
   font-size: 24px;
   font-weight: 700;
@@ -1649,6 +1635,41 @@ a {
   font-size: 13px;
   color: #aab4c8;
   min-height: 18px;
+}
+
+/* 마이크가 실제로 활성화됐을 때만(엔진 초기화 지연 동안은 "준비 중"으로 구분) 켜지는 표시.
+   이 표시가 켜지기 전에 말하면 초반부가 잘려서 인식되지 않을 수 있어 명확히 구분해서 보여준다. */
+.room-mic-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  min-height: 18px;
+}
+
+.room-mic-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+
+.room-mic-status-dot.listening {
+  background: var(--accent-listening);
+  animation: room-mic-status-pulse 1.2s infinite;
+}
+
+@keyframes room-mic-status-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 203, 142, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(59, 203, 142, 0);
+  }
 }
 
 /* --- 셀프 카메라/파형 미리보기 (스테이지 안에 도킹) --- */

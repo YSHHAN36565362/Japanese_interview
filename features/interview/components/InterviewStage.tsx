@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { BankQuestion } from '@/lib/questionBank'
 import type { InterviewPhase } from '../types'
+import type { VoiceOption } from '../hooks/useSpeechSynthesis'
 import { PHASE_STATUS_TEXT } from '../constants'
 
 export default function InterviewStage({
@@ -14,20 +15,21 @@ export default function InterviewStage({
   voices,
   voiceURI,
   onVoiceChange,
-  onRefreshVoices,
+  micListening,
 }: {
   question: BankQuestion
   phase: InterviewPhase
   isFollowUp: boolean
   blurQuestion: boolean
   onReplay: () => void
-  voices: SpeechSynthesisVoice[]
+  voices: VoiceOption[]
   voiceURI: string
   onVoiceChange: (uri: string) => void
-  onRefreshVoices: () => void
+  micListening: boolean
 }) {
   const speaking = phase === 'interviewerSpeaking'
   const [photoFailed, setPhotoFailed] = useState(false)
+  const listeningPhase = phase === 'listening'
 
   return (
     <section className="room-stage" data-testid="room-stage">
@@ -59,20 +61,12 @@ export default function InterviewStage({
             title="면접관 목소리 선택 (브라우저 제공, 무료)"
           >
             {voices.map((v) => (
-              <option key={v.voiceURI} value={v.voiceURI}>
+              <option key={v.id} value={v.id}>
                 {v.name}
               </option>
             ))}
           </select>
         )}
-        <button
-          type="button"
-          className="room-voice-refresh-btn"
-          onClick={onRefreshVoices}
-          title="목소리 목록이 1개만 보이면 눌러서 다시 불러와보세요"
-        >
-          목소리 다시 불러오기
-        </button>
         <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
       </div>
       <p
@@ -89,9 +83,25 @@ export default function InterviewStage({
         다시 듣기 (TTS)
       </button>
 
-      <p className="room-phase-status" role="status" aria-live="polite">
-        {PHASE_STATUS_TEXT[phase]}
-      </p>
+      {listeningPhase ? (
+        <p className="room-mic-status" role="status" aria-live="polite">
+          {micListening ? (
+            <>
+              <span className="room-mic-status-dot listening" aria-hidden="true" />
+              듣고 있습니다 — 지금 말씀하세요
+            </>
+          ) : (
+            <>
+              <span className="room-mic-status-dot" aria-hidden="true" />
+              마이크 준비 중... (점이 켜지면 말씀하세요)
+            </>
+          )}
+        </p>
+      ) : (
+        <p className="room-phase-status" role="status" aria-live="polite">
+          {PHASE_STATUS_TEXT[phase]}
+        </p>
+      )}
     </section>
   )
 }

@@ -1224,3 +1224,70 @@ npx tsc --noEmit, npm run build 모두 통과.
   app/globals.css(죽은 CSS 정리), data/questions.json, public/data/follow_ups.txt
 신규: data/drafts/batch4_main_questions.json, batch4_followup_questions.json,
   followup_rules_batch4.txt
+
+===============================================================
+[16차 작업] 게스트 저장 안 함, 세션 일괄삭제, 질문풀 재확대, 음성인식 타이밍 표시, VOICEVOX 외부 음성 추가
+===============================================================
+[1. "번호 없이 시작하기"(게스트) 세션이 실제로 저장되던 문제 수정]
+"고유 번호를 안 하고 입장했으니까 다 지워져야 하는 거 아닌가? 고유 번호를 입력해야만
+저장되는거임" 요청에 따라 설계를 명확히 했습니다. 익명 로그인도 Supabase 입장에서는
+"실제 로그인 세션"이라 원래는 세션/답변이 그대로 저장되고 있었습니다.
+수정: Supabase user의 is_anonymous 플래그를 확인해서, 게스트인 경우
+①app/interview/page.tsx에서 sessions 테이블에 행을 아예 만들지 않고(로컬 UUID로만 라우팅),
+②useInterviewMachine.ts의 confirmAnswer에서 session_answers insert 자체를 건너뜁니다.
+PreflightDialog에 "이 세션은 저장되지 않습니다" 안내를 추가했고, 결과 페이지도 게스트
+세션에 대해 "왜 없는지" 명확히 안내하도록 바꿨습니다. 번호로 로그인한 경우는 기존 그대로
+Supabase에 저장되어 다른 기기에서도 같은 번호로 불러올 수 있습니다(변경 없음).
+
+[2. 마이페이지 지난 세션 — 전체 선택 / 선택 삭제]
+components/SessionList.tsx(신규, 클라이언트 컴포넌트)로 교체 — 전체 선택 체크박스, 개별
+체크박스, "선택 삭제(N)" 버튼, 개별 "삭제" 버튼을 모두 지원합니다. 기존 DeleteSessionButton은
+제거했습니다.
+
+[3. 세션당 질문 수 재확대 + 설명 문서 작성]
+"14개는 적다"는 피드백에 이어, poolSize를 모드별로 다시 조정했습니다: 연습 20, 기술 면접
+18(technical 카테고리 자체가 22개뿐이라 그보다 낮게), 실전 자기소개+16+역질문=18.
+"14개면 꼬리질문이 많은거야?"라는 질문에 답하기 위해 QuestionBankExplained.md(저장소
+루트)를 새로 작성했습니다 — 대분류/꼬리질문/마무리 질문의 개수·구조, 모드별 poolSize가
+왜 다른지, 꼬리질문이 왜 항상 다 이어지지는 않는지(키워드 매칭 기반) 등을 설명합니다.
+
+[4. 텍스트 모드 관련 요청에 이어, 음성인식 시작 타이밍 문제 발견 및 수정]
+"말할 때 중간부터 인식될 때가 있는데, 인식하고 있다는 걸 표시해줬으면" 요청으로 코드를
+다시 보니 실제 원인을 찾았습니다: features/interview/hooks/useSpeechRecognition.ts가
+recognition.start() 호출 직후 곧바로 listening=true로 표시하고 있었는데, 실제로 브라우저가
+마이크를 열고 인식을 시작하기까지는 시간이 걸립니다 — 그 사이에 사용자가 말을 시작하면
+초반부가 통째로 인식되지 않았던 것입니다.
+수정: recognition.onstart 이벤트(엔진이 실제로 준비된 시점)에서만 listening=true로
+바꾸도록 했고, features/interview/components/InterviewStage.tsx에 실시간 표시를
+추가했습니다 — "마이크 준비 중..."(점이 꺼짐) → "듣고 있습니다 — 지금 말씀하세요"(점이
+켜지고 펄스 애니메이션)로 명확히 구분되어, 점이 켜진 뒤에 말하면 잘리지 않습니다.
+
+[5. VOICEVOX 무료 외부 음성 추가]
+"목소리 다시 불러오기 눌러도 Kyoko밖에 안뜬다"는 재확인으로, 이 환경은 실제로 일본어
+음성이 1개뿐인 것으로 결론짓고 "다시 불러오기" 버튼은 요청대로 제거했습니다. 대신 사용자가
+제안한 서비스들(AnySpeech/TTSForge/Ondoku/TTSMaker)을 검토했는데, 전부 회원가입·API 키·
+유료/제한적 무료 티어가 필요해 "완전 무료, 의존성 없음" 원칙과 맞지 않는다고 판단해
+제외했습니다. 대신 실제로 키 없이 CORS가 열려 있고 무료로 동작하는 tts.quest의 VOICEVOX
+프록시(api.tts.quest)를 직접 검증한 뒤(Chrome으로 실제 합성→재생까지 확인 완료) 추가
+음성으로 넣었습니다 — 단, 공식 문서상 API 키가 있어야 안정적으로 쓸 수 있고 키 없는
+경로는 비공식 폴백이라 언제든 막힐 수 있어서, "(외부 음성)"으로 라벨을 구분하고 실패 시
+조용히 넘어가 면접 진행에는 지장이 없도록 했습니다(lib/voicevoxTts.ts,
+features/interview/hooks/useSpeechSynthesis.ts). 목소리 6종(四国めたん/ずんだもん/
+春日部つむぎ/波音リツ/雨晴はう/玄野武宏) 추가.
+
+[6. 셀프 프리뷰 물결(waveform) — 카메라 켜져 있어도 항상 표시]
+"말하는 정도를 물결로 표현해달라"는 요청 — 기존엔 카메라를 켜면 물결이 아예 안 보였습니다
+(카메라 꺼짐 상태의 fallback에만 있었음). features/interview/components/SelfPreview.tsx를
+고쳐서, 카메라 on/off와 무관하게 오른쪽 아래에 항상 떠 있는 막대 물결로 보이게 했습니다.
+
+[검증]
+npx tsc --noEmit, npm run build 모두 통과. Chrome으로 실제 VOICEVOX 합성 요청(200)과
+오디오 재생(onStart→onEnd) 성공까지 직접 확인. 게스트 저장 안 함/일괄삭제/물결 표시는
+UI 렌더링까지 확인, 실제 Supabase 연동은 실제 프로젝트에서 재확인 필요.
+
+파일 신규: components/SessionList.tsx, lib/voicevoxTts.ts, QuestionBankExplained.md
+파일 삭제: components/DeleteSessionButton.tsx
+파일 수정: app/interview/page.tsx, app/dashboard/page.tsx,
+  app/interview/result/[sessionId]/page.tsx, features/interview/hooks/{useInterviewMachine,
+  useSpeechRecognition,useSpeechSynthesis}.ts, features/interview/components/{PreflightDialog,
+  InterviewRoom,InterviewStage,SelfPreview}.tsx, app/globals.css

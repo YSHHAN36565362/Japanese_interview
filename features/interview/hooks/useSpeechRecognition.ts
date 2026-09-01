@@ -51,6 +51,10 @@ export function useSpeechRecognition({ enabled, lang = 'ja-JP', onFinal, onInter
     recognition.interimResults = true
     finalTextRef.current = ''
 
+    // 브라우저가 실제로 마이크를 열고 인식을 시작한 시점(onstart)에만 "듣고 있음"으로
+    // 표시한다. recognition.start() 호출 직후 곧바로 listening=true로 두면, 실제로는
+    // 아직 엔진이 준비되기 전이라 그 사이에 말한 초반부가 잘려서 인식되지 않는 문제가 있었다.
+    recognition.onstart = () => setListening(true)
     recognition.onspeechstart = () => callbacksRef.current.onFirstSpeech?.()
 
     recognition.onresult = (event: any) => {
@@ -82,7 +86,6 @@ export function useSpeechRecognition({ enabled, lang = 'ja-JP', onFinal, onInter
     try {
       recognition.start()
       recognitionRef.current = recognition
-      setListening(true)
     } catch {
       recognitionRef.current = null
     }
