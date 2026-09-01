@@ -30,7 +30,15 @@ export default function LoginPage() {
     setLoading(false)
 
     if (error) {
-      setError(error.message)
+      if (error.message.toLowerCase().includes('anonymous sign-ins are disabled')) {
+        setError(
+          '비밀번호는 맞지만, 이 Supabase 프로젝트에서 "Anonymous Sign-Ins"가 꺼져 있어 입장할 수 없습니다. ' +
+            'Supabase 대시보드 → Authentication → Sign In / Providers → Anonymous Sign-Ins 를 켜주세요 ' +
+            '(SETUP.md 1-4 참고).'
+        )
+      } else {
+        setError(error.message)
+      }
       return
     }
     router.push('/level-check')

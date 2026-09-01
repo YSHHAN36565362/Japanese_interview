@@ -1,50 +1,18 @@
--- Voice Interview JP — Supabase 스키마 (readme_3.md 최종 데이터 모델 기준)
+-- Voice Interview JP — Supabase 스키마
 -- Supabase 대시보드 > SQL Editor 에서 이 파일 전체를 실행하세요.
+--
+-- 질문/꼬리질문 데이터는 더 이상 Supabase에 저장하지 않습니다.
+-- 저장소의 data/questions.json(git으로 관리)이 원본이며, 앱이 실행 시 그 파일을 직접 읽습니다.
+-- Supabase에는 사용자별 실제 면접 답변 로그(sessions/session_answers 등)만 저장합니다.
+-- 기존에 questions/follow_up_rules 테이블을 이미 만든 적이 있다면
+-- supabase/migrate_local_questions.sql을 먼저 실행해 정리하세요.
 
 create extension if not exists pgcrypto;
 
 -- ============================================================
--- questions: 질문 풀 (공개 질문 + 사용자 커스텀 질문)
--- ============================================================
-create table if not exists questions (
-  id uuid primary key default gen_random_uuid(),
-  category text not null check (category in ('personality', 'technical', 'culture_fit', 'reverse')),
-  jlpt_level text check (jlpt_level in ('N5', 'N4', 'N3', 'N2', 'N1')),
-  keigo_required boolean not null default true,
-  difficulty text,
-  text_ja text not null,
-  text_ko text,
-  company_stage text,
-  job_family text,
-  expected_duration_sec int not null default 60,
-  answer_framework text,
-  evaluation_points jsonb,
-  tags text[],
-  core_keywords text[],
-  sample_answer_ja text,
-  sample_answer_ko text,
-  is_custom boolean not null default false,
-  owner_user_id uuid references auth.users(id) on delete cascade,
-  created_at timestamptz not null default now()
-);
-
--- ============================================================
--- follow_up_rules: 꼬리질문 규칙 그래프 (AI 없이 키워드/조건 매칭)
--- ============================================================
-create table if not exists follow_up_rules (
-  id uuid primary key default gen_random_uuid(),
-  parent_question_id uuid not null references questions(id) on delete cascade,
-  trigger_type text not null check (trigger_type in ('keyword', 'missing_keyword', 'answer_length', 'order', 'random')),
-  trigger_value jsonb,
-  priority int not null default 0,
-  cooldown_count int not null default 1,
-  follow_up_question_id uuid not null references questions(id) on delete cascade,
-  feedback_hint_ja text,
-  feedback_hint_ko text
-);
-
--- ============================================================
 -- sessions / session_answers: 면접 세션 및 답변 로그
+-- question_id / follow_up_question_id는 Supabase 테이블이 아니라
+-- data/questions.json에 있는 질문의 id(문자열)를 그대로 저장하는 텍스트 필드다.
 -- ============================================================
 create table if not exists sessions (
   id uuid primary key default gen_random_uuid(),
@@ -56,8 +24,8 @@ create table if not exists sessions (
 create table if not exists session_answers (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references sessions(id) on delete cascade,
-  question_id uuid references questions(id),
-  follow_up_question_id uuid references questions(id),
+  question_id text,
+  follow_up_question_id text,
   stt_raw_text text,
   corrected_answer_text text,
   duration_seconds numeric,
@@ -128,33 +96,11 @@ create table if not exists diagnostic_results (
 -- ============================================================
 -- Row Level Security
 -- ============================================================
-alter table questions enable row level security;
-alter table follow_up_rules enable row level security;
 alter table sessions enable row level security;
 alter table session_answers enable row level security;
 alter table user_custom_terms enable row level security;
 alter table user_settings enable row level security;
 alter table diagnostic_results enable row level security;
-
-drop policy if exists "questions_select_public_or_own" on questions;
-create policy "questions_select_public_or_own" on questions
-  for select using (is_custom = false or owner_user_id = auth.uid());
-
-drop policy if exists "questions_insert_own_custom" on questions;
-create policy "questions_insert_own_custom" on questions
-  for insert with check (is_custom = true and owner_user_id = auth.uid());
-
-drop policy if exists "questions_update_own_custom" on questions;
-create policy "questions_update_own_custom" on questions
-  for update using (owner_user_id = auth.uid());
-
-drop policy if exists "questions_delete_own_custom" on questions;
-create policy "questions_delete_own_custom" on questions
-  for delete using (owner_user_id = auth.uid());
-
-drop policy if exists "follow_up_rules_select_all" on follow_up_rules;
-create policy "follow_up_rules_select_all" on follow_up_rules
-  for select using (true);
 
 drop policy if exists "sessions_owner_all" on sessions;
 create policy "sessions_owner_all" on sessions

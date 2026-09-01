@@ -7,3 +7,7 @@ npm-debug.log*
 .DS_Store
 .vercel
 node_modules/
+
+# next dev가 자동 생성하는 AI 에이전트 안내 파일 (커밋 불필요)
+AGENTS.md
+CLAUDE.md

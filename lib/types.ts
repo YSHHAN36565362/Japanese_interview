@@ -1,40 +1,7 @@
+// 질문/꼬리질문 관련 타입은 lib/questionBank.ts (data/questions.json 기반)를 참고하세요.
+// 이 파일에는 Supabase에 실제로 저장되는 사용자별 데이터 타입만 둡니다.
 export type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1'
 export type KeigoMode = 'forced' | 'flexible' | 'casual_allowed'
-export type QuestionCategory = 'personality' | 'technical' | 'culture_fit' | 'reverse'
-
-export interface Question {
-  id: string
-  category: QuestionCategory
-  jlpt_level: JlptLevel | null
-  keigo_required: boolean
-  difficulty: string | null
-  text_ja: string
-  text_ko: string | null
-  company_stage: string | null
-  job_family: string | null
-  expected_duration_sec: number
-  answer_framework: string | null
-  evaluation_points: unknown
-  tags: string[] | null
-  core_keywords: string[] | null
-  sample_answer_ja: string | null
-  sample_answer_ko: string | null
-  is_custom: boolean
-  owner_user_id: string | null
-  created_at: string
-}
-
-export interface FollowUpRule {
-  id: string
-  parent_question_id: string
-  trigger_type: 'keyword' | 'missing_keyword' | 'answer_length' | 'order' | 'random'
-  trigger_value: any
-  priority: number
-  cooldown_count: number
-  follow_up_question_id: string
-  feedback_hint_ja: string | null
-  feedback_hint_ko: string | null
-}
 
 export interface InterviewSession {
   id: string

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MacWindow from '@/components/MacWindow'
+import LogoutButton from '@/components/LogoutButton'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -55,7 +56,10 @@ export default async function DashboardPage() {
 
   return (
     <MacWindow title="voice-interview-jp — my page">
-      <h1 style={{ marginTop: 0 }}>마이페이지</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 style={{ marginTop: 0 }}>마이페이지</h1>
+        <LogoutButton />
+      </div>
 
       <section className="card">
         <h2>지난 세션</h2>

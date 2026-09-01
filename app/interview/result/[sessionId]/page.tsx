@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MarkdownExportButton from '@/components/MarkdownExportButton'
 import MacWindow from '@/components/MacWindow'
+import { getQuestionById } from '@/lib/questionBank'
 
 export default async function ResultPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params
@@ -11,9 +12,7 @@ export default async function ResultPage({ params }: { params: Promise<{ session
 
   const { data: answers } = await supabase
     .from('session_answers')
-    .select(
-      '*, question:questions!session_answers_question_id_fkey(text_ja, text_ko), follow_up:questions!session_answers_follow_up_question_id_fkey(text_ja, text_ko)'
-    )
+    .select('*')
     .eq('session_id', sessionId)
     .order('answered_at', { ascending: true })
 
@@ -21,7 +20,13 @@ export default async function ResultPage({ params }: { params: Promise<{ session
     return <p>세션을 찾을 수 없습니다.</p>
   }
 
-  const rows = answers ?? []
+  // 질문 텍스트는 Supabase가 아니라 로컬 data/questions.json(질문 은행)에서 가져온다.
+  const rows = (answers ?? []).map((r) => {
+    const isFollowUp = !!r.follow_up_question_id
+    const question = getQuestionById((isFollowUp ? r.follow_up_question_id : r.question_id) ?? '')
+    return { ...r, isFollowUp, questionTextJa: question?.textJa ?? '(삭제되었거나 알 수 없는 질문)' }
+  })
+
   const avgDuration = rows.length
     ? (rows.reduce((sum, r) => sum + (r.duration_seconds ?? 0), 0) / rows.length).toFixed(1)
     : '0'
@@ -60,13 +65,21 @@ export default async function ResultPage({ params }: { params: Promise<{ session
         </div>
       </div>
 
-      <MarkdownExportButton session={session} answers={rows as any} />
+      <MarkdownExportButton
+        session={session}
+        answers={rows.map((r) => ({
+          corrected_answer_text: r.corrected_answer_text,
+          duration_seconds: r.duration_seconds,
+          politeness_score_ratio: r.politeness_score_ratio,
+          question: { text_ja: r.questionTextJa },
+        }))}
+      />
 
       <div className="qa-list">
         {rows.map((r) => (
           <div key={r.id} className="card">
-            <span className="badge">{r.follow_up ? '꼬리 질문' : '질문'}</span>
-            <p className="question-ja">{r.question?.text_ja ?? r.follow_up?.text_ja}</p>
+            <span className="badge">{r.isFollowUp ? '꼬리 질문' : '질문'}</span>
+            <p className="question-ja">{r.questionTextJa}</p>
             <p>{r.corrected_answer_text}</p>
             <p className="muted small">
               {r.duration_seconds != null && <>답변 {Math.round(r.duration_seconds)}초 · </>}

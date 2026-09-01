@@ -8,11 +8,18 @@ import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
 import { analyzeAnswer } from '@/lib/feedback'
 import { matchFollowUpRule } from '@/lib/followUp'
 import { TECH_TERM_MAP } from '@/lib/techTerms'
+import {
+  REAL_MODE_INTRO_QUESTION,
+  getFollowUpsFor,
+  getQuestionById,
+  getQuestionsByCategory,
+  shuffle,
+  type BankQuestion,
+} from '@/lib/questionBank'
 import WaveformVisualizer from '@/components/WaveformVisualizer'
 import MacWindow from '@/components/MacWindow'
 import LoadingDots from '@/components/LoadingDots'
 import MicToggle from '@/components/MicToggle'
-import type { FollowUpRule, Question, UserSettings } from '@/lib/types'
 
 const MODE_TO_CATEGORY: Record<string, string[]> = {
   practice: ['personality', 'technical', 'culture_fit'],
@@ -28,12 +35,11 @@ export default function InterviewRunPage() {
   const router = useRouter()
 
   const [userId, setUserId] = useState<string | null>(null)
-  const [questions, setQuestions] = useState<Question[]>([])
-  const [rulesByQuestion, setRulesByQuestion] = useState<Record<string, FollowUpRule[]>>({})
+  const [questions, setQuestions] = useState<BankQuestion[]>([])
   const [loading, setLoading] = useState(true)
 
   const [queueIndex, setQueueIndex] = useState(0)
-  const [activeQuestion, setActiveQuestion] = useState<Question | null>(null)
+  const [activeQuestion, setActiveQuestion] = useState<BankQuestion | null>(null)
   const [isFollowUp, setIsFollowUp] = useState(false)
   const [askedFollowUps, setAskedFollowUps] = useState<Set<string>>(new Set())
 
@@ -48,51 +54,23 @@ export default function InterviewRunPage() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data }) => {
+    supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
         router.replace('/login')
         return
       }
       setUserId(data.user.id)
 
-      const { data: settingsRow } = await supabase
-        .from('user_settings')
-        .select('*')
-        .eq('user_id', data.user.id)
-        .maybeSingle()
-      const settings = settingsRow as UserSettings | null
-
+      // 질문은 Supabase가 아니라 로컬 data/questions.json(git 관리)에서 불러온다.
+      // 세션마다 순서가 매번 달라지도록 셔플한다.
       const categories = MODE_TO_CATEGORY[mode] ?? ['personality']
-      const jlptLevel = settings?.jlpt_level_estimate
+      const isRealMode = mode === 'real'
+      const poolSize = isRealMode ? 5 : 6
+      const pool = shuffle(getQuestionsByCategory(categories)).slice(0, poolSize)
+      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool] : pool
 
-      let query = supabase
-        .from('questions')
-        .select('*')
-        .in('category', categories)
-        .order('created_at', { ascending: true })
-        .limit(6)
-      if (jlptLevel) {
-        query = query.eq('jlpt_level', jlptLevel)
-      }
-
-      let { data: qs } = await query
-      if (!qs || qs.length === 0) {
-        const fallback = await supabase.from('questions').select('*').in('category', categories).limit(6)
-        qs = fallback.data ?? []
-      }
-      setQuestions((qs ?? []) as Question[])
-
-      if (qs && qs.length > 0) {
-        const ids = qs.map((q) => q.id)
-        const { data: rules } = await supabase.from('follow_up_rules').select('*').in('parent_question_id', ids)
-        const grouped: Record<string, FollowUpRule[]> = {}
-        for (const r of (rules ?? []) as FollowUpRule[]) {
-          grouped[r.parent_question_id] = grouped[r.parent_question_id] ?? []
-          grouped[r.parent_question_id].push(r)
-        }
-        setRulesByQuestion(grouped)
-        setActiveQuestion(qs[0] as Question)
-      }
+      setQuestions(finalQuestions)
+      setActiveQuestion(finalQuestions[0] ?? null)
       setLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,7 +79,7 @@ export default function InterviewRunPage() {
   useEffect(() => {
     if (activeQuestion) {
       resetForNewQuestion()
-      speakJapanese(activeQuestion.text_ja)
+      speakJapanese(activeQuestion.textJa)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuestion])
@@ -187,27 +165,19 @@ export default function InterviewRunPage() {
 
   function advance(answeredText: string, durationSeconds: number) {
     if (!isFollowUp && activeQuestion) {
-      const rules = rulesByQuestion[activeQuestion.id] ?? []
-      const availableRules = rules.filter((r) => !askedFollowUps.has(r.follow_up_question_id))
-      const matched = matchFollowUpRule(availableRules, answeredText, durationSeconds, activeQuestion.expected_duration_sec)
+      const rules = getFollowUpsFor(activeQuestion.id).filter((r) => !askedFollowUps.has(r.targetId))
+      const matched = matchFollowUpRule(rules, answeredText, durationSeconds, activeQuestion.expectedDurationSec)
       if (matched) {
-        setAskedFollowUps((prev) => new Set(prev).add(matched.follow_up_question_id))
-        loadFollowUpQuestion(matched.follow_up_question_id)
-        return
+        const target = getQuestionById(matched.targetId)
+        if (target) {
+          setAskedFollowUps((prev) => new Set(prev).add(matched.targetId))
+          setIsFollowUp(true)
+          setActiveQuestion(target)
+          return
+        }
       }
     }
     goToNextMainQuestion()
-  }
-
-  async function loadFollowUpQuestion(id: string) {
-    const supabase = createClient()
-    const { data } = await supabase.from('questions').select('*').eq('id', id).maybeSingle()
-    if (data) {
-      setIsFollowUp(true)
-      setActiveQuestion(data as Question)
-    } else {
-      goToNextMainQuestion()
-    }
   }
 
   function goToNextMainQuestion() {
@@ -223,7 +193,7 @@ export default function InterviewRunPage() {
 
   if (loading) return <LoadingDots label="질문을 불러오는 중입니다..." />
   if (questions.length === 0) {
-    return <p>표시할 질문이 없습니다. supabase/seed.sql이 실행되었는지 확인해주세요.</p>
+    return <p>표시할 질문이 없습니다. data/questions.json에 해당 카테고리 질문이 있는지 확인해주세요.</p>
   }
   if (!activeQuestion) return null
 
@@ -232,9 +202,8 @@ export default function InterviewRunPage() {
       <div className="interview-layout">
         <div className="card">
           <span className="badge">{isFollowUp ? '꼬리 질문' : `${queueIndex + 1} / ${questions.length}`}</span>
-          <h2 className="question-ja">{activeQuestion.text_ja}</h2>
-          {activeQuestion.text_ko && <p className="muted">{activeQuestion.text_ko}</p>}
-          <button className="btn" onClick={() => speakJapanese(activeQuestion.text_ja)}>
+          <h2 className="question-ja">{activeQuestion.textJa}</h2>
+          <button className="btn" onClick={() => speakJapanese(activeQuestion.textJa)}>
             다시 듣기 (TTS)
           </button>
         </div>

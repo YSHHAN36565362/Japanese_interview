@@ -57,9 +57,16 @@ export default function InterviewModeSelectPage() {
       ) : (
         <div className="mode-grid">
           {MODES.map((m) => (
-            <button key={m.id} className="card mode-card" disabled={starting} onClick={() => startSession(m.id)}>
-              <h3>{m.label}</h3>
-              <p className="muted small">{m.desc}</p>
+            <button key={m.id} className="mode-card" disabled={starting} onClick={() => startSession(m.id)}>
+              <div className="mode-card-titlebar">
+                <span className="mac-dot red" />
+                <span className="mac-dot yellow" />
+                <span className="mac-dot green" />
+              </div>
+              <div className="mode-card-body">
+                <h3>{m.label}</h3>
+                <p className="muted small">{m.desc}</p>
+              </div>
             </button>
           ))}
         </div>

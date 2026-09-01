@@ -11,9 +11,12 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Supabase 프로젝트에 아직 연결되지 않았거나(URL 오류 등) 일시적으로 응답이 없어도
+  // 전체 페이지가 500 에러로 죽지 않도록 방어적으로 처리한다.
+  const user = await supabase
+    .auth.getUser()
+    .then(({ data }) => data.user)
+    .catch(() => null)
 
   return (
     <html lang="ko">
@@ -21,20 +24,29 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <div className="page-bg-fill" aria-hidden="true" />
         <MatrixBackground />
         <header className="topbar">
-          <div className="container topbar-inner">
-            <Link href="/" className="brand">
+          <div className="topbar-titlebar">
+            <span className="mac-dot red" />
+            <span className="mac-dot yellow" />
+            <span className="mac-dot green" />
+            <Link href="/" className="topbar-tabtitle">
               Voice Interview JP
             </Link>
-            <nav className="nav">
-              <Link href="/interview">면접 시작</Link>
-              <Link href="/level-check">레벨 체크</Link>
-              <Link href="/dashboard">마이페이지</Link>
+          </div>
+          <div className="topbar-toolbar-outer">
+            <div className="container topbar-toolbar">
+              <nav className="nav">
+                <Link href="/interview">면접 시작</Link>
+                <Link href="/level-check">레벨 체크</Link>
+                <Link href="/dashboard">마이페이지</Link>
+              </nav>
               {user ? (
                 <span className="user-email">{user.email ?? '게스트 세션'}</span>
               ) : (
-                <Link href="/login">입장하기</Link>
+                <Link href="/login" className="topbar-enter-link">
+                  입장하기
+                </Link>
               )}
-            </nav>
+            </div>
           </div>
         </header>
         <main className="container main">{children}</main>
