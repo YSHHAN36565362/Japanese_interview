@@ -113,13 +113,16 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
           const audio = new Audio(objectUrl)
           audioRef.current = audio
           audio.onended = () => onEnd?.()
-          audio.onerror = () => onEnd?.()
-          audio.play().catch(() => onEnd?.())
+          // 재생 자체가 실패하면(자동재생 차단 등) 그냥 무음으로 넘어가지 않고 브라우저
+          // 기본 음성으로 즉시 대체해서, 최소한 질문은 항상 소리로 들리게 한다.
+          audio.onerror = () => speakNative(text)
+          audio.play().catch(() => speakNative(text))
         })
         .catch(() => {
-          // 외부 음성 합성 실패(키리스 경로 불안정, 요청 제한 등) — 조용히 넘어가서
-          // 면접 진행이 막히지 않게 한다. 질문 텍스트는 이미 화면에 표시되어 있다.
-          if (!controller.signal.aborted) onEnd?.()
+          // 외부 음성 합성 실패(키리스 경로 불안정, 요청 제한 등) — 무음으로 넘어가는 대신
+          // 브라우저 기본 음성(native TTS)으로 자동 대체한다. 질문이 안 들리고 그냥
+          // 답변 단계로 넘어가버리는 문제를 막기 위함.
+          if (!controller.signal.aborted) speakNative(text)
         })
     },
     [voiceURI, speakNative, onStart, onEnd]

@@ -209,6 +209,15 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       if (followUpQuestion) {
         askedFollowUpsRef.current.add(followUpQuestion.id)
         setIsFollowUp(true)
+        // 꼬리질문을 큐에 실제로 끼워 넣어서(현재 위치 바로 다음) "질문 X / Y"에 꼬리질문까지
+        // 포함되게 한다 — 이전에는 currentQuestion만 바꾸고 questions/queueIndex는 그대로라
+        // 꼬리질문이 진행 표시에 전혀 반영되지 않았다.
+        setQuestions((prev) => {
+          const next = [...prev]
+          next.splice(queueIndex + 1, 0, followUpQuestion)
+          return next
+        })
+        setQueueIndex((idx) => idx + 1)
         setCurrentQuestion(followUpQuestion)
         resetForQuestion()
         setSaving(false)
@@ -220,7 +229,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     setSaving(false)
     goToNextInQueue()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestion, userId, draftTranscript, interimTranscript, isFollowUp, isFinalQuestion, suggestion, sessionId])
+  }, [currentQuestion, userId, draftTranscript, interimTranscript, isFollowUp, isFinalQuestion, suggestion, sessionId, queueIndex])
 
   // "꼬리질문 종료" 버튼: 지금 답변은 저장하되, 꼬리질문 판단은 건너뛰고 바로 다음 대분류 질문으로.
   const endFollowUp = useCallback(() => confirmAnswer({ skipFollowUp: true }), [confirmAnswer])

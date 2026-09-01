@@ -85,3 +85,7 @@ incident_response_experience | 障害,対応,原因 | incident_detail | 1
 reason_for_job_change | 転職,理由,きっかけ | job_change_detail | 1
 mentoring_experience | 指導,育成,後輩 | mentoring_detail | 1
 oss_contribution | OSS,貢献,オープンソース | oss_detail | 1
+
+remote_work_experience | リモート,在宅,コミュニケーション | remote_work_detail | 1
+side_project_experience | サイドプロジェクト,個人開発,学習 | side_project_detail | 1
+admitting_mistakes | ミス,対応,対策 | mistake_detail | 1

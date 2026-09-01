@@ -70,3 +70,62 @@ data/questions.json을 직접 수정하거나 follow_ups.txt 규칙을 조정하
   data/drafts/batch5_followup_questions.json, data/drafts/followup_rules_batch5.txt
 파일 수정: features/interview/components/InterviewRoom.tsx, app/globals.css,
   data/questions.json, public/data/follow_ups.txt, QuestionBankExplained.md
+
+===============================================================
+[2차 작업] VOICEVOX 무음 실패 수정, 꼬리질문 진행률 미반영 버그 수정, 질문 추가 확충(batch6)
+===============================================================
+
+[1. VOICEVOX 목소리가 가끔만 나오고 대부분 무음으로 바로 답변 단계로 넘어가던 버그]
+"波音リツ만 가끔 나오고 다른 목소리는 아예 안 나오거나 바로 답변으로 넘어간다" 제보로
+확인했습니다. 예상대로 어제 경고했던 대로였습니다 — tts.quest의 키리스(무료, 비공식)
+경로가 요청 제한에 자주 걸려 합성이 실패하는데, 실패 시 그냥 onEnd()만 호출하고 아무
+소리도 내지 않은 채 다음 단계로 넘어가던 것이 원인이었습니다.
+수정: features/interview/hooks/useSpeechSynthesis.ts에서 VOICEVOX 합성/재생이 실패하면
+(요청 실패, 타임아웃, 자동재생 차단 등) 무음으로 넘어가는 대신 브라우저 기본 음성
+(speakNative)으로 자동 대체하도록 했습니다. 이제 어떤 경우든 질문이 최소한 무슨 목소리로든
+들리고, 화면이 그냥 답변 단계로 건너뛰는 일은 없습니다. (다만 VOICEVOX 자체의 불안정성은
+외부 서비스 한계라 근본적으로 없앨 수는 없고, 이 폴백으로 사용자 경험만 보정한 것입니다.)
+
+[2. "질문 X / Y" 표시가 꼬리질문을 전혀 세지 않던 버그 발견 및 수정]
+"질문이 아직 18개로 나오는데, 소분류 질문이랑 꼬리질문 모두 합한 개수를 세어달라"는
+요청으로 코드를 다시 보니 실제 버그를 발견했습니다: features/interview/hooks/
+useInterviewMachine.ts가 꼬리질문을 결정하면 currentQuestion만 바꾸고 questions 배열과
+queueIndex는 전혀 건드리지 않고 있었습니다 — 즉 꼬리질문이 몇 개가 이어지든 화면 상단의
+"질문 X / Y"는 전혀 늘어나지 않고 멈춰 있었습니다.
+수정: 꼬리질문이 결정되면 그 질문을 questions 배열의 현재 위치 바로 다음에 실제로
+끼워넣고(splice) queueIndex도 함께 한 칸 전진시키도록 했습니다. 이제 꼬리질문이 나올
+때마다 Y(전체 개수)가 실제로 늘어나고 X(현재 위치)도 같이 올라가서, 대분류 질문과
+꼬리질문을 합한 정확한 진행 상황이 표시됩니다. (confirmAnswer의 useCallback 의존성
+배열에 queueIndex를 빠뜨리면 클로저가 오래된 값을 참조하는 버그가 생기므로 함께 추가.)
+
+[3. 질문 추가 확충 (batch6) — "문제를 더 만들어보자"]
+아직 다루지 않은 주제 22개를 새로 추가했습니다.
+
+기술 관련 신규 10개: preferred_language_reason, remote_work_experience, tool_familiarity,
+  code_review_receiving_attitude, multiple_priority_handling, knowledge_sharing_experience,
+  side_project_experience, admitting_mistakes, code_ownership_opinion,
+  documentation_writing_experience
+
+컬처핏/인성 관련 신규 12개: business_manner_understanding, company_event_participation,
+  welfare_expectation, long_term_career_plan, how_found_job_posting,
+  team_meeting_experience, cross_team_collaboration, keigo_mistake_recovery,
+  self_development_plan, unexpected_strength, handling_multiple_deadlines,
+  receiving_negative_feedback
+
+새 꼬리질문 3개 + 규칙 3개: remote_work_detail, side_project_detail, mistake_detail.
+
+병합 결과: 질문 은행 164개 → 189개(대분류 103→125, 꼬리질문 56→59, 마무리 5 그대로),
+꼬리질문 규칙 87줄 → 91줄. QuestionBankExplained.md를 최신 숫자로 갱신하고, §2 위의
+"진행률 버그 수정" 내용도 함께 추가했습니다.
+
+[검증]
+npx tsc --noEmit, npm run build 모두 통과. 꼬리질문 카운팅 수정은 배열 삽입/인덱스 증가
+로직을 직접 손으로 추적해 정확성을 확인했습니다(실제 Supabase 세션 없이는 브라우저에서
+전체 플로우를 재현하기 어려워 코드 추적으로 검증). VOICEVOX 폴백은 로직상 확실하나,
+실제 다발적 실패 상황에서의 체감은 사용자가 다시 사용해보며 확인 부탁드립니다.
+
+파일 신규: data/drafts/batch6_technical_questions.json,
+  data/drafts/batch6_culturefit_personality_questions.json,
+  data/drafts/batch6_followup_questions.json, data/drafts/followup_rules_batch6.txt
+파일 수정: features/interview/hooks/{useSpeechSynthesis,useInterviewMachine}.ts,
+  data/questions.json, public/data/follow_ups.txt, QuestionBankExplained.md

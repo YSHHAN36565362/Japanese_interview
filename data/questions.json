@@ -1318,6 +1318,165 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "リリース作業やデプロイのプロセスに関わった経験はありますか。"
+    },
+    {
+      "id": "business_manner_understanding",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "名刺交換など、日本のビジネスマナーについてどの程度理解していますか。"
+    },
+    {
+      "id": "company_event_participation",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "飲み会や社内イベントへの参加について、どのようにお考えですか。"
+    },
+    {
+      "id": "welfare_expectation",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "会社に期待する福利厚生はありますか。"
+    },
+    {
+      "id": "long_term_career_plan",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "当社で長く働きたいとお考えですか。将来的な転職の可能性についても教えてください。"
+    },
+    {
+      "id": "how_found_job_posting",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "当社の求人をどのように知りましたか。"
+    },
+    {
+      "id": "team_meeting_experience",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "定例会議やスタンドアップミーティングに参加した経験はありますか。"
+    },
+    {
+      "id": "cross_team_collaboration",
+      "category": "culture_fit",
+      "expectedDurationSec": 90,
+      "textJa": "他部署やチームと連携して仕事を進めた経験はありますか。"
+    },
+    {
+      "id": "keigo_mistake_recovery",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "面接や仕事の場で敬語を間違えてしまった場合、どのように対応しますか。"
+    },
+    {
+      "id": "self_development_plan",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "入社後、どのようにスキルアップしていきたいですか。"
+    },
+    {
+      "id": "unexpected_strength",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "履歴書には書いていないが、自分の強みだと思うことはありますか。"
+    },
+    {
+      "id": "handling_multiple_deadlines",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "複数の締め切りが重なったとき、どのように対処しますか。"
+    },
+    {
+      "id": "receiving_negative_feedback",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "厳しいフィードバックを受けたとき、どのように気持ちを切り替えますか。"
+    },
+    {
+      "id": "remote_work_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "リモートワークで工夫していたコミュニケーション方法はありますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "side_project_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "そのプロジェクトを通じて、具体的にどのようなスキルが身につきましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "mistake_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "そのミスを防ぐために、その後どのような対策をしていますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "preferred_language_reason",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "得意なプログラミング言語は何ですか。その言語を選ぶ理由は何ですか。"
+    },
+    {
+      "id": "remote_work_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "リモートワークの経験はありますか。オフィス勤務とどう違うと感じますか。"
+    },
+    {
+      "id": "tool_familiarity",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "普段よく使う開発ツールやIDEを教えてください。"
+    },
+    {
+      "id": "code_review_receiving_attitude",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "自分のコードにレビューで指摘を受けたとき、どのように受け止めますか。"
+    },
+    {
+      "id": "multiple_priority_handling",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "複数のプロジェクトやタスクを同時に進める際、優先順位はどう決めますか。"
+    },
+    {
+      "id": "knowledge_sharing_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "チーム内で知識共有（勉強会、社内発表など）をした経験はありますか。"
+    },
+    {
+      "id": "side_project_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "個人的に取り組んでいるサイドプロジェクトや自己学習はありますか。"
+    },
+    {
+      "id": "admitting_mistakes",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "仕事でミスをしたとき、どのように対応しますか。"
+    },
+    {
+      "id": "code_ownership_opinion",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "自分が書いたコードに対する責任感について、どのように考えていますか。"
+    },
+    {
+      "id": "documentation_writing_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "技術ドキュメントやAPI仕様書を書いた経験はありますか。"
     }
   ]
 }
