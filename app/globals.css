@@ -117,6 +117,38 @@ a {
   transform: translateY(-1px);
 }
 
+/* 좁은 폰 화면(320~480px)에서는 로고+입장버튼이 한 줄, 내비게이션 링크가 그 아래
+   두 번째 줄로 내려가게 해서 글자가 중간에 깨져 겹치는 문제를 막는다 */
+@media (max-width: 480px) {
+  .topbar-toolbar {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 10px 0;
+  }
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
+  }
+  .nav a {
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+  .topbar-brand {
+    font-size: 13px;
+  }
+  .user-email {
+    font-size: 11px;
+  }
+  .topbar-enter-link {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
 .main {
   padding: 32px 20px 64px;
 }
@@ -1773,6 +1805,26 @@ a {
   background: rgba(0, 0, 0, 0.5);
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+/* 드래그로 화면 밖에 버려지거나 이상한 크기가 됐을 때 되돌리는 버튼 (더블클릭으로도 가능) */
+.room-self-reset-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #f0f0f0;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.room-self-reset-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
 }
 
 /* --- 우측 보조 패널: 대화 / STAR / 메모 --- */

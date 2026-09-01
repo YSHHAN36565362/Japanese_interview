@@ -1477,6 +1477,141 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "技術ドキュメントやAPI仕様書を書いた経験はありますか。"
+    },
+    {
+      "id": "ses_contract_understanding",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "SES（システムエンジニアリングサービス）契約や派遣契約について、どの程度理解していますか。"
+    },
+    {
+      "id": "multiple_offers_priority",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "複数の企業から内定をもらった場合、何を基準に選びますか。"
+    },
+    {
+      "id": "final_decision_criteria",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "最終的に入社する会社を決める際、最も重視する基準は何ですか。"
+    },
+    {
+      "id": "pre_joining_preparation",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "入社前に準備しておきたいことはありますか。"
+    },
+    {
+      "id": "goal_setting_method",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "目標を設定するとき、どのような方法で計画を立てますか。"
+    },
+    {
+      "id": "time_management_method",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "時間管理のために、普段どのような工夫をしていますか。"
+    },
+    {
+      "id": "conflict_prevention_habit",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "チーム内での対立を未然に防ぐために、あらかじめ心がけていることはありますか。"
+    },
+    {
+      "id": "graduation_research_topic",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "卒業論文や卒業研究のテーマについて教えてください。"
+    },
+    {
+      "id": "fear_of_failure_attitude",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "失敗を恐れずに挑戦するために、どのように考え方を切り替えていますか。"
+    },
+    {
+      "id": "test_automation_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "どのようなツールやフレームワークを使ってテストを自動化しましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "graduation_research_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "その研究で最も苦労した点と、それをどう乗り越えたか教えてください。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "internship_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "インターンシップで実際にどのような業務を担当しましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "test_automation_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "テスト自動化に取り組んだ経験はありますか。"
+    },
+    {
+      "id": "performance_testing_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "負荷テストやパフォーマンステストを行った経験はありますか。"
+    },
+    {
+      "id": "api_security_understanding",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "APIの認証・認可について、どの程度理解していますか。"
+    },
+    {
+      "id": "frontend_backend_preference",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "フロントエンドとバックエンド、どちらにより興味がありますか。理由も教えてください。"
+    },
+    {
+      "id": "database_migration_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "データベースのマイグレーション（移行）作業をした経験はありますか。"
+    },
+    {
+      "id": "log_analysis_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "ログを分析して問題を解決した経験はありますか。"
+    },
+    {
+      "id": "waterfall_vs_agile_understanding",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "ウォーターフォール開発とアジャイル開発の違いをどのように理解していますか。"
+    },
+    {
+      "id": "upstream_downstream_process",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "上流工程と下流工程、どちらの経験が多いですか。"
+    },
+    {
+      "id": "internship_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "インターンシップの経験はありますか。そこで学んだことを教えてください。"
     }
   ]
 }

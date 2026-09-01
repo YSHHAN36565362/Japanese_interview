@@ -89,3 +89,7 @@ oss_contribution | OSS,貢献,オープンソース | oss_detail | 1
 remote_work_experience | リモート,在宅,コミュニケーション | remote_work_detail | 1
 side_project_experience | サイドプロジェクト,個人開発,学習 | side_project_detail | 1
 admitting_mistakes | ミス,対応,対策 | mistake_detail | 1
+
+test_automation_experience | ツール,フレームワーク,自動化 | test_automation_detail | 1
+graduation_research_topic | 研究,苦労,テーマ | graduation_research_detail | 1
+internship_experience | インターン,業務,担当 | internship_detail | 1

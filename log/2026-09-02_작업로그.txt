@@ -129,3 +129,52 @@ npx tsc --noEmit, npm run build 모두 통과. 꼬리질문 카운팅 수정은 
   data/drafts/batch6_followup_questions.json, data/drafts/followup_rules_batch6.txt
 파일 수정: features/interview/hooks/{useSpeechSynthesis,useInterviewMachine}.ts,
   data/questions.json, public/data/follow_ups.txt, QuestionBankExplained.md
+
+===============================================================
+[3차 작업] 모바일/태블릿/맥북/데스크탑 반응형 재점검, 셀프뷰 화면이탈 버그 수정, 질문 확충(batch7)
+===============================================================
+
+[1. 반응형 UI 재점검 — 모바일/태블릿/맥북/데스크탑]
+390/768/820/1440/1728px 등 여러 폭에서 홈/로그인/대시보드/모드선택/면접실 화면을 다시
+확인했습니다.
+- 실제로 발견한 버그: 320~360px처럼 아주 좁은 구형 폰 폭에서 상단 내비게이션(로고/면접
+  시작/마이페이지/입장하기)이 한 줄에 다 들어가려다 글자가 중간에 깨져 겹치는 문제가
+  있었습니다. app/globals.css에 480px 이하 전용 미디어쿼리를 추가해서, 로고+입장버튼이
+  첫 줄에, 내비게이션 링크는 그 아래 둘째 줄에 중앙 정렬되도록 고쳤습니다.
+- 모드 선택 화면(일러스트 3개), 로그인 폼, 면접실의 태블릿(1279px 이하 오버레이 드로어)과
+  맥북/데스크탑(1280px 이상 고정 사이드 패널) 레이아웃은 모두 정상 확인됐습니다(중간에
+  이 자동화 환경 특유의 다중 iframe 렌더링 아티팩트로 한 번 "빈 화면"처럼 보인 적이
+  있었으나, 단일 iframe으로 재확인 결과 실제로는 정상 렌더링됨을 확인했습니다).
+
+[2. 셀프 카메라 미리보기(SelfPreview)를 화면 밖으로 드래그하면 되찾을 수 없던 문제]
+"크기조절이나 이동을 고려해달라"는 요청으로 코드를 다시 보니, 드래그 이동 시 왼쪽/위
+방향만 화면 안으로 제한하고 오른쪽/아래 방향은 전혀 제한이 없어서, 사용자가 실수로
+화면 밖으로 완전히 드래그해버리면 다시 화면에 돌아오게 할 방법이 전혀 없었습니다(리셋
+버튼도 없었음). 좁은 화면일수록 이 문제가 발생하기 쉽습니다.
+수정 (features/interview/components/SelfPreview.tsx):
+- 드래그 이동과 모서리 크기조절 모두 부모(스테이지) 영역 안으로 실시간 clamp하도록 수정.
+- 더블클릭으로, 또는 우측 상단의 작은 "↺" 되돌리기 버튼으로 위치·크기를 기본값으로
+  즉시 되돌릴 수 있게 추가.
+- 좁은 화면(창 너비 480px 미만)에서는 기본 크기를 220×150 → 150×104로 더 작게 시작하도록
+  변경.
+※ 이 자동화 환경은 포인터 캡처 기반 드래그(setPointerCapture)를 프로그래밍적으로
+재현하는 것이 안 돼서(합성 PointerEvent와 실제 마우스 드래그 둘 다 시도했으나 React
+핸들러가 반응하지 않음) 실제 드래그 동작 자체는 자동으로 검증하지 못했습니다 — clamp
+공식은 손으로 계산을 검증했고, 실제 드래그 확인은 사용자가 직접 해주시는 것이 정확합니다.
+
+[3. 질문 확충 (batch7)]
+SES/파견 계약, 상류/하류 공정, 워터폴 vs 애자일, 인턴십, 졸업연구, 여러 회사 동시 합격 시
+우선순위, 테스트 자동화, 성능 테스트, API 인증/인가, 로그 분석 등 18개 대분류 질문 + 꼬리질문
+3개를 추가했습니다. 병합 결과: 질문 은행 189개 → 210개(대분류 125→143, 꼬리질문 59→62,
+마무리 5 그대로), 꼬리질문 규칙 91줄 → 95줄. QuestionBankExplained.md를 최신 숫자로
+갱신했습니다.
+
+[검증]
+npx tsc --noEmit, npm run build 모두 통과.
+
+파일 신규: data/drafts/batch7_technical_questions.json,
+  data/drafts/batch7_culturefit_personality_questions.json,
+  data/drafts/batch7_followup_questions.json, data/drafts/followup_rules_batch7.txt
+파일 수정: app/globals.css(좁은 화면 상단바 수정, 셀프뷰 되돌리기 버튼 스타일),
+  features/interview/components/SelfPreview.tsx, data/questions.json,
+  public/data/follow_ups.txt, QuestionBankExplained.md
