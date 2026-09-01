@@ -40,6 +40,17 @@ export function getQuestionsByCategory(categories: string[]): BankQuestion[] {
   return questions.filter((q) => categories.includes(q.category))
 }
 
+// 세션 시작 시 "대분류" 질문 풀을 뽑을 때 쓴다. tags에 'follow_up'(꼬리질문 전용) 또는
+// 'closing'(마무리 전용, 예: final_word)이 붙은 질문은 무작위 첫 질문 풀에서 제외한다 —
+// 이런 질문들은 decideFollowUp()의 getQuestionById로만 등장해야 한다.
+const NON_MAIN_TAGS = new Set(['follow_up', 'closing'])
+
+export function getMainQuestionsByCategory(categories: string[]): BankQuestion[] {
+  return getQuestionsByCategory(categories).filter(
+    (q) => !(q.tags ?? []).some((t) => NON_MAIN_TAGS.has(t))
+  )
+}
+
 // 꼬리질문 규칙은 JSON이 아니라 public/data/follow_ups.txt(일반 텍스트)에서 읽는다.
 // public/ 아래 파일은 정적 자산으로 그대로 서빙되므로 fetch로 원문을 가져와 파싱한다.
 // 형식: 원래질문id | 키워드1,키워드2,... | 다음질문id | 우선순위(선택)

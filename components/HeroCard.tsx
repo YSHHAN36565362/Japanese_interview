@@ -2,8 +2,8 @@ export default function HeroCard() {
   return (
     <div className="hero-card-wrap">
       <div className="hero-card">
-        <span className="hero-card-title">JP</span>
-        <p className="hero-card-sub">- 日本語面接練習プログラム -</p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/hero-illustration.png" alt="面接官のイラスト" className="hero-card-img" />
       </div>
     </div>
   )

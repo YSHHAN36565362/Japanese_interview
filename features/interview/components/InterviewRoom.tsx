@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useMediaRecorder } from '@/lib/useMediaRecorder'
 import { useInterviewMachine } from '../hooks/useInterviewMachine'
 import { useMediaDevices } from '../hooks/useMediaDevices'
@@ -24,26 +23,9 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
   const media = useMediaDevices()
   const micLevel = useAudioLevel(media.micStream)
 
-  const [levelLabel, setLevelLabel] = useState<string | null>(null)
-  const [keigoMode, setKeigoMode] = useState<string | null>(null)
-  const [subtitleOn, setSubtitleOn] = useState(true)
   const [panelOpen, setPanelOpen] = useState(true)
   const [activeTab, setActiveTab] = useState<AuxTab>('transcript')
   const [notes, setNotes] = useState('')
-
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return
-      const { data: settings } = await supabase
-        .from('user_settings')
-        .select('jlpt_level_estimate, keigo_mode')
-        .eq('user_id', data.user.id)
-        .maybeSingle()
-      setLevelLabel(settings?.jlpt_level_estimate ?? null)
-      setKeigoMode(settings?.keigo_mode ?? null)
-    })
-  }, [])
 
   const tts = useSpeechSynthesis({
     onStart: machine.handleTtsStarted,
@@ -131,8 +113,6 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
         <>
           <RoomHeader
             mode={mode}
-            levelLabel={levelLabel}
-            keigoMode={keigoMode}
             questionIndex={machine.queueIndex + 1}
             totalQuestions={machine.questions.length}
             timerFormatted={timer.formatted}
@@ -145,10 +125,11 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                 question={machine.currentQuestion}
                 phase={machine.phase}
                 isFollowUp={machine.isFollowUp}
-                interimTranscript={machine.interimTranscript}
-                showSubtitle={subtitleOn}
                 blurQuestion={mode === 'real'}
                 onReplay={handleReplay}
+                voices={tts.voices}
+                voiceURI={tts.voiceURI}
+                onVoiceChange={tts.setVoiceURI}
               />
               <SelfPreview
                 cameraOn={media.cameraOn}
@@ -219,8 +200,6 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
             onToggleMic={handleToggleMic}
             cameraOn={media.cameraOn}
             onToggleCamera={media.toggleCamera}
-            subtitleOn={subtitleOn}
-            onToggleSubtitle={() => setSubtitleOn((v) => !v)}
             panelOpen={panelOpen}
             onTogglePanel={() => setPanelOpen((v) => !v)}
             onReplay={handleReplay}
@@ -229,6 +208,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
             audioRecording={audioRecorder.recording}
             onToggleAudioRecording={() => (audioRecorder.recording ? audioRecorder.stop() : audioRecorder.start())}
             onPrimaryAction={handlePrimaryAction}
+            onFinalQuestion={machine.requestFinalQuestion}
             onEndFollowUp={machine.endFollowUp}
             onEnd={handleEnd}
             saving={machine.saving}

@@ -36,3 +36,12 @@ conflict | 意見,対立,分かれ | opinion_split_decision | 1
 years_in_japan | 安定,定年,長く | long_term_reason_beyond_stability | 1
 why_japan | 安定,定年,長く | long_term_reason_beyond_stability | 1
 explain_tech_term_japanese | 技術用語,説明 | explain_oop | 1
+
+tech_stack_choice | 学んだ,勉強,きっかけ,独学 | tech_stack_detail | 1
+testing_experience | テスト,ユニット,カバレッジ | testing_detail | 1
+debugging_approach | ツール,デバッグ,ログ,ブレークポイント | debugging_detail | 1
+security_awareness | 対策,脆弱性,セキュリティ,認証 | security_detail | 1
+failure_in_development | 学んだ,教訓,次,改善 | failure_lesson_detail | 1
+handling_pressure | 対応,行動,工夫 | pressure_detail | 1
+feedback_receiving | 指摘,フィードバック,改善 | feedback_detail | 1
+company_research | 調べ,情報,ホームページ,採用ページ | research_detail | 1

@@ -31,7 +31,6 @@ export default function SiteChrome({
           </Link>
           <nav className="nav">
             <Link href="/interview">면접 시작</Link>
-            <Link href="/level-check">레벨 체크</Link>
             <Link href="/dashboard">마이페이지</Link>
           </nav>
           {isLoggedIn ? (
@@ -44,9 +43,6 @@ export default function SiteChrome({
         </div>
       </header>
       <main className="container main">{children}</main>
-      <footer className="footer">
-        <div className="container">무료 배포 데모 · Next.js + Vercel + Supabase + Web Speech API</div>
-      </footer>
     </>
   )
 }

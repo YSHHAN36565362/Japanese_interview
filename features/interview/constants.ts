@@ -1,15 +1,15 @@
+// 역질문 모드는 별도 모드로 두지 않는다 — 실전 모드 마지막에 항상 역질문이 자동으로 붙는다
+// (useInterviewMachine.ts 참고).
 export const MODE_TO_CATEGORY: Record<string, string[]> = {
   practice: ['personality', 'technical', 'culture_fit'],
   real: ['personality', 'technical', 'culture_fit'],
   technical: ['technical'],
-  reverse: ['reverse'],
 }
 
 export const MODE_LABEL: Record<string, string> = {
   practice: '연습 모드',
   real: '실전 모드',
   technical: '기술 면접',
-  reverse: '역질문 모드',
 }
 
 // 상태별로 화면에 보여줄 문구. 색상만으로 상태를 전달하지 않기 위해 항상 텍스트를 함께 노출한다.

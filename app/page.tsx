@@ -18,19 +18,17 @@ export default async function HomePage() {
       <SupportBanner />
 
       <div className="cta-row cta-row-hero">
-        {user ? (
-          <span className="hero-card-wrap">
-            <Link className="btn-3d btn-3d-lg" href="/interview">
-              바로 면접 시작
-            </Link>
+        <span className="button-wrapper">
+          <Link className="spiderverse-button" href={user ? '/interview' : '/login'}>
+            {user ? '바로 면접 시작' : '시작하기'}
+          </Link>
+          <span className="glitch-layers" aria-hidden="true">
+            <span className="glitch-layer layer-1">{user ? '바로 면접 시작' : '시작하기'}</span>
+            <span className="glitch-layer layer-2">{user ? '바로 면접 시작' : '시작하기'}</span>
           </span>
-        ) : (
-          <span className="hero-card-wrap">
-            <Link className="btn-3d btn-3d-lg" href="/login">
-              시작하기
-            </Link>
-          </span>
-        )}
+          <span className="noise" aria-hidden="true" />
+          <span className="glitch-slice" aria-hidden="true" />
+        </span>
       </div>
     </div>
   )

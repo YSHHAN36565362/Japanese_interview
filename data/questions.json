@@ -467,7 +467,8 @@
       "expectedDurationSec": 60,
       "textJa": "最後に一言お願いします。",
       "tags": [
-        "final_word"
+        "final_word",
+        "closing"
       ]
     },
     {
@@ -558,6 +559,258 @@
       "tags": [
         "follow_up"
       ]
+    },
+    {
+      "id": "company_research",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "当社についてどの程度調べましたか。何を知っていますか。"
+    },
+    {
+      "id": "team_vs_individual",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "チームで働くことと、個人で働くこと、どちらが得意ですか。"
+    },
+    {
+      "id": "relocation_flexibility",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "転勤や異動の可能性について、どのようにお考えですか。"
+    },
+    {
+      "id": "work_style_expectation",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "当社に入社したら、どのような働き方をしたいですか。"
+    },
+    {
+      "id": "long_term_commitment",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "一つの会社に長く勤めることについて、どのようにお考えですか。"
+    },
+    {
+      "id": "cross_cultural_challenge",
+      "category": "culture_fit",
+      "expectedDurationSec": 90,
+      "textJa": "文化の違いで困った経験はありますか。どのように対応しましたか。"
+    },
+    {
+      "id": "salary_negotiation",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "給与よりも重視することはありますか。"
+    },
+    {
+      "id": "tech_stack_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "その技術を選んだ理由や、学んだきっかけを教えてください。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "testing_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "どのようなテストを、どのくらいの頻度で書いていますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "debugging_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "具体的にどのようなツールや方法を使いますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "security_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "具体的にどのような対策をしましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "failure_lesson_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "その失敗を、次にどう活かしましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "pressure_detail",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "具体的にどのような行動をとりましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "feedback_detail",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "印象に残っている指摘はありますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "research_detail",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "具体的にどのような情報を調べましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "decision_making_style",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "物事を決めるとき、何を基準に判断しますか。"
+    },
+    {
+      "id": "handling_pressure",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "プレッシャーの大きい状況で、どのように対応しますか。"
+    },
+    {
+      "id": "time_management",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "複数のタスクがあるとき、どのように優先順位をつけますか。"
+    },
+    {
+      "id": "communication_style",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "ご自身のコミュニケーションの特徴を教えてください。"
+    },
+    {
+      "id": "failure_experience_general",
+      "category": "personality",
+      "expectedDurationSec": 90,
+      "textJa": "大きな失敗をした経験と、それをどう乗り越えたか教えてください。"
+    },
+    {
+      "id": "long_term_goal",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "将来的にどのようなエンジニアになりたいですか。"
+    },
+    {
+      "id": "work_life_balance",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "仕事とプライベートのバランスについて、どのようにお考えですか。"
+    },
+    {
+      "id": "feedback_receiving",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "上司や同僚からの指摘を、どのように受け止めますか。"
+    },
+    {
+      "id": "tech_stack_choice",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "現在得意としている技術スタックを教えてください。"
+    },
+    {
+      "id": "version_control_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "バージョン管理システム(Gitなど)の使用経験について教えてください。"
+    },
+    {
+      "id": "testing_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "テストコードやユニットテストを書いた経験はありますか。"
+    },
+    {
+      "id": "code_review_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "コードレビューの経験について教えてください。どのような点を意識していますか。"
+    },
+    {
+      "id": "debugging_approach",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "バグを発見したとき、どのように原因を特定しますか。"
+    },
+    {
+      "id": "database_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "データベース設計やSQLの経験について教えてください。"
+    },
+    {
+      "id": "security_awareness",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "セキュリティを意識して開発した経験はありますか。"
+    },
+    {
+      "id": "agile_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "アジャイルやスクラム開発の経験はありますか。"
+    },
+    {
+      "id": "cloud_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "クラウドサービス(AWS、GCPなど)の利用経験について教えてください。"
+    },
+    {
+      "id": "api_design_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "APIの設計・開発経験について教えてください。"
+    },
+    {
+      "id": "performance_optimization",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "パフォーマンス改善に取り組んだ経験はありますか。"
+    },
+    {
+      "id": "learning_new_tech",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "新しい技術を学ぶとき、どのように学習していますか。"
+    },
+    {
+      "id": "code_quality_opinion",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "保守しやすいコードとは何だと思いますか。"
+    },
+    {
+      "id": "failure_in_development",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "開発中に大きな失敗をした経験と、そこから学んだことを教えてください。"
+    },
+    {
+      "id": "documentation_habit",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "開発の際、ドキュメントや仕様書をどの程度重視していますか。"
     }
   ]
 }

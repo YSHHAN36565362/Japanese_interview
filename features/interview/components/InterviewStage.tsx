@@ -9,21 +9,22 @@ export default function InterviewStage({
   question,
   phase,
   isFollowUp,
-  interimTranscript,
-  showSubtitle,
   blurQuestion,
   onReplay,
+  voices,
+  voiceURI,
+  onVoiceChange,
 }: {
   question: BankQuestion
   phase: InterviewPhase
   isFollowUp: boolean
-  interimTranscript: string
-  showSubtitle: boolean
   blurQuestion: boolean
   onReplay: () => void
+  voices: SpeechSynthesisVoice[]
+  voiceURI: string
+  onVoiceChange: (uri: string) => void
 }) {
   const speaking = phase === 'interviewerSpeaking'
-  const listening = phase === 'listening'
   const [photoFailed, setPhotoFailed] = useState(false)
 
   return (
@@ -46,7 +47,24 @@ export default function InterviewStage({
         {speaking && <span className="room-speaking-indicator"> · 発話中…</span>}
       </div>
 
-      <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
+      <div className="room-question-row">
+        {voices.length > 0 && (
+          <select
+            className="room-voice-select"
+            value={voiceURI}
+            onChange={(e) => onVoiceChange(e.target.value)}
+            aria-label="면접관 목소리 선택"
+            title="면접관 목소리 선택 (브라우저 제공, 무료)"
+          >
+            {voices.map((v) => (
+              <option key={v.voiceURI} value={v.voiceURI}>
+                {v.name}
+              </option>
+            ))}
+          </select>
+        )}
+        <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
+      </div>
       <p
         className={`room-question-ja${blurQuestion ? ' blurred' : ''}`}
         tabIndex={blurQuestion ? 0 : undefined}
@@ -64,12 +82,6 @@ export default function InterviewStage({
       <p className="room-phase-status" role="status" aria-live="polite">
         {PHASE_STATUS_TEXT[phase]}
       </p>
-
-      {showSubtitle && listening && interimTranscript && (
-        <p className="room-subtitle" aria-live="polite">
-          {interimTranscript}
-        </p>
-      )}
     </section>
   )
 }

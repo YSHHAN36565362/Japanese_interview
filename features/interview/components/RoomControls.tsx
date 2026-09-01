@@ -9,8 +9,6 @@ export default function RoomControls({
   onToggleMic,
   cameraOn,
   onToggleCamera,
-  subtitleOn,
-  onToggleSubtitle,
   panelOpen,
   onTogglePanel,
   onReplay,
@@ -19,6 +17,7 @@ export default function RoomControls({
   audioRecording,
   onToggleAudioRecording,
   onPrimaryAction,
+  onFinalQuestion,
   onEndFollowUp,
   onEnd,
   saving,
@@ -29,8 +28,6 @@ export default function RoomControls({
   onToggleMic: () => void
   cameraOn: boolean
   onToggleCamera: () => void
-  subtitleOn: boolean
-  onToggleSubtitle: () => void
   panelOpen: boolean
   onTogglePanel: () => void
   onReplay: () => void
@@ -39,6 +36,7 @@ export default function RoomControls({
   audioRecording: boolean
   onToggleAudioRecording: () => void
   onPrimaryAction: () => void
+  onFinalQuestion: () => void
   onEndFollowUp: () => void
   onEnd: () => void
   saving: boolean
@@ -46,6 +44,7 @@ export default function RoomControls({
   const primaryLabel = phase === 'listening' ? '답변 완료' : phase === 'answerReview' ? '다음 질문' : '답변 완료'
   const primaryDisabled = phase !== 'listening' && phase !== 'answerReview'
   const endFollowUpDisabled = phase !== 'answerReview' || saving
+  const finalQuestionDisabled = phase !== 'answerReview' || saving
 
   return (
     <footer className="room-controls" data-testid="room-controls">
@@ -67,14 +66,6 @@ export default function RoomControls({
           aria-label={cameraOn ? '카메라 끄기' : '카메라 켜기'}
         >
           {cameraOn ? '카메라 켜짐' : '카메라'}
-        </button>
-
-        <button
-          className={`room-control-btn${subtitleOn ? ' active' : ''}`}
-          onClick={onToggleSubtitle}
-          aria-pressed={subtitleOn}
-        >
-          자막
         </button>
 
         <button className={`room-control-btn${panelOpen ? ' active' : ''}`} onClick={onTogglePanel} aria-pressed={panelOpen}>
@@ -101,9 +92,26 @@ export default function RoomControls({
         >
           {audioRecording ? '음성 녹음 중지' : '음성 녹음(로컬)'}
         </button>
+
+        <button
+          className={`room-record-dot-btn${audioRecording ? ' recording' : ''}`}
+          onClick={onToggleAudioRecording}
+          aria-label={audioRecording ? '음성 녹음 중지' : '음성 녹음 시작'}
+          title={audioRecording ? '음성 녹음 중지' : '음성 녹음 시작'}
+        >
+          <span className="room-record-dot" aria-hidden="true" />
+        </button>
       </div>
 
       <div className="room-controls-right">
+        <button
+          className="room-control-btn end-followup"
+          onClick={onFinalQuestion}
+          disabled={finalQuestionDisabled}
+          title="지금까지의 질문을 마치고, 마지막으로 하고 싶은 말을 묻습니다"
+        >
+          마지막 질문하기
+        </button>
         <button
           className="room-control-btn end-followup"
           onClick={onEndFollowUp}

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   REAL_MODE_INTRO_QUESTION,
+  getMainQuestionsByCategory,
+  getQuestionById,
   getQuestionsByCategory,
   shuffle,
   type BankQuestion,
@@ -27,6 +29,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
   const [queueIndex, setQueueIndex] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState<BankQuestion | null>(null)
   const [isFollowUp, setIsFollowUp] = useState(false)
+  const [isFinalQuestion, setIsFinalQuestion] = useState(false)
   const askedFollowUpsRef = useRef<Set<string>>(new Set())
 
   const [interimTranscript, setInterimTranscript] = useState('')
@@ -54,9 +57,13 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
 
       const categories = MODE_TO_CATEGORY[mode] ?? ['personality']
       const isRealMode = mode === 'real'
-      const poolSize = isRealMode ? 5 : 6
-      const pool = shuffle(getQuestionsByCategory(categories)).slice(0, poolSize)
-      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool] : pool
+      // 질문 은행이 대폭 늘어난 것을 세션에도 반영해 한 번에 더 다양한 질문이 나오게 한다.
+      const poolSize = isRealMode ? 8 : 10
+      const pool = shuffle(getMainQuestionsByCategory(categories)).slice(0, poolSize)
+      // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
+      // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
+      const reverseQuestions = isRealMode ? getQuestionsByCategory(['reverse']) : []
+      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool, ...reverseQuestions] : pool
 
       setQuestions(finalQuestions)
       setCurrentQuestion(finalQuestions[0] ?? null)
@@ -171,6 +178,13 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       customTermsRef.current = [...customTermsRef.current, { spoken_variation: suggestion.from, correct_term: suggestion.to }]
     }
 
+    // "마지막 질문하기" 버튼으로 들어온 질문(final_word)에 답했다면, 꼬리질문 없이 바로 면접을 종료한다.
+    if (isFinalQuestion) {
+      setSaving(false)
+      setPhase('completed')
+      return
+    }
+
     if (!opts?.skipFollowUp) {
       // isFollowUp 여부와 무관하게 항상 꼬리질문을 우선 확인한다 (꼬리질문 체인이 계속 이어질 수 있음).
       // 같은 대상 질문은 askedFollowUpsRef가 한 번만 나오도록 막아주므로 무한 루프 걱정은 없다.
@@ -195,10 +209,22 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     setSaving(false)
     goToNextInQueue()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestion, userId, draftTranscript, interimTranscript, isFollowUp, suggestion, sessionId])
+  }, [currentQuestion, userId, draftTranscript, interimTranscript, isFollowUp, isFinalQuestion, suggestion, sessionId])
 
   // "꼬리질문 종료" 버튼: 지금 답변은 저장하되, 꼬리질문 판단은 건너뛰고 바로 다음 대분류 질문으로.
   const endFollowUp = useCallback(() => confirmAnswer({ skipFollowUp: true }), [confirmAnswer])
+
+  // "마지막 질문하기" 버튼: final_word("마지막으로 하고 싶은 말 있나요")는 더 이상 무작위 질문 풀에
+  // 섞이지 않는다(data/questions.json에 'closing' 태그) — 사용자가 이 버튼을 눌렀을 때만 등장한다.
+  const requestFinalQuestion = useCallback(() => {
+    const finalQuestion = getQuestionById('final_word')
+    if (!finalQuestion) return
+    setIsFollowUp(false)
+    setIsFinalQuestion(true)
+    setCurrentQuestion(finalQuestion)
+    resetForQuestion()
+    setPhase('questionReady')
+  }, [])
 
   const requestEnd = useCallback(() => {
     setPhase('completed')
@@ -238,6 +264,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     handleSpeechError,
     confirmAnswer,
     endFollowUp,
+    requestFinalQuestion,
     requestEnd,
   }
 }

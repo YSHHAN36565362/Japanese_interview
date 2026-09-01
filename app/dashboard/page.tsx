@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MacWindow from '@/components/MacWindow'
 import LogoutButton from '@/components/LogoutButton'
+import ChangeNumberForm from '@/components/ChangeNumberForm'
+import DeleteSessionButton from '@/components/DeleteSessionButton'
 import { formatKST } from '@/lib/formatDate'
 
 export default async function DashboardPage() {
@@ -63,14 +65,23 @@ export default async function DashboardPage() {
       </div>
 
       <section className="card">
+        <h2>고유 번호 변경</h2>
+        <p className="muted small">
+          번호를 바꿔도 지금까지의 기록은 그대로 유지됩니다. 다음부터는 새 번호로 입장하세요.
+        </p>
+        <ChangeNumberForm />
+      </section>
+
+      <section className="card">
         <h2>지난 세션</h2>
         {(!sessions || sessions.length === 0) && <p className="muted">아직 완료한 세션이 없습니다.</p>}
         <ul className="session-list">
           {(sessions ?? []).map((s: any) => (
-            <li key={s.id}>
+            <li key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
               <Link href={`/interview/result/${s.id}`}>
                 {formatKST(s.created_at)} · {s.mode} · 답변 {s.session_answers?.[0]?.count ?? 0}개
               </Link>
+              <DeleteSessionButton sessionId={s.id} />
             </li>
           ))}
         </ul>

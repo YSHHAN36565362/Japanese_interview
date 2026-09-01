@@ -7,13 +7,48 @@ interface Options {
   onEnd?: () => void
 }
 
+const VOICE_STORAGE_KEY = 'voiceInterviewJp:ttsVoiceURI'
+
 // 질문 낭독 전용 TTS 훅. 재생 중에는 STT를 시작하지 않도록 onStart/onEnd 콜백으로
 // 면접 상태 머신에 TTS_STARTED/TTS_ENDED 이벤트를 보낸다 (가이드 §7-4).
+// 유료 AI TTS API는 0원 운영 원칙상 쓰지 않는다 — 대신 브라우저(OS)가 이미 무료로 제공하는
+// 여러 일본어 음성(Web Speech API SpeechSynthesisVoice) 중에서 고를 수 있게 한다.
 export function useSpeechSynthesis({ onStart, onEnd }: Options) {
   const [supported, setSupported] = useState(true)
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
+  const [voiceURI, setVoiceURIState] = useState<string>('')
 
   useEffect(() => {
-    setSupported(typeof window !== 'undefined' && 'speechSynthesis' in window)
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setSupported(false)
+      return
+    }
+    setSupported(true)
+
+    function loadVoices() {
+      const jaVoices = window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('ja'))
+      setVoices(jaVoices)
+      setVoiceURIState((prev) => {
+        if (prev && jaVoices.some((v) => v.voiceURI === prev)) return prev
+        const saved = window.localStorage.getItem(VOICE_STORAGE_KEY)
+        if (saved && jaVoices.some((v) => v.voiceURI === saved)) return saved
+        const kyoko = jaVoices.find((v) => v.name === 'Kyoko')
+        return (kyoko ?? jaVoices[0])?.voiceURI ?? ''
+      })
+    }
+
+    loadVoices()
+    window.speechSynthesis.onvoiceschanged = loadVoices
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null
+    }
+  }, [])
+
+  const setVoiceURI = useCallback((uri: string) => {
+    setVoiceURIState(uri)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(VOICE_STORAGE_KEY, uri)
+    }
   }, [])
 
   const speak = useCallback(
@@ -26,12 +61,14 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       const utter = new SpeechSynthesisUtterance(text)
       utter.lang = 'ja-JP'
       utter.rate = 0.95
+      const selected = voices.find((v) => v.voiceURI === voiceURI)
+      if (selected) utter.voice = selected
       utter.onstart = () => onStart?.()
       utter.onend = () => onEnd?.()
       utter.onerror = () => onEnd?.()
       window.speechSynthesis.speak(utter)
     },
-    [onStart, onEnd]
+    [onStart, onEnd, voices, voiceURI]
   )
 
   const cancel = useCallback(() => {
@@ -42,5 +79,5 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
 
   useEffect(() => () => cancel(), [cancel])
 
-  return { supported, speak, cancel }
+  return { supported, speak, cancel, voices, voiceURI, setVoiceURI }
 }

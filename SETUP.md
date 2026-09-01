@@ -6,9 +6,16 @@
 
 **필요 환경**: Node.js 20 이상 권장 (Vercel 배포 시에는 자동으로 적절한 Node 런타임을 사용하므로 별도 설정 불필요).
 
-> ⚠️ **가장 먼저 확인하세요**: 비밀번호(`kmove13`)를 입력했는데 "Anonymous sign-ins are disabled"
-> 오류가 뜨면, Supabase 대시보드 → **Authentication → Sign In / Providers → Anonymous Sign-Ins**
-> 토글을 켜지 않은 것입니다. 아래 1장의 3번 단계를 먼저 완료하세요. 이 토글 하나만 켜면 바로 해결됩니다.
+> ⚠️ **가장 먼저 확인하세요**: 로그인 화면에는 두 가지 입장 방법이 있고, 둘 다 Supabase 설정이
+> 하나씩 필요합니다.
+> - 고유 번호 입장 → "이메일 회원가입이 꺼져 있습니다" 오류가 뜨면, **Authentication → Providers →
+>   Email**에서 **Confirm email**을 꺼주세요(Disable). 진짜 이메일을 보내지 않고(가짜 `.local`
+>   주소를 내부적으로만 씁니다) 번호만으로 즉시 로그인/가입 처리를 하므로, 이 토글이 켜져 있으면
+>   계정은 만들어지고도 로그인이 완료되지 않습니다.
+> - "번호 없이 시작하기" → "Anonymous sign-ins are disabled" 오류가 뜨면, **Authentication →
+>   Sign In / Providers → Anonymous Sign-Ins**를 켜주세요(Enable). 기록을 남기지 않는 게스트
+>   입장은 이 방식을 그대로 씁니다.
+> 아래 1장의 3번 단계 참고.
 
 ---
 
@@ -17,11 +24,10 @@
 ```
 app/                  Next.js App Router 페이지
   page.tsx            홈
-  login/               공유 비밀번호 입력 → 익명 로그인 (이메일 발송 없음)
-  level-check/         최초 레벨 체크(자가 신고 + 장음/경어 진단)
+  login/               고유 번호 입력 → 그 번호로 Supabase 이메일/비밀번호 로그인·가입 (이메일 발송 없음)
   interview/           모드 선택 화면 (면접 진행 자체는 features/interview 참고)
     run/[sessionId]/   InterviewRoom을 렌더링하는 얇은 로더
-  dashboard/           마이페이지 (세션 목록, STT 보정 사전, 로그아웃)
+  dashboard/           마이페이지 (세션 목록·삭제, 고유 번호 변경, STT 보정 사전, 로그아웃)
 components/           사이트 공통 재사용 UI 컴포넌트 (SiteChrome, MacWindow, HeroCard 등)
 features/interview/    ★ 면접 진행 화면("면접실") 전용 — 상태 머신, 훅, 하위 컴포넌트
                        (zoom_style_frontend_implementation_guide.md 기반, 자세한 내용은 readme_4.md §3-4·§9)
@@ -46,11 +52,18 @@ supabase/
    - 예전에 이미 이 프로젝트에서 `questions`/`follow_up_rules` 테이블을 만든 적이 있다면(구버전
      schema.sql + seed.sql을 실행했던 경우), `supabase/migrate_local_questions.sql`을 딱 1번 실행해
      정리하세요. 처음 만드는 프로젝트라면 이 단계는 건너뛰어도 됩니다.
-3. 왼쪽 메뉴 **Authentication → Sign In / Providers → Anonymous Sign-Ins** 를 켜주세요(Enable).
-   이 데모는 이메일을 전혀 보내지 않습니다 — 화면에서 공유 비밀번호(`kmove13`)를 확인한 뒤
-   `supabase.auth.signInAnonymously()`로 세션만 발급합니다. 이메일/비밀번호 Provider나 URL
-   Redirect 설정을 따로 만질 필요가 없습니다.
-4. **Project Settings → API** 에서 `Project URL`과 `anon public` 키를 복사해둡니다 (다음 단계에서 사용).
+3. 왼쪽 메뉴 **Authentication → Providers → Email**에서 두 가지를 확인하세요.
+   - **Confirm email**(가입 확인 메일 요구) → **꺼주세요(Disable)**. 이 데모는 사용자가 입력한
+     "고유 번호"로 `id-번호@voiceinterviewjp.local` 같은 가짜 이메일을 만들어 Supabase
+     이메일/비밀번호 인증에 그대로 씁니다(진짜 메일함이 없으므로 확인 메일이 절대 오지 않습니다).
+     이 토글이 켜져 있으면 회원가입은 되지만 로그인이 완료되지 않습니다.
+   - **Secure email change**(이메일 변경 시 재확인 요구) → 켜져 있다면 **꺼주세요**. 마이페이지의
+     "고유 번호 변경" 기능은 내부적으로 계정의 이메일/비밀번호를 바꾸는 방식인데, 이 토글이 켜져
+     있으면 마찬가지로 도착하지 않을 확인 메일을 기다리게 됩니다.
+   - 그 외 이메일 Provider의 Signup(가입 허용) 자체는 켜져 있어야 합니다(기본값 On).
+4. 왼쪽 메뉴 **Authentication → Sign In / Providers → Anonymous Sign-Ins**도 켜주세요(Enable).
+   로그인 화면의 "번호 없이 시작하기"(기록을 남기지 않는 게스트 입장)가 이 방식을 씁니다.
+5. **Project Settings → API** 에서 `Project URL`과 `anon public` 키를 복사해둡니다 (다음 단계에서 사용).
 
 ---
 
@@ -151,16 +164,19 @@ team_project | チーム,プロジェクト,担当 | role_detail | 1
 
 ### 질문 순서
 
-같은 카테고리에 속한 질문들은 세션을 시작할 때마다 무작위로 섞여서 6개(실전 모드는 고정 자기소개
-1개 + 5개)가 출제됩니다. `data/questions.json`에 질문을 더 추가할수록 매번 다른 조합이 나옵니다.
+같은 카테고리에 속한 질문들은 세션을 시작할 때마다 무작위로 섞여서 10개(연습/기술 면접 모드) 또는
+자기소개 1개 + 8개 + 역질문 1개 = 10개(실전 모드)가 출제됩니다. `data/questions.json`에 질문을
+더 추가할수록 매번 다른 조합이 나옵니다.
 
 ---
 
 ## 6. 화면 구성 & UI 요소
 
 - **홈**: 좌우로 기울어진 호버 카드(`HeroCard`)로 "JP · 日本語面接練習プログラム" 타이틀을 보여줍니다.
-- **로그인**: 공유 비밀번호 입력 폼(네오브루탈리즘 스타일) 하나뿐입니다. 이메일 발송(가입 확인 메일,
-  매직 링크 등)이 전혀 없고, 비밀번호가 맞으면 Supabase 익명 로그인으로 즉시 세션을 발급합니다.
+- **로그인**: "고유 번호" 입력창과 "번호 없이 시작하기" 버튼 두 가지입니다. 고유 번호는 그 번호로
+  Supabase 이메일/비밀번호 계정을 만들거나 로그인해, 다른 기기에서도 같은 번호로 기록을 이어볼 수
+  있게 합니다(진짜 이메일 발송은 전혀 없습니다). "번호 없이 시작하기"는 예전의 익명 로그인 방식 그대로,
+  기록을 남기지 않는 1회성 게스트 입장입니다.
 - **내부 화면 공통 프레임**: 레벨 체크·면접·결과·마이페이지·상단바·모드 선택 카드는 모두 실제 macOS
   Safari 창처럼 "트래픽 라이트 타이틀바 + 주소창 느낌의 툴바" 2단 구조(`MacWindow`, `.topbar-*`,
   `.mode-card-*`)로 통일했습니다.
@@ -215,6 +231,6 @@ team_project | チーム,プロジェクト,担当 | role_detail | 1
   한 번 허용하면 이후에는 다시 묻지 않는 브라우저가 대부분입니다.
 - Supabase 무료 프로젝트는 7일간 활동이 없으면 일시 정지될 수 있습니다. 오랜만에 접속했는데 로딩이
   오래 걸린다면 프로젝트가 깨어나는 중일 가능성이 높습니다.
-- **공유 비밀번호는 브라우저 코드에 그대로 들어있는 클라이언트 측 확인일 뿐입니다.** 실제 계정 인증이
-  아니라 "아무나 못 들어오게 막는" 수준의 가벼운 문지기입니다. 5~10명 규모의 비공개 데모에는 충분하지만,
-  더 엄격한 접근 제어가 필요해지면 Supabase Auth의 이메일/비밀번호 또는 OAuth 로그인으로 교체하세요.
+- **고유 번호는 사실상 비밀번호 역할을 겸합니다.** 번호를 알거나 추측하는 사람은 그 번호의 저장 기록을
+  보고 지울 수 있습니다(복구 수단 없음). 약 20명 규모의 개인 연습용 데모라는 전제하에 의도적으로 선택한
+  가벼운 구조입니다 — 더 엄격한 접근 제어가 필요해지면 실제 이메일 인증이나 OAuth 로그인으로 교체하세요.

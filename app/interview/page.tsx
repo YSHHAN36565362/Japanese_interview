@@ -8,9 +8,8 @@ import LoadingDots from '@/components/LoadingDots'
 
 const MODES = [
   { id: 'practice', label: '연습 모드', desc: '질문 미리보기·다시 듣기 가능, 시간 제한 없음' },
-  { id: 'real', label: '실전 모드', desc: '제한 시간 안에 답변, 종료 후에만 수정' },
+  { id: 'real', label: '실전 모드', desc: '제한 시간 안에 답변, 마지막엔 역질문까지' },
   { id: 'technical', label: '기술 면접', desc: '프로젝트 경험·기술 선택 이유 중심' },
-  { id: 'reverse', label: '역질문 모드', desc: '면접관에게 할 질문 연습' },
 ]
 
 export default function InterviewModeSelectPage() {
@@ -45,13 +44,6 @@ export default function InterviewModeSelectPage() {
   return (
     <MacWindow title="voice-interview-jp — select mode">
       <h1 style={{ marginTop: 0 }}>면접 모드 선택</h1>
-      <p className="muted small">
-        레벨 체크를 아직 하지 않았다면{' '}
-        <a href="/level-check" style={{ textDecoration: 'underline' }}>
-          레벨 체크
-        </a>
-        를 먼저 해보는 것을 권장합니다.
-      </p>
       {starting ? (
         <LoadingDots label="세션을 준비하고 있습니다..." />
       ) : (
