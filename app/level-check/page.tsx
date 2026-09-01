@@ -7,9 +7,34 @@ import { speakJapanese } from '@/lib/webSpeech'
 import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
 import { CHOON_PRACTICE_WORDS } from '@/lib/choon'
 import { analyzeAnswer, charOverlapSimilarity } from '@/lib/feedback'
+import MacWindow from '@/components/MacWindow'
+import PillRadio from '@/components/PillRadio'
+import MicToggle from '@/components/MicToggle'
+import LoadingDots from '@/components/LoadingDots'
 
 const KEIGO_SENTENCE = '本日はお時間をいただき、誠にありがとうございます。'
 const CHOON_WORD = CHOON_PRACTICE_WORDS[0]
+
+const JLPT_OPTIONS = [
+  { value: 'N1', label: 'N1' },
+  { value: 'N2', label: 'N2' },
+  { value: 'N3', label: 'N3' },
+  { value: 'N4', label: 'N4' },
+  { value: 'N5', label: 'N5' },
+  { value: 'unknown', label: '모름' },
+]
+
+const KEIGO_OPTIONS = [
+  { value: 'confident', label: '자신 있음' },
+  { value: 'unsure', label: '애매함' },
+  { value: 'difficult', label: '어려움' },
+]
+
+const CHOON_OPTIONS = [
+  { value: 'confident', label: '자신 있음' },
+  { value: 'unsure', label: '잘 모름' },
+  { value: 'difficult', label: '어려움' },
+]
 
 type Step = 'self-report' | 'choon-check' | 'keigo-check' | 'result'
 
@@ -104,11 +129,11 @@ export default function LevelCheckPage() {
     router.push('/interview')
   }
 
-  if (!userId) return <p>확인 중입니다...</p>
+  if (!userId) return <LoadingDots label="확인 중입니다..." />
 
   return (
-    <div className="card">
-      <h1>레벨 체크</h1>
+    <MacWindow title="voice-interview-jp — level check">
+      <h1 style={{ marginTop: 0 }}>레벨 체크</h1>
       <p className="muted small">
         자가 신고 + 짧은 진단으로 초기 난이도와 경어 모드를 추천합니다. 결과는 자동 확정이 아니라
         제안이며, 면접 모드 선택 화면에서 언제든 바꿀 수 있습니다.
@@ -118,58 +143,17 @@ export default function LevelCheckPage() {
         <div className="form">
           <div>
             <p>JLPT 수준</p>
-            <div className="radio-group">
-              {['N1', 'N2', 'N3', 'N4', 'N5', 'unknown'].map((lvl) => (
-                <label key={lvl}>
-                  <input type="radio" name="jlpt" value={lvl} checked={jlpt === lvl} onChange={() => setJlpt(lvl)} />
-                  {lvl === 'unknown' ? '모름' : lvl}
-                </label>
-              ))}
-            </div>
+            <PillRadio name="jlpt" options={JLPT_OPTIONS} value={jlpt} onChange={setJlpt} />
           </div>
 
           <div>
             <p>경어(敬語) 사용</p>
-            <div className="radio-group">
-              {[
-                { v: 'confident', label: '자신 있음' },
-                { v: 'unsure', label: '애매함' },
-                { v: 'difficult', label: '어려움' },
-              ].map((opt) => (
-                <label key={opt.v}>
-                  <input
-                    type="radio"
-                    name="keigo"
-                    value={opt.v}
-                    checked={keigoConfidence === opt.v}
-                    onChange={() => setKeigoConfidence(opt.v)}
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
+            <PillRadio name="keigo" options={KEIGO_OPTIONS} value={keigoConfidence} onChange={setKeigoConfidence} />
           </div>
 
           <div>
             <p>장음(長音) 발음</p>
-            <div className="radio-group">
-              {[
-                { v: 'confident', label: '자신 있음' },
-                { v: 'unsure', label: '잘 모르겠음' },
-                { v: 'difficult', label: '어려움을 느낀 적 있음' },
-              ].map((opt) => (
-                <label key={opt.v}>
-                  <input
-                    type="radio"
-                    name="choon"
-                    value={opt.v}
-                    checked={choonConfidence === opt.v}
-                    onChange={() => setChoonConfidence(opt.v)}
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
+            <PillRadio name="choon" options={CHOON_OPTIONS} value={choonConfidence} onChange={setChoonConfidence} />
           </div>
 
           <div className="step-nav">
@@ -189,13 +173,8 @@ export default function LevelCheckPage() {
           <button className="btn" onClick={() => speakJapanese(CHOON_WORD.word)}>
             발음 듣기
           </button>
-          <div className="mic-row" style={{ marginTop: 12 }}>
-            <button className="btn btn-primary" onClick={() => choonRec.start()} disabled={choonRec.listening}>
-              🎤 따라 말하기
-            </button>
-            <button className="btn" onClick={() => choonRec.stop()} disabled={!choonRec.listening}>
-              ⏹ 중지
-            </button>
+          <div className={`mic-row${choonRec.listening ? ' mic-row-active' : ''}`} style={{ marginTop: 16 }}>
+            <MicToggle checked={choonRec.listening} onChange={(v) => (v ? choonRec.start() : choonRec.stop())} />
           </div>
           <p className="muted small">인식된 텍스트: {choonRec.transcript || '—'}</p>
           <div className="step-nav">
@@ -214,13 +193,8 @@ export default function LevelCheckPage() {
           <button className="btn" onClick={() => speakJapanese(KEIGO_SENTENCE)}>
             발음 듣기
           </button>
-          <div className="mic-row" style={{ marginTop: 12 }}>
-            <button className="btn btn-primary" onClick={() => keigoRec.start()} disabled={keigoRec.listening}>
-              🎤 따라 말하기
-            </button>
-            <button className="btn" onClick={() => keigoRec.stop()} disabled={!keigoRec.listening}>
-              ⏹ 중지
-            </button>
+          <div className={`mic-row${keigoRec.listening ? ' mic-row-active' : ''}`} style={{ marginTop: 16 }}>
+            <MicToggle checked={keigoRec.listening} onChange={(v) => (v ? keigoRec.start() : keigoRec.stop())} />
           </div>
           <p className="muted small">인식된 텍스트: {keigoRec.transcript || '—'}</p>
           <div className="step-nav">
@@ -253,12 +227,16 @@ export default function LevelCheckPage() {
             선택 화면에서 난이도를 직접 바꿀 수 있습니다.
           </p>
           <div className="step-nav">
-            <button className="btn btn-primary" onClick={saveAndContinue} disabled={saving}>
-              {saving ? '저장 중...' : '이 설정으로 면접 시작하기'}
-            </button>
+            {saving ? (
+              <LoadingDots label="저장 중..." />
+            ) : (
+              <button className="btn btn-primary" onClick={saveAndContinue}>
+                이 설정으로 면접 시작하기
+              </button>
+            )}
           </div>
         </div>
       )}
-    </div>
+    </MacWindow>
   )
 }

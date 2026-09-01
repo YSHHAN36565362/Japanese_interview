@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Supabase 세션 쿠키를 매 요청마다 갱신한다 (매직 링크 로그인 유지용).
+// Supabase 세션 쿠키를 매 요청마다 갱신한다 (익명 로그인 세션 유지용).
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } })
 

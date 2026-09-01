@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import MacWindow from '@/components/MacWindow'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -53,8 +54,8 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div>
-      <h1>마이페이지</h1>
+    <MacWindow title="voice-interview-jp — my page">
+      <h1 style={{ marginTop: 0 }}>마이페이지</h1>
 
       <section className="card">
         <h2>지난 세션</h2>
@@ -82,6 +83,6 @@ export default async function DashboardPage() {
           ))}
         </ul>
       </section>
-    </div>
+    </MacWindow>
   )
 }

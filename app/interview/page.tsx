@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import MacWindow from '@/components/MacWindow'
+import LoadingDots from '@/components/LoadingDots'
 
 const MODES = [
   { id: 'practice', label: '연습 모드', desc: '질문 미리보기·다시 듣기 가능, 시간 제한 없음' },
@@ -38,11 +40,11 @@ export default function InterviewModeSelectPage() {
     router.push(`/interview/run/${data.id}?mode=${mode}`)
   }
 
-  if (!userId) return <p>확인 중입니다...</p>
+  if (!userId) return <LoadingDots label="확인 중입니다..." />
 
   return (
-    <div>
-      <h1>면접 모드 선택</h1>
+    <MacWindow title="voice-interview-jp — select mode">
+      <h1 style={{ marginTop: 0 }}>면접 모드 선택</h1>
       <p className="muted small">
         레벨 체크를 아직 하지 않았다면{' '}
         <a href="/level-check" style={{ textDecoration: 'underline' }}>
@@ -50,14 +52,18 @@ export default function InterviewModeSelectPage() {
         </a>
         를 먼저 해보는 것을 권장합니다.
       </p>
-      <div className="mode-grid">
-        {MODES.map((m) => (
-          <button key={m.id} className="card mode-card" disabled={starting} onClick={() => startSession(m.id)}>
-            <h3>{m.label}</h3>
-            <p className="muted small">{m.desc}</p>
-          </button>
-        ))}
-      </div>
-    </div>
+      {starting ? (
+        <LoadingDots label="세션을 준비하고 있습니다..." />
+      ) : (
+        <div className="mode-grid">
+          {MODES.map((m) => (
+            <button key={m.id} className="card mode-card" disabled={starting} onClick={() => startSession(m.id)}>
+              <h3>{m.label}</h3>
+              <p className="muted small">{m.desc}</p>
+            </button>
+          ))}
+        </div>
+      )}
+    </MacWindow>
   )
 }

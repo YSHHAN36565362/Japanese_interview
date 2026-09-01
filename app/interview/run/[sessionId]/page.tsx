@@ -9,6 +9,9 @@ import { analyzeAnswer } from '@/lib/feedback'
 import { matchFollowUpRule } from '@/lib/followUp'
 import { TECH_TERM_MAP } from '@/lib/techTerms'
 import WaveformVisualizer from '@/components/WaveformVisualizer'
+import MacWindow from '@/components/MacWindow'
+import LoadingDots from '@/components/LoadingDots'
+import MicToggle from '@/components/MicToggle'
 import type { FollowUpRule, Question, UserSettings } from '@/lib/types'
 
 const MODE_TO_CATEGORY: Record<string, string[]> = {
@@ -218,61 +221,62 @@ export default function InterviewRunPage() {
     setActiveQuestion(questions[nextIndex])
   }
 
-  if (loading) return <p>질문을 불러오는 중입니다...</p>
+  if (loading) return <LoadingDots label="질문을 불러오는 중입니다..." />
   if (questions.length === 0) {
     return <p>표시할 질문이 없습니다. supabase/seed.sql이 실행되었는지 확인해주세요.</p>
   }
   if (!activeQuestion) return null
 
   return (
-    <div className="interview-layout">
-      <div className="card">
-        <span className="badge">{isFollowUp ? '꼬리 질문' : `${queueIndex + 1} / ${questions.length}`}</span>
-        <h2 className="question-ja">{activeQuestion.text_ja}</h2>
-        {activeQuestion.text_ko && <p className="muted">{activeQuestion.text_ko}</p>}
-        <button className="btn" onClick={() => speakJapanese(activeQuestion.text_ja)}>
-          다시 듣기 (TTS)
-        </button>
-      </div>
-
-      <div className="card">
-        <div className="mic-row">
-          <button className="btn btn-primary" onClick={handleStartMic} disabled={rec.listening}>
-            🎤 답변 시작
+    <MacWindow title="voice-interview-jp — interview">
+      <div className="interview-layout">
+        <div className="card">
+          <span className="badge">{isFollowUp ? '꼬리 질문' : `${queueIndex + 1} / ${questions.length}`}</span>
+          <h2 className="question-ja">{activeQuestion.text_ja}</h2>
+          {activeQuestion.text_ko && <p className="muted">{activeQuestion.text_ko}</p>}
+          <button className="btn" onClick={() => speakJapanese(activeQuestion.text_ja)}>
+            다시 듣기 (TTS)
           </button>
-          <button className="btn" onClick={handleStopMic} disabled={!rec.listening}>
-            ⏹ 인식 중지
-          </button>
-          {rec.listening && <WaveformVisualizer />}
         </div>
-        {!rec.supported && (
-          <p className="badge badge-warn">
-            이 브라우저는 음성 인식을 지원하지 않습니다. 아래 텍스트창에 답변을 직접 입력해주세요.
-          </p>
-        )}
-        <textarea
-          className="answer-box"
-          rows={5}
-          value={answerText || rec.transcript}
-          onChange={(e) => setAnswerText(e.target.value)}
-          placeholder="음성 인식 결과가 여기에 실시간으로 표시됩니다. 필요하면 직접 수정하세요."
-        />
-        {suggestion && (
-          <p className="badge badge-warn">
-            혹시 &quot;{suggestion.to}&quot;를 의도하셨나요?
-            <button className="btn btn-small" onClick={applySuggestion}>
-              적용
+
+        <div className="card">
+          <div className={`mic-row${rec.listening ? ' mic-row-active' : ''}`}>
+            <MicToggle
+              checked={rec.listening}
+              onChange={(v) => (v ? handleStartMic() : handleStopMic())}
+              label="답변 시작"
+            />
+            {rec.listening && <WaveformVisualizer />}
+          </div>
+          {!rec.supported && (
+            <p className="badge badge-warn">
+              이 브라우저는 음성 인식을 지원하지 않습니다. 아래 텍스트창에 답변을 직접 입력해주세요.
+            </p>
+          )}
+          <textarea
+            className="answer-box"
+            rows={5}
+            value={answerText || rec.transcript}
+            onChange={(e) => setAnswerText(e.target.value)}
+            placeholder="음성 인식 결과가 여기에 실시간으로 표시됩니다. 필요하면 직접 수정하세요."
+          />
+          {suggestion && (
+            <p className="badge badge-warn">
+              혹시 &quot;{suggestion.to}&quot;를 의도하셨나요?
+              <button className="btn btn-small" onClick={applySuggestion}>
+                적용
+              </button>
+            </p>
+          )}
+          {saving ? (
+            <LoadingDots label="저장 중..." />
+          ) : (
+            <button className="btn btn-primary" onClick={submitAnswer} disabled={!(answerText || rec.transcript)}>
+              답변 제출
             </button>
-          </p>
-        )}
-        <button
-          className="btn btn-primary"
-          onClick={submitAnswer}
-          disabled={saving || !(answerText || rec.transcript)}
-        >
-          {saving ? '저장 중...' : '답변 제출'}
-        </button>
+          )}
+        </div>
       </div>
-    </div>
+    </MacWindow>
   )
 }

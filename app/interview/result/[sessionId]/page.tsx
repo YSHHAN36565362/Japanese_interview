@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MarkdownExportButton from '@/components/MarkdownExportButton'
+import MacWindow from '@/components/MacWindow'
 
 export default async function ResultPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params
@@ -34,8 +35,8 @@ export default async function ResultPage({ params }: { params: Promise<{ session
     : '—'
 
   return (
-    <div>
-      <h1>세션 리포트</h1>
+    <MacWindow title="voice-interview-jp — result">
+      <h1 style={{ marginTop: 0 }}>세션 리포트</h1>
       <p className="muted">
         모드: {session.mode} · {new Date(session.created_at).toLocaleString('ko-KR')}
       </p>
@@ -79,6 +80,6 @@ export default async function ResultPage({ params }: { params: Promise<{ session
       <Link className="btn" href="/dashboard">
         마이페이지로 돌아가기
       </Link>
-    </div>
+    </MacWindow>
   )
 }
