@@ -1105,6 +1105,219 @@
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "新しい環境やチームに馴染むために、ご自身なりに工夫していることはありますか。"
+    },
+    {
+      "id": "git_conflict_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "その競合の原因は何でしたか。再発防止のために何か工夫しましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "incident_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "その障害の根本原因は何でしたか。再発防止策はありますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "job_change_detail",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "現職（前職）で改善が難しいと感じた点は具体的に何ですか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "mentoring_detail",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "指導する際、相手のレベルに合わせてどのように教え方を変えましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "oss_detail",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "そのOSS活動で、具体的にどのような貢献をしましたか（コード提供、ドキュメント、Issue対応など）。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "reason_for_job_change",
+      "category": "personality",
+      "expectedDurationSec": 90,
+      "textJa": "転職を考えたきっかけは何ですか。"
+    },
+    {
+      "id": "side_business_opinion",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "副業について、どのようにお考えですか。"
+    },
+    {
+      "id": "harassment_response",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "職場でハラスメントを見聞きした場合、どのように対応しますか。"
+    },
+    {
+      "id": "mental_health_management",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "ストレスやメンタルヘルスを、どのように管理していますか。"
+    },
+    {
+      "id": "paid_leave_attitude",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "有給休暇の取得について、どのようにお考えですか。"
+    },
+    {
+      "id": "evaluation_system_opinion",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "会社の評価制度について、どのような点を重視しますか。"
+    },
+    {
+      "id": "mentoring_experience",
+      "category": "personality",
+      "expectedDurationSec": 90,
+      "textJa": "後輩や新人の指導・育成をした経験はありますか。"
+    },
+    {
+      "id": "overseas_assignment_willingness",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "海外赴任や出向の可能性について、どのようにお考えですか。"
+    },
+    {
+      "id": "certification_motivation",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "資格取得やスキルアップへの取り組みについて教えてください。"
+    },
+    {
+      "id": "japanese_learning_method",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "日本語をどのように学習しましたか。きっかけも教えてください。"
+    },
+    {
+      "id": "visa_status_check",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "現在の在留資格と、就労可能な状況について教えてください。"
+    },
+    {
+      "id": "boss_relationship_building",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "上司や先輩と、どのように信頼関係を築いていきますか。"
+    },
+    {
+      "id": "company_axis_alignment",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "就活の軸と、当社が一致すると思う点はどこですか。"
+    },
+    {
+      "id": "git_conflict_resolution",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "Gitでコンフリクト（競合）が発生した経験はありますか。どのように解決しましたか。"
+    },
+    {
+      "id": "ci_cd_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "CI/CDパイプラインを構築、または運用した経験はありますか。"
+    },
+    {
+      "id": "docker_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "Dockerなどのコンテナ技術を使った経験はありますか。"
+    },
+    {
+      "id": "database_design_choice",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "SQLとNoSQLは、それぞれどのような場面で使い分けるべきだと思いますか。"
+    },
+    {
+      "id": "incident_response_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "本番環境で障害が発生した経験はありますか。どのように対応しましたか。"
+    },
+    {
+      "id": "tech_debt_opinion",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "技術的負債について、どのように考え、どう対処すべきだと思いますか。"
+    },
+    {
+      "id": "pair_programming_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "ペアプログラミングやモブプログラミングの経験はありますか。"
+    },
+    {
+      "id": "code_readability_opinion",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "読みやすいコードを書くために、普段意識していることは何ですか。"
+    },
+    {
+      "id": "estimation_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "開発の見積もり（工数見積もり）をした経験はありますか。難しかった点は何ですか。"
+    },
+    {
+      "id": "requirement_gathering_experience",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "要件定義や仕様策定に関わった経験はありますか。"
+    },
+    {
+      "id": "oss_contribution",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "オープンソースソフトウェア（OSS）に貢献した経験はありますか。"
+    },
+    {
+      "id": "monitoring_logging_experience",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "システムの監視やログ設計に関わった経験はありますか。"
+    },
+    {
+      "id": "microservice_vs_monolith",
+      "category": "technical",
+      "expectedDurationSec": 90,
+      "textJa": "マイクロサービスとモノリシックアーキテクチャ、それぞれのメリット・デメリットをどう考えますか。"
+    },
+    {
+      "id": "algorithm_data_structure",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "アルゴリズムやデータ構造について、どの程度学習していますか。得意な分野はありますか。"
+    },
+    {
+      "id": "release_deployment_process",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "リリース作業やデプロイのプロセスに関わった経験はありますか。"
     }
   ]
 }

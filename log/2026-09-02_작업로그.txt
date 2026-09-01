@@ -1,0 +1,72 @@
+Voice Interview JP (Mensetsu Dojo) — 작업 로그
+날짜: 2026-09-02
+작성자: Claude Code (세션 자동 기록)
+
+===============================================================
+[1차 작업] 모바일 반응형 개선, 질문 은행 총량 확인, 대규모 질문 확충(batch5)
+===============================================================
+
+[1. 모바일에서 보조 패널이 화면을 너무 많이 가리던 문제]
+"모바일에서 사용하고 싶은데 패널이 너무 크게 나온다, 자동으로 조절되면 좋겠다" 요청에
+따라 체크박스 같은 수동 토글 대신, 화면 폭에 자동으로 반응하는 방식을 택했습니다
+(아이폰/안드로이드/태블릿/맥북 범용).
+- features/interview/components/InterviewRoom.tsx: 마운트 시 window.innerWidth < 768이면
+  보조 패널(대화/STAR/메모)을 기본적으로 닫힌 상태로 시작하도록 했습니다. 필요할 때만
+  "패널" 버튼으로 열 수 있습니다.
+- 패널이 열려 있을 때 모바일/태블릿(1279px 이하)에서는 바깥 영역을 탭하면 바로 닫히는
+  반투명 배경(.room-aux-backdrop)을 추가했고, 패널 안에도 "✕" 닫기 버튼을 추가해 스와이프
+  없이도 쉽게 닫을 수 있게 했습니다.
+- app/globals.css: 하단 컨트롤 바(.room-controls)가 좁은 화면에서 버튼들이 잘리거나
+  가로로 넘치지 않도록 flex-wrap과 글자 크기를 조정했습니다.
+- 검증: 이 자동화 환경은 실제 브라우저 창 리사이즈가 반영되지 않아(resize_window 호출은
+  성공했지만 viewport는 그대로였음), 대신 390×844 크기의 iframe을 페이지 안에 삽입해서
+  실제 모바일 폭 레이아웃을 확인했습니다 — 바텀시트 형태의 패널, "✕" 닫기 버튼, 배경 탭
+  시 닫힘(JS로 클릭 이벤트 발생시켜 확인), 하단 컨트롤 줄바꿈까지 전부 정상 동작 확인.
+  실제 아이폰/기기에서의 최종 확인은 사용자가 직접 해주시는 것이 가장 정확합니다.
+
+[2. 질문 총량 확인]
+"아직 질문이 18개인데 그보다 많은거지?" 질문에 답변: 세션에 보이는 18개는 그 모드의
+poolSize일 뿐이고, 실제 질문 은행 총량은 batch5 병합 전 기준 131개(대분류 75 + 꼬리질문
+전용 51 + 마무리 전용 5)였습니다. QuestionBankExplained.md에 이미 이 구조를 설명해뒀고,
+이번에 숫자를 최신화했습니다(아래 §3 참고).
+
+[3. 일본 IT 면접 실제 빈출 질문 대량 추가 (batch5)]
+"내 질문이 아니더라도 일본 IT 면접에서 주로 묻는 질문들을 알아서 data 폴더에 업데이트해서
+많이 넣어달라, 일단 많이 넣어봐야 나중에 고치지" 요청에 따라, 기존에 다루지 않았던 실제
+빈출 주제 28개를 새로 추가했습니다.
+
+기술 관련 신규 15개 (data/drafts/batch5_technical_questions.json):
+  git_conflict_resolution, ci_cd_experience, docker_experience, database_design_choice,
+  incident_response_experience, tech_debt_opinion, pair_programming_experience,
+  code_readability_opinion, estimation_experience, requirement_gathering_experience,
+  oss_contribution, monitoring_logging_experience, microservice_vs_monolith,
+  algorithm_data_structure, release_deployment_process
+
+인성/직장문화 관련 신규 13개 (data/drafts/batch5_personality_culturefit_questions.json):
+  reason_for_job_change, side_business_opinion, harassment_response,
+  mental_health_management, paid_leave_attitude, evaluation_system_opinion,
+  mentoring_experience, overseas_assignment_willingness, certification_motivation,
+  japanese_learning_method, visa_status_check, boss_relationship_building,
+  company_axis_alignment
+
+새 꼬리질문 5개 + 규칙 5개 (data/drafts/batch5_followup_questions.json,
+followup_rules_batch5.txt): git_conflict_detail, incident_detail, job_change_detail,
+mentoring_detail, oss_detail — 각각 원래 질문에 관련 키워드(해결/대응, 장애/원인,
+전직/이유, 지도/육성, OSS/공헌 등)가 나오면 이어지도록 연결했습니다.
+
+병합 결과: 질문 은행 131개 → 164개 (대분류 75→103, 꼬리질문 51→56, 마무리 5 그대로),
+꼬리질문 규칙 81줄 → 87줄. QuestionBankExplained.md의 §1·§2 표를 최신 숫자로 갱신했습니다.
+기술 면접 모드가 뽑는 technical 카테고리 풀도 22개 → 37개로 늘어나, poolSize(18)와의
+여유가 더 커졌습니다(추가 조정 불필요).
+
+[검증]
+npx tsc --noEmit, npm run build 모두 통과. 새로 추가한 질문들의 일본어 표현은 자연스러운
+경어체로 작성했으나, 실제 면접에서의 적절성·난이도는 사용자가 검토 후 필요하면
+data/questions.json을 직접 수정하거나 follow_ups.txt 규칙을 조정하는 것을 권장합니다
+(요청하신 대로 "일단 많이 넣고 나중에 고치는" 방식으로 진행했습니다).
+
+파일 신규: data/drafts/batch5_technical_questions.json,
+  data/drafts/batch5_personality_culturefit_questions.json,
+  data/drafts/batch5_followup_questions.json, data/drafts/followup_rules_batch5.txt
+파일 수정: features/interview/components/InterviewRoom.tsx, app/globals.css,
+  data/questions.json, public/data/follow_ups.txt, QuestionBankExplained.md

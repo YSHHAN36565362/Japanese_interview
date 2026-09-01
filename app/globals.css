@@ -1786,6 +1786,11 @@ a {
   overflow-y: auto;
 }
 
+/* 데스크톱(사이드 패널 고정)에서는 배경이 필요 없어 기본적으로 숨겨둔다 */
+.room-aux-backdrop {
+  display: none;
+}
+
 @media (max-width: 1279px) {
   .room-aux-panel {
     position: fixed;
@@ -1796,6 +1801,15 @@ a {
     max-width: 420px;
     z-index: 400;
     box-shadow: -12px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  /* 태블릿/모바일에서는 패널이 화면 위를 덮는 드로어라, 바깥을 탭하면 닫히게 배경을 보여준다 */
+  .room-aux-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 399;
   }
 }
 
@@ -1813,8 +1827,26 @@ a {
 
 .room-aux-tabs {
   display: flex;
+  align-items: center;
   gap: 6px;
   margin-bottom: 14px;
+}
+
+.room-aux-close-btn {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: var(--room-text-primary);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.room-aux-close-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .room-aux-tab {
@@ -2026,10 +2058,19 @@ a {
   .room-controls-left {
     flex: 1 1 100%;
     justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 6px;
   }
   .room-controls-right {
     flex: 1 1 100%;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    row-gap: 6px;
+  }
+  .room-control-btn {
+    font-size: 11px;
+    padding: 8px 10px;
   }
 }
 

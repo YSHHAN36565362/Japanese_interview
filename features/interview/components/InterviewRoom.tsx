@@ -27,6 +27,15 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
   const [activeTab, setActiveTab] = useState<AuxTab>('transcript')
   const [notes, setNotes] = useState('')
 
+  // 모바일 화면에서는 보조 패널(대화/STAR/메모)이 화면을 너무 많이 가리므로 기본값을 닫힘으로
+  // 시작한다. 필요할 때만 "패널" 버튼으로 열 수 있다. (서버 렌더링 시점엔 window가 없으므로
+  // 마운트 후 클라이언트에서만 판단한다.)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setPanelOpen(false)
+    }
+  }, [])
+
   const tts = useSpeechSynthesis({
     onStart: machine.handleTtsStarted,
     onEnd: machine.handleTtsEnded,
@@ -173,20 +182,33 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
             </div>
 
             {panelOpen && (
-              <aside className="room-aux-panel">
-                <div className="room-aux-tabs" role="tablist">
-                  {AUX_TABS.map((tab) => (
+              <>
+                {/* 모바일에서 패널이 화면 대부분을 덮는 바텀시트로 바뀌므로, 바깥을 탭하면
+                    바로 닫히는 배경(backdrop)을 함께 둔다. 데스크톱 사이드 패널에서는
+                    CSS로 숨겨진다(app/globals.css 참고). */}
+                <div className="room-aux-backdrop" onClick={() => setPanelOpen(false)} aria-hidden="true" />
+                <aside className="room-aux-panel">
+                  <div className="room-aux-tabs" role="tablist">
+                    {AUX_TABS.map((tab) => (
+                      <button
+                        key={tab}
+                        role="tab"
+                        aria-selected={activeTab === tab}
+                        className={`room-aux-tab${activeTab === tab ? ' active' : ''}`}
+                        onClick={() => setActiveTab(tab)}
+                      >
+                        {AUX_TAB_LABEL[tab]}
+                      </button>
+                    ))}
                     <button
-                      key={tab}
-                      role="tab"
-                      aria-selected={activeTab === tab}
-                      className={`room-aux-tab${activeTab === tab ? ' active' : ''}`}
-                      onClick={() => setActiveTab(tab)}
+                      type="button"
+                      className="room-aux-close-btn"
+                      onClick={() => setPanelOpen(false)}
+                      aria-label="패널 닫기"
                     >
-                      {AUX_TAB_LABEL[tab]}
+                      ✕
                     </button>
-                  ))}
-                </div>
+                  </div>
 
                 {activeTab === 'transcript' && (
                   <TranscriptPanel
@@ -217,7 +239,8 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                     <p className="muted small">이 메모는 서버에 저장되지 않습니다.</p>
                   </div>
                 )}
-              </aside>
+                </aside>
+              </>
             )}
           </div>
 

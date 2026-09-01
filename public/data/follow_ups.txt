@@ -79,3 +79,9 @@ adapt_new_environment | ルール,マニュアル,規則,原則 | adapt_rule_tie
 adapt_person_tier1 | 性向,価値観,正反対 | adapt_person_tier2 | 1
 adapt_person_tier2 | 歩み寄っ,行動 | adapt_person_tier3 | 1
 adapt_rule_tier1 | マニュアル,柔軟性,原則 | adapt_rule_tier2 | 1
+
+git_conflict_resolution | 解決,対応,原因 | git_conflict_detail | 1
+incident_response_experience | 障害,対応,原因 | incident_detail | 1
+reason_for_job_change | 転職,理由,きっかけ | job_change_detail | 1
+mentoring_experience | 指導,育成,後輩 | mentoring_detail | 1
+oss_contribution | OSS,貢献,オープンソース | oss_detail | 1
