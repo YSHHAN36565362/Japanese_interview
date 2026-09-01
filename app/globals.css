@@ -1618,6 +1618,20 @@ a {
   max-width: 160px;
 }
 
+.room-voice-refresh-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.room-voice-refresh-btn:hover {
+  color: var(--room-text-primary);
+}
+
 .room-question-ja {
   font-size: 24px;
   font-weight: 700;
@@ -1708,11 +1722,18 @@ a {
   font-weight: 700;
 }
 
+/* 카메라 on/off와 무관하게 항상 오른쪽 아래에 떠서, 말하는 크기를 실시간으로 보여준다 */
 .room-self-waveform {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
   display: flex;
   align-items: flex-end;
   gap: 3px;
   height: 28px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .room-self-waveform-bar {
@@ -2037,6 +2058,11 @@ a {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.preflight-guest-notice {
+  color: var(--accent-warning);
+  font-weight: 600;
 }
 
 .preflight-mic-test {

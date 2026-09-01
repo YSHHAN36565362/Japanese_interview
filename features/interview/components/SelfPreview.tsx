@@ -96,17 +96,18 @@ export default function SelfPreview({
       ) : (
         <div className="room-self-fallback">
           <span className="room-self-initial">{initial}</span>
-          <div className="room-self-waveform">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <span
-                key={i}
-                className="room-self-waveform-bar"
-                style={{ height: `${8 + Math.round(audioLevel * 24 * (0.6 + 0.1 * i))}px` }}
-              />
-            ))}
-          </div>
         </div>
       )}
+      {/* 카메라 on/off와 무관하게 말하는 크기를 물결(막대)로 항상 보여준다 */}
+      <div className="room-self-waveform" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <span
+            key={i}
+            className="room-self-waveform-bar"
+            style={{ height: `${8 + Math.round(audioLevel * 24 * (0.6 + 0.1 * i))}px` }}
+          />
+        ))}
+      </div>
       <span className="room-self-label">내 화면</span>
       <div
         className="room-self-resize-handle"

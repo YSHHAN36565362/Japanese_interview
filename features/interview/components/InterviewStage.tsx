@@ -14,6 +14,7 @@ export default function InterviewStage({
   voices,
   voiceURI,
   onVoiceChange,
+  onRefreshVoices,
 }: {
   question: BankQuestion
   phase: InterviewPhase
@@ -23,6 +24,7 @@ export default function InterviewStage({
   voices: SpeechSynthesisVoice[]
   voiceURI: string
   onVoiceChange: (uri: string) => void
+  onRefreshVoices: () => void
 }) {
   const speaking = phase === 'interviewerSpeaking'
   const [photoFailed, setPhotoFailed] = useState(false)
@@ -63,6 +65,14 @@ export default function InterviewStage({
             ))}
           </select>
         )}
+        <button
+          type="button"
+          className="room-voice-refresh-btn"
+          onClick={onRefreshVoices}
+          title="목소리 목록이 1개만 보이면 눌러서 다시 불러와보세요"
+        >
+          목소리 다시 불러오기
+        </button>
         <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
       </div>
       <p

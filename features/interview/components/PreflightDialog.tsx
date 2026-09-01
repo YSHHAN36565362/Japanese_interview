@@ -6,11 +6,13 @@ import { MODE_LABEL } from '../constants'
 export default function PreflightDialog({
   mode,
   micLevel,
+  isGuest,
   onRequestMic,
   onComplete,
 }: {
   mode: string
   micLevel: number
+  isGuest: boolean
   onRequestMic: () => Promise<boolean>
   onComplete: (micAvailable: boolean) => void
 }) {
@@ -37,6 +39,11 @@ export default function PreflightDialog({
             API 비용은 발생하지 않습니다.
           </li>
           <li>마이크 권한이 없어도 텍스트 모드로 전체 연습을 진행할 수 있습니다.</li>
+          {isGuest && (
+            <li className="preflight-guest-notice">
+              번호 없이 게스트로 입장하셨습니다 — 이 세션은 저장되지 않으며, 종료 후 다시 볼 수 없습니다.
+            </li>
+          )}
         </ul>
 
         <div className="preflight-mic-test">

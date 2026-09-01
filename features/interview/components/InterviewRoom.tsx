@@ -131,6 +131,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
         <PreflightDialog
           mode={mode}
           micLevel={micLevel}
+          isGuest={machine.isGuest}
           onRequestMic={handleRequestMic}
           onComplete={machine.completePreflight}
         />
@@ -157,6 +158,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                 voices={tts.voices}
                 voiceURI={tts.voiceURI}
                 onVoiceChange={tts.setVoiceURI}
+                onRefreshVoices={tts.refreshVoices}
               />
               <SelfPreview
                 cameraOn={media.cameraOn}

@@ -39,10 +39,12 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
 
   const [sttSupported, setSttSupported] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [isGuest, setIsGuest] = useState(false)
 
   const startedAtRef = useRef<number>(Date.now())
   const firstSpeechAtRef = useRef<number | null>(null)
   const customTermsRef = useRef<CustomTerm[]>([])
+  const isGuestRef = useRef(false)
 
   // 세션 사용자 확인 + 질문 큐 구성 (data/questions.json에서 로컬 로딩, 매번 셔플)
   useEffect(() => {
@@ -53,14 +55,19 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         return
       }
       setUserId(data.user.id)
-      customTermsRef.current = await loadUserCustomTerms(data.user.id)
+      // "번호 없이 시작하기"(익명 로그인)로 들어온 게스트는 아무것도 저장하지 않는다 —
+      // 고유 번호를 입력해야만 그 다음부터 저장된다.
+      const guest = data.user.is_anonymous ?? false
+      isGuestRef.current = guest
+      setIsGuest(guest)
+      customTermsRef.current = guest ? [] : await loadUserCustomTerms(data.user.id)
 
       const categories = MODE_TO_CATEGORY[mode] ?? ['personality']
       const isRealMode = mode === 'real'
       // 질문 은행이 대폭 늘어난 것을 세션에도 반영해 한 번에 더 다양한 질문이 나오게 한다.
-      // (기술 면접 모드는 technical 카테고리 단독 풀이 22개라 poolSize를 그보다 낮게 유지해야
-      // 세션마다 매번 다른 조합이 나온다.)
-      const poolSize = isRealMode ? 12 : 15
+      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독 22개뿐) 모드마다
+      // poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은 조합만 나오게 된다.
+      const poolSize = isRealMode ? 16 : mode === 'technical' ? 18 : 20
       const pool = shuffle(getMainQuestionsByCategory(categories)).slice(0, poolSize)
       // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
       // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
@@ -159,25 +166,27 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     const analysis = evaluateAnswer(finalText)
     setLastFeedback({ questionTextJa: currentQuestion.textJa, analysis })
 
-    await supabase.from('session_answers').insert({
-      session_id: sessionId,
-      question_id: isFollowUp ? null : currentQuestion.id,
-      follow_up_question_id: isFollowUp ? currentQuestion.id : null,
-      stt_raw_text: rawText,
-      corrected_answer_text: finalText,
-      duration_seconds: durationSeconds,
-      latency_to_first_speech_sec: latency,
-      politeness_score_ratio: analysis.politenessRatio,
-      filler_counts: analysis.fillerBreakdown,
-      feedback_result: analysis,
-    })
+    if (!isGuestRef.current) {
+      await supabase.from('session_answers').insert({
+        session_id: sessionId,
+        question_id: isFollowUp ? null : currentQuestion.id,
+        follow_up_question_id: isFollowUp ? currentQuestion.id : null,
+        stt_raw_text: rawText,
+        corrected_answer_text: finalText,
+        duration_seconds: durationSeconds,
+        latency_to_first_speech_sec: latency,
+        politeness_score_ratio: analysis.politenessRatio,
+        filler_counts: analysis.fillerBreakdown,
+        feedback_result: analysis,
+      })
 
-    if (suggestion) {
-      await supabase.from('user_custom_terms').upsert(
-        { user_id: userId, spoken_variation: suggestion.from, correct_term: suggestion.to, category: 'tech' },
-        { onConflict: 'user_id,spoken_variation' }
-      )
-      customTermsRef.current = [...customTermsRef.current, { spoken_variation: suggestion.from, correct_term: suggestion.to }]
+      if (suggestion) {
+        await supabase.from('user_custom_terms').upsert(
+          { user_id: userId, spoken_variation: suggestion.from, correct_term: suggestion.to, category: 'tech' },
+          { onConflict: 'user_id,spoken_variation' }
+        )
+        customTermsRef.current = [...customTermsRef.current, { spoken_variation: suggestion.from, correct_term: suggestion.to }]
+      }
     }
 
     // "마지막 질문하기" 버튼으로 들어온 질문(final_word)에 답했다면, 꼬리질문 없이 바로 면접을 종료한다.
@@ -256,6 +265,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     lastFeedback,
     sttSupported,
     saving,
+    isGuest,
     completePreflight,
     handleTtsStarted,
     handleTtsEnded,

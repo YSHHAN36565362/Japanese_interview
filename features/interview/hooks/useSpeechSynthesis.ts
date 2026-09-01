@@ -18,6 +18,22 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const [voiceURI, setVoiceURIState] = useState<string>('')
 
+  const refreshVoices = useCallback(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+    const jaVoices = window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('ja'))
+    // 브라우저가 처음엔 일부(가끔 1개)만 동기로 반환하고 나머지는 비동기로 채워준다.
+    // 그런데 onvoiceschanged가 안 뜨는 브라우저/환경도 있어서, 새로 얻은 목록이 기존보다
+    // 줄어들지만 않으면(0개로 리셋되는 경우 방지) 항상 최신 목록으로 갱신한다.
+    setVoices((prevVoices) => (jaVoices.length >= prevVoices.length ? jaVoices : prevVoices))
+    setVoiceURIState((prev) => {
+      if (prev && jaVoices.some((v) => v.voiceURI === prev)) return prev
+      const saved = window.localStorage.getItem(VOICE_STORAGE_KEY)
+      if (saved && jaVoices.some((v) => v.voiceURI === saved)) return saved
+      const kyoko = jaVoices.find((v) => v.name === 'Kyoko')
+      return (kyoko ?? jaVoices[0])?.voiceURI ?? prev
+    })
+  }, [])
+
   useEffect(() => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       setSupported(false)
@@ -25,31 +41,17 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
     }
     setSupported(true)
 
-    function loadVoices() {
-      const jaVoices = window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('ja'))
-      // 브라우저가 처음엔 일부(가끔 1개)만 동기로 반환하고 나머지는 비동기로 채워준다.
-      // 그런데 onvoiceschanged가 안 뜨는 브라우저/환경도 있어서, 새로 얻은 목록이 기존보다
-      // 줄어들지만 않으면(0개로 리셋되는 경우 방지) 항상 최신 목록으로 갱신한다.
-      setVoices((prevVoices) => (jaVoices.length >= prevVoices.length ? jaVoices : prevVoices))
-      setVoiceURIState((prev) => {
-        if (prev && jaVoices.some((v) => v.voiceURI === prev)) return prev
-        const saved = window.localStorage.getItem(VOICE_STORAGE_KEY)
-        if (saved && jaVoices.some((v) => v.voiceURI === saved)) return saved
-        const kyoko = jaVoices.find((v) => v.name === 'Kyoko')
-        return (kyoko ?? jaVoices[0])?.voiceURI ?? prev
-      })
-    }
-
-    loadVoices()
-    window.speechSynthesis.onvoiceschanged = loadVoices
-    // onvoiceschanged 이벤트가 안 뜨는 환경을 대비해, 마운트 직후 잠깐 동안 몇 번 더
-    // 재조회한다(전체 음성 목록을 비동기로 채우는 데 다소 시간이 걸리는 브라우저가 있다).
-    const retryTimers = [200, 500, 1000, 2000].map((ms) => window.setTimeout(loadVoices, ms))
+    refreshVoices()
+    window.speechSynthesis.onvoiceschanged = refreshVoices
+    // onvoiceschanged 이벤트가 안 뜨는 환경을 대비해, 마운트 직후 한동안 몇 번 더 재조회한다
+    // (전체 음성 목록을 비동기로 채우는 데 다소 시간이 걸리는 브라우저가 있다). 그래도 안 뜨면
+    // 사용자가 직접 refreshVoices()를 호출할 수 있게 밖으로도 내보낸다.
+    const retryTimers = [200, 500, 1000, 2000, 3500, 5000].map((ms) => window.setTimeout(refreshVoices, ms))
     return () => {
       window.speechSynthesis.onvoiceschanged = null
       retryTimers.forEach((t) => window.clearTimeout(t))
     }
-  }, [])
+  }, [refreshVoices])
 
   const setVoiceURI = useCallback((uri: string) => {
     setVoiceURIState(uri)
@@ -86,5 +88,5 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
 
   useEffect(() => () => cancel(), [cancel])
 
-  return { supported, speak, cancel, voices, voiceURI, setVoiceURI }
+  return { supported, speak, cancel, voices, voiceURI, setVoiceURI, refreshVoices }
 }

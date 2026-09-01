@@ -30,19 +30,34 @@ const MODES = [
 export default function InterviewModeSelectPage() {
   const router = useRouter()
   const [userId, setUserId] = useState<string | null>(null)
+  const [isGuest, setIsGuest] = useState(false)
   const [starting, setStarting] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.replace('/login')
-      else setUserId(data.user.id)
+      if (!data.user) {
+        router.replace('/login')
+        return
+      }
+      setUserId(data.user.id)
+      setIsGuest(data.user.is_anonymous ?? false)
     })
   }, [router])
 
   async function startSession(mode: string) {
     if (!userId) return
     setStarting(true)
+
+    // 게스트("번호 없이 시작하기")는 sessions 행 자체를 만들지 않는다 — 로컬에서만 쓰는
+    // id로 진행하고, 답변도 Supabase에 저장하지 않는다(useInterviewMachine.ts 참고).
+    if (isGuest) {
+      const localId = crypto.randomUUID()
+      setStarting(false)
+      router.push(`/interview/run/${localId}?mode=${mode}`)
+      return
+    }
+
     const supabase = createClient()
     const { data, error } = await supabase.from('sessions').insert({ user_id: userId, mode }).select().single()
     setStarting(false)

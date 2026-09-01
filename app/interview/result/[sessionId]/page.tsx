@@ -20,7 +20,18 @@ export default async function ResultPage({ params }: { params: Promise<{ session
     .order('answered_at', { ascending: true })
 
   if (!session) {
-    return <p>세션을 찾을 수 없습니다.</p>
+    return (
+      <div className="card">
+        <p>세션을 찾을 수 없습니다.</p>
+        <p className="muted small">
+          번호 없이 게스트로 진행한 세션은 저장되지 않아 결과를 다시 볼 수 없습니다. 기록을 남기고
+          싶으시면 마이페이지에서 고유 번호로 입장한 뒤 면접을 진행해주세요.
+        </p>
+        <Link className="btn" href="/dashboard">
+          마이페이지로 돌아가기
+        </Link>
+      </div>
+    )
   }
 
   // 질문 텍스트는 Supabase가 아니라 로컬 data/questions.json(질문 은행)에서 가져온다.
