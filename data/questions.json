@@ -811,6 +811,300 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "開発の際、ドキュメントや仕様書をどの程度重視していますか。"
+    },
+    {
+      "id": "closing_last_word_regret",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "本日の面接を通じて、何か言い残したことはありますか。",
+      "tags": [
+        "closing"
+      ]
+    },
+    {
+      "id": "closing_final_enthusiasm",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "最後に、当社への熱意を一言でお願いします。",
+      "tags": [
+        "closing"
+      ]
+    },
+    {
+      "id": "closing_forgot_to_mention",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "面接を振り返って、伝え忘れたことがあれば教えてください。",
+      "tags": [
+        "closing"
+      ]
+    },
+    {
+      "id": "closing_final_self_pr",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "最後に自己PRを一言でお願いします。",
+      "tags": [
+        "closing"
+      ]
+    },
+    {
+      "id": "tp_role_tier1",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "チーム内で公式な役割以外に、雰囲気作りやコミュニケーション面ではどのような役割を担うことが多いですか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_role_tier2",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "メンバーの力量が異なる場合、業務分担はどのような基準で決めましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_role_tier3",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "入社後、ご自身が望まない役割を任された場合、どのように取り組みますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_conflict_tier1",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "チームメンバーの意見が強く対立したとき、具体的にどのように解決しましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_conflict_tier2",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "もし相手が、ご自身の意見やデータに全く納得しない場合、どう対応しますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_conflict_tier3",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "同僚ではなく直属の上司や先輩の意見が、ご自身の考えと明らかに異なる場合はどう行動しますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_freeride_tier1",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "チームメンバーの一人が担当業務を期限通りに行わなかったとき、どのように対処しましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "tp_freeride_tier2",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "直接話し合っても態度が変わらない場合、プロジェクトを完成させるためにどのような決断をしますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "fail_cause_tier1",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "その失敗の直接的な原因は、ご自身にありましたか、それとも外部の環境にありましたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "fail_cause_tier2",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "その失敗を挽回するために、ご自身が能動的に試みた具体的な行動は何ですか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "fail_cause_tier3",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "今同じ状況に戻るとしたら、どの決断を変えますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "fail_pivot_tier1",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "既存のやり方を捨てて新しい方法を選ぶとき、もう少し試すか諦めるかの判断基準は何でしたか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "fail_pivot_tier2",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "実務で納期が迫っているのに計画通りに進まない場合、完成度を下げても期限を守りますか、期限を延ばしてでも完成度を高めますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "weak_perfection_tier1",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "その短所によって、実際に締め切りを守れなかったり周囲に迷惑をかけた具体的な事例はありますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "weak_perfection_tier2",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "短所を補うために、ご自身で作った具体的な行動ルールはありますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "weak_perfection_tier3",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "スピードと正確さが同時に求められる実務環境で、二つの価値が衝突するときどうバランスを取りますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "weak_kindness_tier1",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "他人を助けるあまり、ご自身の業務スケジュールに支障が出たことはありませんか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "weak_kindness_tier2",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "ご自身の業務量がすでに飽和状態のとき、同僚や上司から追加業務を頼まれたらどう対応しますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "motiv_strength_tier1",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "当社の強みは、競合他社と比べてどのような差別化点があると思いますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "motiv_strength_tier2",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "その差別化点や強みを知った経路や根拠は何ですか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "motiv_strength_tier3",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "その強みは、ご自身の力量やキャリア目標と具体的にどう繋がりますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "major_mismatch_tier1",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "非専攻者として、既存の専攻者と競争するために別途学習・準備したことは何ですか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "major_mismatch_tier2",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "ご自身のもともとの専攻知識が、この職務を遂行する上でどのようにシナジーを生むと考えますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "adapt_person_tier1",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "ご自身と性向や価値観が正反対の人と協業しなければならなかったことはありますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "adapt_person_tier2",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "その人と円滑に過ごすために、自ら歩み寄った具体的な行動は何ですか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "adapt_person_tier3",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "非常に厳格、あるいは感情的な上司に出会った場合、どう対処しますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "adapt_rule_tier1",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "マニュアルや原則を必ず守るべき状況と、素早い柔軟性が必要な状況、どちらをより重要だと考えますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "adapt_rule_tier2",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "現場のマニュアルにない突発的な緊急事態が発生した場合、どのような手順で行動しますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "adapt_new_environment",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "新しい環境やチームに馴染むために、ご自身なりに工夫していることはありますか。"
     }
   ]
 }

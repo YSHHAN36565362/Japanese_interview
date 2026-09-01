@@ -51,6 +51,13 @@ export function getMainQuestionsByCategory(categories: string[]): BankQuestion[]
   )
 }
 
+// "마지막 질문하기" 버튼용 — 'closing' 태그가 붙은 질문 중 하나를 무작위로 고른다.
+export function getRandomClosingQuestion(): BankQuestion | undefined {
+  const closingQuestions = questions.filter((q) => (q.tags ?? []).includes('closing'))
+  if (closingQuestions.length === 0) return undefined
+  return closingQuestions[Math.floor(Math.random() * closingQuestions.length)]
+}
+
 // 꼬리질문 규칙은 JSON이 아니라 public/data/follow_ups.txt(일반 텍스트)에서 읽는다.
 // public/ 아래 파일은 정적 자산으로 그대로 서빙되므로 fetch로 원문을 가져와 파싱한다.
 // 형식: 원래질문id | 키워드1,키워드2,... | 다음질문id | 우선순위(선택)

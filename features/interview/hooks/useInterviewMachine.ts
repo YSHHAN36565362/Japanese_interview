@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import {
   REAL_MODE_INTRO_QUESTION,
   getMainQuestionsByCategory,
-  getQuestionById,
   getQuestionsByCategory,
+  getRandomClosingQuestion,
   shuffle,
   type BankQuestion,
 } from '@/lib/questionBank'
@@ -58,7 +58,9 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       const categories = MODE_TO_CATEGORY[mode] ?? ['personality']
       const isRealMode = mode === 'real'
       // 질문 은행이 대폭 늘어난 것을 세션에도 반영해 한 번에 더 다양한 질문이 나오게 한다.
-      const poolSize = isRealMode ? 8 : 10
+      // (기술 면접 모드는 technical 카테고리 단독 풀이 22개라 poolSize를 그보다 낮게 유지해야
+      // 세션마다 매번 다른 조합이 나온다.)
+      const poolSize = isRealMode ? 12 : 15
       const pool = shuffle(getMainQuestionsByCategory(categories)).slice(0, poolSize)
       // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
       // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
@@ -214,10 +216,11 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
   // "꼬리질문 종료" 버튼: 지금 답변은 저장하되, 꼬리질문 판단은 건너뛰고 바로 다음 대분류 질문으로.
   const endFollowUp = useCallback(() => confirmAnswer({ skipFollowUp: true }), [confirmAnswer])
 
-  // "마지막 질문하기" 버튼: final_word("마지막으로 하고 싶은 말 있나요")는 더 이상 무작위 질문 풀에
-  // 섞이지 않는다(data/questions.json에 'closing' 태그) — 사용자가 이 버튼을 눌렀을 때만 등장한다.
+  // "마지막 질문하기" 버튼: 'closing' 태그가 붙은 여러 마무리 질문(final_word 포함) 중
+  // 하나를 무작위로 골라 등장시킨다 — 매번 다른 질문이 나온다. 이 태그가 붙은 질문들은
+  // 무작위 첫 질문 풀에는 섞이지 않고, 이 버튼을 눌렀을 때만 등장한다.
   const requestFinalQuestion = useCallback(() => {
-    const finalQuestion = getQuestionById('final_word')
+    const finalQuestion = getRandomClosingQuestion()
     if (!finalQuestion) return
     setIsFollowUp(false)
     setIsFinalQuestion(true)

@@ -27,7 +27,7 @@ export default function SiteChrome({
       <header className="topbar">
         <div className="container topbar-toolbar">
           <Link href="/" className="topbar-brand">
-            Voice Interview JP
+            Mensetsu Dojo
           </Link>
           <nav className="nav">
             <Link href="/interview">면접 시작</Link>

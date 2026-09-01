@@ -2,8 +2,10 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MarkdownExportButton from '@/components/MarkdownExportButton'
 import MacWindow from '@/components/MacWindow'
+import LikeButton from '@/components/LikeButton'
 import { getQuestionById } from '@/lib/questionBank'
 import { formatKST } from '@/lib/formatDate'
+import { computeSessionScore } from '@/lib/sessionScore'
 
 export default async function ResultPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params
@@ -40,12 +42,19 @@ export default async function ResultPage({ params }: { params: Promise<{ session
     ? (politenessValues.reduce((a, b) => a + b, 0) / politenessValues.length).toFixed(2)
     : '—'
 
+  const score = computeSessionScore(rows.map((r) => r.corrected_answer_text ?? r.stt_raw_text ?? ''))
+
   return (
-    <MacWindow title="voice-interview-jp — result">
-      <h1 style={{ marginTop: 0 }}>세션 리포트</h1>
-      <p className="muted">
-        모드: {session.mode} · {formatKST(session.created_at)}
-      </p>
+    <MacWindow title="mensetsu-dojo — result">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+        <div>
+          <h1 style={{ marginTop: 0 }}>세션 리포트</h1>
+          <p className="muted">
+            모드: {session.mode} · {formatKST(session.created_at)}
+          </p>
+        </div>
+        <LikeButton />
+      </div>
 
       <div className="stat-row">
         <div className="stat-card">
@@ -64,7 +73,17 @@ export default async function ResultPage({ params }: { params: Promise<{ session
           <strong>{avgPoliteness}</strong>
           <span>평균 정중체 비율(추정치)</span>
         </div>
+        <div className="stat-card">
+          <strong>{score.scorePercent != null ? `${score.scorePercent}점` : '—'}</strong>
+          <span>종합 점수(추정, 저장 안 됨)</span>
+        </div>
       </div>
+
+      <p className="muted small">
+        경어 오류(반말 종결) {score.casualDefectCount}회 · 장음 인식 오류 {score.choonDefectCount}회 · 전체{' '}
+        {score.totalSentences}문장 중 {score.wellSaidCount}문장 양호. 이 점수는 이 화면에서만 계산되며 어디에도
+        저장되지 않습니다 — 텍스트 전체는 아래 Markdown 다운로드나 마이페이지에서 언제든 다시 볼 수 있습니다.
+      </p>
 
       <MarkdownExportButton
         session={session}

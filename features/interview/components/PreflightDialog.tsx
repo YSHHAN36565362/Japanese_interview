@@ -40,7 +40,7 @@ export default function PreflightDialog({
         </ul>
 
         <div className="preflight-mic-test">
-          <button className="btn btn-primary" onClick={handleTestMic} disabled={testing}>
+          <button className="mic-test-btn" onClick={handleTestMic} disabled={testing}>
             {testing ? '마이크 확인 중...' : '마이크 테스트 시작'}
           </button>
           {tested && (

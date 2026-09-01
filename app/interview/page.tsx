@@ -7,9 +7,24 @@ import MacWindow from '@/components/MacWindow'
 import LoadingDots from '@/components/LoadingDots'
 
 const MODES = [
-  { id: 'practice', label: '연습 모드', desc: '질문 미리보기·다시 듣기 가능, 시간 제한 없음' },
-  { id: 'real', label: '실전 모드', desc: '제한 시간 안에 답변, 마지막엔 역질문까지' },
-  { id: 'technical', label: '기술 면접', desc: '프로젝트 경험·기술 선택 이유 중심' },
+  {
+    id: 'practice',
+    label: '연습 모드',
+    desc: '질문 미리보기·다시 듣기 가능, 시간 제한 없음',
+    img: '/mode-practice.png',
+  },
+  {
+    id: 'real',
+    label: '실전 모드',
+    desc: '제한 시간 안에 답변, 마지막엔 역질문까지',
+    img: '/mode-real.png',
+  },
+  {
+    id: 'technical',
+    label: '기술 면접',
+    desc: '프로젝트 경험·기술 선택 이유 중심',
+    img: '/mode-tech.png',
+  },
 ]
 
 export default function InterviewModeSelectPage() {
@@ -42,7 +57,7 @@ export default function InterviewModeSelectPage() {
   if (!userId) return <LoadingDots label="확인 중입니다..." />
 
   return (
-    <MacWindow title="voice-interview-jp — select mode">
+    <MacWindow title="mensetsu-dojo — select mode">
       <h1 style={{ marginTop: 0 }}>면접 모드 선택</h1>
       {starting ? (
         <LoadingDots label="세션을 준비하고 있습니다..." />
@@ -50,6 +65,8 @@ export default function InterviewModeSelectPage() {
         <div className="mode-grid mode-grid-3d">
           {MODES.map((m) => (
             <div key={m.id} className="mode-3d-item">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={m.img} alt="" aria-hidden="true" className="mode-illustration" />
               <button className="btn-3d" disabled={starting} onClick={() => startSession(m.id)}>
                 {m.label}
               </button>

@@ -1,15 +1,11 @@
 'use client'
 
-import type { BankQuestion } from '@/lib/questionBank'
-
 export default function TranscriptPanel({
-  question,
   transcript,
   interimTranscript,
   onChange,
   sttSupported,
 }: {
-  question: BankQuestion
   transcript: string
   interimTranscript: string
   onChange: (text: string) => void
@@ -17,7 +13,6 @@ export default function TranscriptPanel({
 }) {
   return (
     <div className="room-transcript-panel" data-testid="transcript-panel">
-      <p className="room-transcript-line room-transcript-interviewer">面接官: {question.textJa}</p>
       {!sttSupported && (
         <p className="badge badge-warn">
           이 브라우저에서는 음성 인식을 사용할 수 없습니다. 아래에 답변을 직접 입력해주세요.

@@ -65,6 +65,27 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // 스페이스바로 "답변 완료"/"다음 질문"을 누를 수 있게 한다. 전사·메모 입력창에 포커스가
+  // 있을 때는 원래 스페이스(공백 입력)로 동작해야 하므로 그 경우엔 단축키를 끈다.
+  useEffect(() => {
+    function handleKeydown(e: KeyboardEvent) {
+      if (e.code !== 'Space') return
+      const target = e.target as HTMLElement | null
+      const tag = target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) return
+      const sttAvailable = stt.supported && machine.sttSupported
+      const actionable = sttAvailable
+        ? machine.phase === 'listening' || machine.phase === 'answerReview'
+        : machine.phase === 'questionReady' || machine.phase === 'answerReview'
+      if (!actionable) return
+      e.preventDefault()
+      handlePrimaryAction()
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [machine.phase, stt.supported, machine.sttSupported])
+
   function handleReplay() {
     if (!machine.currentQuestion) return
     tts.speak(machine.currentQuestion.textJa)
@@ -81,6 +102,12 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
       return
     }
     if (machine.phase === 'answerReview') {
+      machine.confirmAnswer()
+      return
+    }
+    // 텍스트 모드는 'listening' 단계를 거치지 않으므로, questionReady에서 바로 확정한다.
+    const sttAvailable = stt.supported && machine.sttSupported
+    if (!sttAvailable && machine.phase === 'questionReady') {
       machine.confirmAnswer()
     }
   }
@@ -161,7 +188,6 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
 
                 {activeTab === 'transcript' && (
                   <TranscriptPanel
-                    question={machine.currentQuestion}
                     transcript={machine.draftTranscript}
                     interimTranscript={machine.interimTranscript}
                     onChange={machine.setDraftTranscript}

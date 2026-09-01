@@ -76,7 +76,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <MacWindow title="voice-interview-jp — enter">
+      <MacWindow title="mensetsu-dojo — enter">
         <form onSubmit={handleSubmit} className="auth-form">
           <p className="auth-form-title">
             면접 연습 입장

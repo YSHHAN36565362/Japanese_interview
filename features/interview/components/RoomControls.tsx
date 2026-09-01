@@ -42,7 +42,12 @@ export default function RoomControls({
   saving: boolean
 }) {
   const primaryLabel = phase === 'listening' ? '답변 완료' : phase === 'answerReview' ? '다음 질문' : '답변 완료'
-  const primaryDisabled = phase !== 'listening' && phase !== 'answerReview'
+  // 텍스트 모드(sttSupported=false)에는 'listening' 단계가 아예 없으므로(마이크 버튼 자체가
+  // 비활성화됨), questionReady 단계에서 바로 확정할 수 있어야 한다 — 안 그러면 텍스트로만
+  // 답변할 수 있는 사용자가 "답변 완료"를 영영 누를 수 없게 된다.
+  const primaryDisabled = sttSupported
+    ? phase !== 'listening' && phase !== 'answerReview'
+    : phase !== 'questionReady' && phase !== 'answerReview'
   const endFollowUpDisabled = phase !== 'answerReview' || saving
   const finalQuestionDisabled = phase !== 'answerReview' || saving
 
@@ -120,8 +125,14 @@ export default function RoomControls({
         >
           꼬리질문 종료
         </button>
-        <button className="btn btn-primary" onClick={onPrimaryAction} disabled={primaryDisabled || saving}>
+        <button
+          className="btn btn-primary"
+          onClick={onPrimaryAction}
+          disabled={primaryDisabled || saving}
+          title="단축키: Space"
+        >
           {saving ? '저장 중...' : primaryLabel}
+          {!primaryDisabled && !saving && <span className="room-shortcut-hint"> (Space)</span>}
         </button>
         <button className="room-end-btn" onClick={onEnd} aria-label="면접 종료">
           종료

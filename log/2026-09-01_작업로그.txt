@@ -1098,3 +1098,129 @@ Supabase 값으로 떠 있어 실제 Supabase 프로젝트에서 위 SETUP.md �
 파일 신규: lib/authNumber.ts, components/ChangeNumberForm.tsx, components/DeleteSessionButton.tsx
 파일 수정: app/login/page.tsx, app/dashboard/page.tsx, features/interview/hooks/useInterviewMachine.ts,
   SETUP.md
+
+===============================================================
+[14차 작업] 세션 리포트 점수화, 모드 선택 일러스트, 사이트 이름 변경, 마이크 레벨/TTS 버그 수정,
+            단축키·좋아요·마지막 질문 랜덤화 등 다수 개선
+===============================================================
+[1. 세션 리포트 통계 질문에 답변]
+"답변수·평균 답변 시간 잘 작동되나?" → 둘 다 정상 작동합니다. 다만 평균 답변 시간은
+질문이 뜬 시점부터 확정 버튼을 누른 시점까지라 검토·수정 시간도 포함될 수 있습니다.
+"정중체 비율은 경어 마무리만 보고 쓰는거?" → 맞습니다, 문장 끝의 です/ます/ございます
+대 だ/である/だから만 보고, 문장 중간의 존경어·겸양어는 전혀 검사하지 않습니다.
+
+[2. 점수 채점 기능 추가 — 화면에서만 계산, 저장 안 됨]
+"장음/틀린 표현 횟수 세고, 전체 중 잘 말한 비율로 점수 매겨줘. 점수는 세션 리포트에서만
+보이고 저장은 안 됨" 요청에 따라 lib/sessionScore.ts를 새로 만들었습니다. 답변 텍스트를
+문장 단위로 나눠 ①반말 종결(경어 오류) ②장음 인식 오류 실제 형태(이전엔 한 번도 연결되지
+않았던 lib/choon.ts의 CHOON_PRACTICE_WORDS를 처음으로 실사용) 포함 여부를 검사해 "잘 말한
+문장 비율(%)"을 계산합니다. 세션 리포트 페이지에서 매번 저장된 텍스트로 새로 계산만 하고
+DB에는 전혀 쓰지 않습니다 — 원문 텍스트/Markdown 다운로드는 기존 그대로 유지됩니다.
+
+[3. 마이크 레벨미터가 크게 말해도 잘 안 움직이는 문제]
+"인식되는 비율을 절대 크기가 아니라 이전보다 얼마나 커졌는지를 기준으로" 제안에 따라
+useAudioLevel.ts를 고정 배율(rms*4) 방식에서, 최근 조용했던 바닥값과 최근 가장 컸던
+천장값을 계속 추적해 그 구간 안에서 상대적으로 정규화하는 방식으로 바꿨습니다. 마이크
+게인이 낮은 기기에서도 상대적으로 반응하게 됩니다.
+
+[4. TTS 목소리가 Kyoko 하나만 보이는 문제]
+브라우저가 처음엔 일부 음성만 동기로 주고 나머지는 비동기로 채우는데, onvoiceschanged
+이벤트가 안 뜨는 환경도 있어서 그 경우 목록이 고정돼 있었습니다. useSpeechSynthesis.ts에
+마운트 후 200/500/1000/2000ms 지연 재조회를 추가하고, 새 목록이 기존보다 줄어들 때는
+무시하도록(0개로 리셋 방지) 해서 안정적으로 전체 목록(이 Mac 기준 10개)이 잡히게 했습니다.
+무료로 늘릴 수 있는 "AI TTS"는 없다는 점(유료 API 없이는 브라우저 제공 음성이 최대치)도
+다시 안내했습니다.
+
+[5. 마이크 테스트 버튼 디자인 — Uiverse.io by WhiteNervosa 밑줄 호버 버튼 각색]
+전역 button이 아니라 .mic-test-btn에만 스코프해서 적용했고, 밑줄 색을 흰색 대신
+--accent-listening(초록, 마이크/듣기 상태에 이미 쓰이는 색)으로 바꿔 의미상 어울리게
+했습니다.
+
+[6. 모드 선택 화면에 이라스토야 일러스트 추가]
+Chrome으로 irasutoya.com에 직접 접속해 연습(1대1 면접), 실전(압박 면접), 기술 면접
+(프로그래머) 이미지를 검색·다운로드해서 public/mode-{practice,real,tech}.png로 저장하고
+각 모드 버튼 위에 배치했습니다. (Google 이미지 검색 썸네일과 달리 irasutoya.com 원본은
+투명 배경 PNG를 그대로 제공해 누끼 테두리 문제가 없었습니다.)
+
+[7. 세션당 질문 수를 두 번 더 확대]
+"아직 6개/10개는 적다"는 피드백에 따라 poolSize를 6/5 → 10/8 → 최종 15/12(실전 모드는
+자기소개+역질문 포함 총 14개)로 올렸습니다. 기술 면접 모드는 technical 카테고리 풀이
+22개뿐이라, 매번 다른 조합이 나오도록 그보다 낮게 유지했습니다.
+
+[8. "마지막 질문하기"를 고정 질문 1개 → 무작위 5개 중 하나로]
+data/drafts/closing_questions_batch.json으로 마무리 질문 4개를 추가하고(기존 final_word
+포함 총 5개, 모두 tags:['closing']), lib/questionBank.ts에 getRandomClosingQuestion()을
+추가해 버튼을 누를 때마다 그중 하나가 무작위로 나오게 했습니다.
+
+[9. 답변완료/다음 질문에 스페이스바 단축키 추가]
+InterviewRoom.tsx에 전역 keydown 리스너를 추가해 phase가 listening/answerReview일 때
+Space로 같은 동작을 실행하게 했고, 전사·메모 입력창에 포커스가 있을 때는 원래 스페이스
+입력(공백 문자)이 되도록 예외 처리했습니다. 버튼에도 "(Space)" 힌트를 표시해 사용자가
+알 수 있게 했습니다.
+
+[10. 세션 리포트에 재미용 "좋아요" 버튼 추가]
+Uiverse.io by Priyanshu02020 스타일을 검정 테마로 각색해 components/LikeButton.tsx로
+만들었습니다(원본의 숫자 슬라이드 애니메이션에 있던 translateX 버그를 translateY로
+통일). 서버에 저장하지 않는 순수 재미 위젯이라 세션 리포트 화면 상단에 배치했고, 화면을
+벗어나면 초기화됩니다.
+
+[11. 사이트 이름 변경]
+"Voice Interview JP (데모)" → "Mensetsu Dojo"로 전체 변경했습니다(면접+도장, 영어권에도
+이미 익숙한 두 단어를 합친 이름). app/layout.tsx의 브라우저 탭 제목, SiteChrome 상단바
+로고, 각 페이지의 (더 이상 화면에 보이지는 않는) MacWindow title 속성까지 전부 갱신.
+
+[검증]
+npx tsc --noEmit, npm run build 모두 통과. Chrome으로 모드 선택 일러스트, Space 힌트,
+마이크 테스트 밑줄 버튼, 좋아요 버튼(하트 붉게 채워지고 0→1 슬라이드) 직접 확인.
+마이크 레벨/TTS 음성 목록 수정은 실제 마이크·브라우저 환경에서 사용자가 직접 재확인
+부탁드립니다(이 자동화 환경엔 실제 마이크가 없음).
+
+파일 신규: lib/sessionScore.ts, components/LikeButton.tsx,
+  data/drafts/closing_questions_batch.json, public/mode-{practice,real,tech}.png
+파일 수정: app/interview/result/[sessionId]/page.tsx, app/interview/page.tsx,
+  app/layout.tsx, components/SiteChrome.tsx, app/{dashboard,login,interview/page}.tsx의
+  MacWindow title, lib/questionBank.ts, features/interview/hooks/{useInterviewMachine,
+  useAudioLevel,useSpeechSynthesis}.ts, features/interview/components/{InterviewRoom,
+  RoomControls,PreflightDialog}.tsx, app/globals.css
+
+===============================================================
+[15차 작업] 텍스트 모드 버그 수정, 전사 패널 블러 우회 문제 수정, 5개 대분류 다단계 꼬리질문 트리 추가
+===============================================================
+[1. 텍스트 모드에서 "답변 완료" 버튼이 절대 눌리지 않던 버그]
+"텍스트 모드에서는 답변완료 버튼이 안눌리는데" 제보로 발견했습니다.
+원인: RoomControls.tsx의 primaryDisabled가 phase가 'listening' 또는 'answerReview'일 때만
+활성화되도록 되어 있었는데, 텍스트 모드(마이크 미지원)에서는 애초에 'listening' 단계에
+진입할 방법이 없어(마이크 버튼도 비활성화) 영원히 questionReady에 멈춰 있었습니다 —
+텍스트 모드 사용자는 답변을 입력해도 제출할 방법이 아예 없는 상태였습니다.
+수정: sttSupported가 false일 때는 questionReady 단계에서도 primaryDisabled를 풀어주고,
+InterviewRoom.tsx의 handlePrimaryAction과 스페이스바 단축키도 텍스트 모드의 questionReady
+단계에서 바로 confirmAnswer()를 호출하도록 맞췄습니다.
+
+[2. 실전 모드 블러 처리를 전사 패널이 무력화하던 문제]
+"패널 대화 맨 위에 면접관 질문이 블러 안 되고 그대로 보인다" 제보. 스테이지의 질문
+텍스트는 blur 처리되어 있었지만, 오른쪽 TranscriptPanel 맨 위에 "面接官: {질문}"이 항상
+평문으로 떠 있어 실전 모드의 듣기 연습 취지를 무력화했습니다. 요청대로 이 줄을 통째로
+제거했습니다(질문은 이미 스테이지에 표시되므로 중복이기도 했습니다).
+
+[3. 사용자가 준 면접 꼬리질문 트리 5종을 데이터로 반영]
+팀 프로젝트/실패 경험/성격 장단점/지원 동기/환경 적응 5개 대분류 + 키워드 분기 + 1~3차
+꼬리질문 구조를 기존 질문 은행에 매핑해 확장했습니다:
+- 대부분은 이미 있던 질문(team_project, setback_experience, failure_experience_general,
+  strengths_and_weaknesses, weakness, why_this_company, motivation, major_mismatch_reason)에
+  새 꼬리질문 체인을 연결했고, 딱 맞는 기존 질문이 없던 "환경 적응"만 새 대분류 질문
+  adapt_new_environment(culture_fit)를 추가했습니다.
+- 새 꼬리질문 대상 28개(tp_role/conflict/freeride, fail_cause/pivot, weak_perfection/kindness,
+  motiv_strength, major_mismatch, adapt_person/rule — 각 1~3단계) + 규칙 33줄을
+  data/drafts/batch4_*.json/txt로 작성해 병합했습니다.
+- tier2/tier3 꼬리질문은 대분류 질문이 아니라 "앞 단계 꼬리질문 자체"를 원래질문id로 삼아
+  체인을 만들었습니다 — 이미 기존 엔진이 꼬리질문 답변에도 또 꼬리질문 판단을 하도록
+  되어 있어 별도 코드 수정 없이 다단계 트리가 그대로 동작합니다.
+- 최종 질문 은행: 131개, 꼬리질문 규칙: 81줄.
+
+[검증]
+npx tsc --noEmit, npm run build 모두 통과.
+
+파일 수정: features/interview/components/{RoomControls,InterviewRoom,TranscriptPanel}.tsx,
+  app/globals.css(죽은 CSS 정리), data/questions.json, public/data/follow_ups.txt
+신규: data/drafts/batch4_main_questions.json, batch4_followup_questions.json,
+  followup_rules_batch4.txt

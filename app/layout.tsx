@@ -5,7 +5,7 @@ import MatrixBackground from '@/components/MatrixBackground'
 import SiteChrome from '@/components/SiteChrome'
 
 export const metadata = {
-  title: 'Voice Interview JP (데모)',
+  title: 'Mensetsu Dojo',
   description: '일본 IT 면접 대비 무료 음성 모의 면접 트레이너 데모',
 }
 

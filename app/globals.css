@@ -202,6 +202,12 @@ a {
   transform: translateY(2px) scale(0.97);
 }
 
+.room-shortcut-hint {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
 .btn-small {
   padding: 4px 10px;
   margin-left: 8px;
@@ -439,6 +445,93 @@ a {
   flex-direction: column;
   gap: 12px;
   margin: 20px 0;
+}
+
+/* ============================================================
+   좋아요 버튼 — Uiverse.io by Priyanshu02020, 검정 테마에 맞게 각색
+   (원본의 translateX 버그를 translateY로 통일해 숫자가 위아래로 슬라이드되게 했다)
+   ============================================================ */
+.like-button {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  width: 128px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background-color: var(--surface-panel);
+  overflow: hidden;
+  box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.08), inset 2px 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+.like-button .on {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.like {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.like-icon {
+  fill: var(--muted);
+  height: 20px;
+  width: 20px;
+  transition: fill 0.2s ease-out;
+}
+
+.like-text {
+  color: var(--room-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.like-count {
+  position: absolute;
+  right: 0;
+  width: 30%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  border-left: 1px solid var(--border);
+  transition: transform 0.4s ease-out, color 0.4s ease-out;
+}
+
+.like-count.two {
+  transform: translateY(44px);
+}
+
+.on:checked ~ .like .like-icon {
+  fill: var(--room-danger);
+  animation: likeEnlarge 0.2s ease-out 1;
+}
+
+.on:checked ~ .like-count.two {
+  transform: translateY(0);
+  color: var(--room-text-primary);
+}
+
+.on:checked ~ .like-count.one {
+  transform: translateY(-44px);
+}
+
+@keyframes likeEnlarge {
+  0% {
+    transform: scale(0.5);
+  }
+  100% {
+    transform: scale(1.2);
+  }
 }
 
 .session-list {
@@ -1707,15 +1800,6 @@ a {
   gap: 10px;
 }
 
-.room-transcript-line {
-  font-size: 13px;
-  color: #cdd6e8;
-}
-
-.room-transcript-interviewer {
-  color: var(--accent-speaking);
-}
-
 .room-transcript-input {
   min-height: 160px;
 }
@@ -1959,6 +2043,53 @@ a {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: flex-start;
+}
+
+/* Uiverse.io by WhiteNervosa 스타일 밑줄 호버 버튼을 검정 테마에 맞게 각색.
+   전역 button이 아니라 마이크 테스트 버튼에만 적용하고, 밑줄 색은 마이크/듣기 상태를
+   나타내는 --accent-listening(초록)으로 바꿔 의미상으로도 어울리게 했다. */
+.mic-test-btn {
+  font-size: 16px;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  background: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 2px;
+  transition: color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.mic-test-btn:hover:not(:disabled),
+.mic-test-btn:focus-visible:not(:disabled) {
+  color: var(--room-text-primary);
+}
+
+.mic-test-btn:hover:not(:disabled)::after,
+.mic-test-btn:focus-visible:not(:disabled)::after {
+  width: 100%;
+  left: 0%;
+}
+
+.mic-test-btn::after {
+  content: '';
+  pointer-events: none;
+  bottom: 2px;
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background-color: var(--accent-listening);
+  transition: width 400ms cubic-bezier(0.25, 0.8, 0.25, 1), left 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.mic-test-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .preflight-mic-level {
@@ -2063,6 +2194,12 @@ a {
   align-items: center;
   gap: 14px;
   padding: 16px 0;
+}
+
+.mode-illustration {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
 }
 
 .mode-grid-3d .btn-3d {

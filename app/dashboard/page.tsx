@@ -58,7 +58,7 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <MacWindow title="voice-interview-jp — my page">
+    <MacWindow title="mensetsu-dojo — my page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ marginTop: 0 }}>마이페이지</h1>
         <LogoutButton />
