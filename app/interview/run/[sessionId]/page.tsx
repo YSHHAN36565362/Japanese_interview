@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { speakJapanese } from '@/lib/webSpeech'
 import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
+import { useMediaRecorder } from '@/lib/useMediaRecorder'
 import { analyzeAnswer } from '@/lib/feedback'
 import { matchFollowUpRule } from '@/lib/followUp'
 import { TECH_TERM_MAP } from '@/lib/techTerms'
@@ -20,6 +21,8 @@ import WaveformVisualizer from '@/components/WaveformVisualizer'
 import MacWindow from '@/components/MacWindow'
 import LoadingDots from '@/components/LoadingDots'
 import MicToggle from '@/components/MicToggle'
+import CameraPreview from '@/components/CameraPreview'
+import ZoomControlBar from '@/components/ZoomControlBar'
 
 const MODE_TO_CATEGORY: Record<string, string[]> = {
   practice: ['personality', 'technical', 'culture_fit'],
@@ -50,7 +53,11 @@ export default function InterviewRunPage() {
   const [saving, setSaving] = useState(false)
   const [finished, setFinished] = useState(false)
 
+  const [cameraOn, setCameraOn] = useState(false)
+
   const rec = useSpeechRecognition()
+  const videoRecorder = useMediaRecorder({ video: true, audio: true }, 'interview-video')
+  const audioRecorder = useMediaRecorder({ audio: true }, 'interview-audio')
 
   useEffect(() => {
     const supabase = createClient()
@@ -90,6 +97,15 @@ export default function InterviewRunPage() {
     }
   }, [finished, params.sessionId, router])
 
+  // 화면을 벗어날 때 녹화가 켜져 있으면 정리한다.
+  useEffect(() => {
+    return () => {
+      if (videoRecorder.recording) videoRecorder.stop()
+      if (audioRecorder.recording) audioRecorder.stop()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function resetForNewQuestion() {
     setAnswerText('')
     setStartedAt(Date.now())
@@ -122,6 +138,20 @@ export default function InterviewRunPage() {
     if (!suggestion) return
     setAnswerText((prev) => (prev || rec.transcript).split(suggestion.from).join(suggestion.to))
     setSuggestion(null)
+  }
+
+  function toggleCamera() {
+    setCameraOn((prev) => !prev)
+  }
+
+  function toggleVideoRecording() {
+    if (videoRecorder.recording) videoRecorder.stop()
+    else videoRecorder.start()
+  }
+
+  function toggleAudioRecording() {
+    if (audioRecorder.recording) audioRecorder.stop()
+    else audioRecorder.start()
   }
 
   async function submitAnswer() {
@@ -159,13 +189,14 @@ export default function InterviewRunPage() {
       )
     }
 
+    await advance(finalText, durationSeconds)
     setSaving(false)
-    advance(finalText, durationSeconds)
   }
 
-  function advance(answeredText: string, durationSeconds: number) {
+  async function advance(answeredText: string, durationSeconds: number) {
     if (!isFollowUp && activeQuestion) {
-      const rules = getFollowUpsFor(activeQuestion.id).filter((r) => !askedFollowUps.has(r.targetId))
+      const allRules = await getFollowUpsFor(activeQuestion.id)
+      const rules = allRules.filter((r) => !askedFollowUps.has(r.targetId))
       const matched = matchFollowUpRule(rules, answeredText, durationSeconds, activeQuestion.expectedDurationSec)
       if (matched) {
         const target = getQuestionById(matched.targetId)
@@ -199,13 +230,32 @@ export default function InterviewRunPage() {
 
   return (
     <MacWindow title="voice-interview-jp — interview">
+      <CameraPreview active={cameraOn} />
+
       <div className="interview-layout">
-        <div className="card">
+        <ZoomControlBar
+          cameraOn={cameraOn}
+          onToggleCamera={toggleCamera}
+          videoRecording={videoRecorder.recording}
+          onToggleVideoRecording={toggleVideoRecording}
+          audioRecording={audioRecorder.recording}
+          onToggleAudioRecording={toggleAudioRecording}
+        />
+        {(videoRecorder.error || audioRecorder.error) && (
+          <p className="badge badge-error">{videoRecorder.error || audioRecorder.error}</p>
+        )}
+        <p className="muted small">
+          화상/음성 녹화는 서버에 올라가지 않고, 종료하는 즉시 이 기기에 파일로 바로 저장됩니다.
+        </p>
+
+        <div className="zoom-tile">
+          <div className="zoom-tile-avatar">面</div>
           <span className="badge">{isFollowUp ? '꼬리 질문' : `${queueIndex + 1} / ${questions.length}`}</span>
           <h2 className="question-ja">{activeQuestion.textJa}</h2>
           <button className="btn" onClick={() => speakJapanese(activeQuestion.textJa)}>
             다시 듣기 (TTS)
           </button>
+          <span className="zoom-tile-name">면접관</span>
         </div>
 
         <div className="card">

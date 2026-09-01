@@ -1,15 +1,10 @@
 {
-  "_comment": "이 파일이 질문/꼬리질문의 원본입니다. Supabase가 아니라 이 저장소(git)로 관리하고, 수정 후 커밋/푸시하면 Vercel에 그대로 반영됩니다. 개인별 실제 면접 답변 로그는 Supabase(sessions/session_answers)에 저장됩니다.",
+  "_comment": "이 파일은 '질문' 원본입니다. 꼬리질문(어떤 단어가 나오면 어떤 질문을 이어서 물을지)은 이제 이 JSON이 아니라 public/data/follow_ups.txt 에 일반 텍스트 형식으로 있습니다. Supabase가 아니라 이 저장소(git)로 관리하고, 수정 후 커밋/푸시하면 Vercel에 그대로 반영됩니다. 개인별 실제 면접 답변 로그는 Supabase(sessions/session_answers)에 저장됩니다.",
   "_format": {
-    "questions[].id": "다른 질문과 겹치지 않는 영문 slug (예: team_project). followUps에서 이 id로 참조합니다.",
+    "questions[].id": "다른 질문과 겹치지 않는 영문 slug (예: team_project). public/data/follow_ups.txt에서 이 id로 참조합니다.",
     "questions[].category": "personality | technical | culture_fit | reverse",
     "questions[].expectedDurationSec": "권장 답변 시간(초). 타이머/짧은 답변 판정 기준으로 쓰입니다.",
-    "questions[].textJa": "질문 본문(일본어). 실제 면접관은 난이도와 무관하게 항상 경어로 질문하므로 한국어 번역이나 난이도 구분 없이 일본어 질문만 둡니다.",
-    "followUps[].parentId": "꼬리질문을 붙일 원본 질문의 id",
-    "followUps[].triggerType": "keyword(포함) | missing_keyword(미포함) | answer_length(짧은 답변) | random",
-    "followUps[].keywords": "triggerType이 keyword/missing_keyword일 때, 답변 텍스트에서 검사할 단어 목록",
-    "followUps[].targetId": "조건을 만족하면 이어서 물어볼 질문의 id (questions[] 안의 id)",
-    "followUps[].priority": "숫자가 클수록 먼저 검사됨 (여러 규칙이 동시에 맞을 때 우선순위)"
+    "questions[].textJa": "질문 본문(일본어). 실제 면접관은 난이도와 무관하게 항상 경어로 질문하므로 한국어 번역이나 난이도 구분 없이 일본어 질문만 둡니다."
   },
   "questions": [
     {
@@ -109,36 +104,6 @@
       "expectedDurationSec": 60,
       "textJa": "その課題をどのように解決しましたか。",
       "tags": ["follow_up"]
-    }
-  ],
-  "followUps": [
-    {
-      "parentId": "strength",
-      "triggerType": "keyword",
-      "keywords": ["チーム", "協力"],
-      "targetId": "role",
-      "priority": 1
-    },
-    {
-      "parentId": "team_project",
-      "triggerType": "keyword",
-      "keywords": ["チーム", "プロジェクト", "担当"],
-      "targetId": "role_detail",
-      "priority": 1
-    },
-    {
-      "parentId": "team_project",
-      "triggerType": "keyword",
-      "keywords": ["Python", "SQL", "機械学習", "データ"],
-      "targetId": "tech_reason",
-      "priority": 2
-    },
-    {
-      "parentId": "problem_solving",
-      "triggerType": "keyword",
-      "keywords": ["エラー", "失敗", "課題"],
-      "targetId": "how_solved",
-      "priority": 1
     }
   ]
 }

@@ -30,7 +30,6 @@ export const REAL_MODE_INTRO_QUESTION: BankQuestion = {
 }
 
 const questions = bank.questions as BankQuestion[]
-const followUps = bank.followUps as BankFollowUp[]
 
 export function getQuestionById(id: string): BankQuestion | undefined {
   if (id === REAL_MODE_INTRO_QUESTION.id) return REAL_MODE_INTRO_QUESTION
@@ -41,8 +40,49 @@ export function getQuestionsByCategory(categories: string[]): BankQuestion[] {
   return questions.filter((q) => categories.includes(q.category))
 }
 
-export function getFollowUpsFor(parentId: string): BankFollowUp[] {
-  return followUps.filter((f) => f.parentId === parentId)
+// 꼬리질문 규칙은 JSON이 아니라 public/data/follow_ups.txt(일반 텍스트)에서 읽는다.
+// public/ 아래 파일은 정적 자산으로 그대로 서빙되므로 fetch로 원문을 가져와 파싱한다.
+// 형식: 원래질문id | 키워드1,키워드2,... | 다음질문id | 우선순위(선택)
+let followUpsCache: BankFollowUp[] | null = null
+
+function parseFollowUpsText(text: string): BankFollowUp[] {
+  const rules: BankFollowUp[] = []
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim()
+    if (!line || line.startsWith('#')) continue
+    const parts = line.split('|').map((p) => p.trim())
+    if (parts.length < 3) continue
+    const [parentId, keywordsRaw, targetId, priorityRaw] = parts
+    if (!parentId || !targetId) continue
+    rules.push({
+      parentId,
+      triggerType: 'keyword',
+      keywords: keywordsRaw
+        .split(',')
+        .map((k) => k.trim())
+        .filter(Boolean),
+      targetId,
+      priority: priorityRaw ? Number(priorityRaw) || 0 : 0,
+    })
+  }
+  return rules
+}
+
+async function loadFollowUps(): Promise<BankFollowUp[]> {
+  if (followUpsCache) return followUpsCache
+  try {
+    const res = await fetch('/data/follow_ups.txt', { cache: 'no-store' })
+    const text = await res.text()
+    followUpsCache = parseFollowUpsText(text)
+  } catch {
+    followUpsCache = []
+  }
+  return followUpsCache
+}
+
+export async function getFollowUpsFor(parentId: string): Promise<BankFollowUp[]> {
+  const all = await loadFollowUps()
+  return all.filter((f) => f.parentId === parentId)
 }
 
 // Fisher-Yates 셔플. 매 세션마다 질문 순서/구성이 달라지도록 한다.
