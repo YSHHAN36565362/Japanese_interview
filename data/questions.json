@@ -549,6 +549,15 @@
         "concrete_results_numbers",
         "follow_up"
       ]
+    },
+    {
+      "id": "project_contribution",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "その経験を活かして、当社ではどのようなことができると思いますか。",
+      "tags": [
+        "follow_up"
+      ]
     }
   ]
 }

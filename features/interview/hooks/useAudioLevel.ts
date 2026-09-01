@@ -16,6 +16,11 @@ export function useAudioLevel(stream: MediaStream | null): number {
 
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
     const audioCtx: AudioContext = new AudioCtx()
+    // 브라우저 자동재생 정책상 useEffect 안에서 만든 AudioContext는 'suspended' 상태로
+    // 시작될 수 있다 — resume하지 않으면 analyser가 항상 무음(레벨 0)만 반환한다.
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {})
+    }
     const analyser = audioCtx.createAnalyser()
     analyser.fftSize = 256
     const source = audioCtx.createMediaStreamSource(stream)

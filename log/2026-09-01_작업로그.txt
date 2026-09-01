@@ -839,3 +839,45 @@ npm run dev를 백그라운드 프로세스로 띄워놓았습니다 (http://loc
 JP 카드 자체는 수정하지 않았습니다. Chrome으로 hover 전/후 스크린샷 확인 완료.
 
 파일: app/page.tsx만 수정.
+
+===============================================================
+[10차 작업] 면접관 발화 종료 시 자동 마이크 on + 꼬리질문/대분류 질문 보강
+===============================================================
+[1. 면접관 음성이 끝나면 자동으로 마이크 켜기]
+"면접관의 음성이 끝나면, 자동으로 마이크가 켜지게 해주고" 요청에 따라
+features/interview/hooks/useInterviewMachine.ts의 handleTtsEnded를 수정했습니다.
+기존에는 TTS가 끝나면 무조건 questionReady로 돌아가 사용자가 "마이크" 버튼을 직접 눌러야
+답변 녹음이 시작됐는데, 이제 sttSupported(마이크 사용 가능)인 경우 TTS 종료 직후 바로
+listening 단계로 전환되어 자동으로 답변 녹음이 시작됩니다. 텍스트 모드(마이크 미지원)인
+경우에는 기존처럼 questionReady로 돌아가 직접 입력할 수 있게 유지했습니다.
+
+[2. 마이크 테스트 레벨미터가 움직이지 않는 버그 수정]
+"마이크 체크가 소리가 나면 움직이거나 해야하는데, 안움직이네" 제보로 발견한 버그입니다.
+원인: features/interview/hooks/useAudioLevel.ts에서 AudioContext를 useEffect 안에서
+생성하는데, 브라우저 자동재생 정책상 사용자 클릭의 콜스택 밖에서 만들어진 AudioContext는
+'suspended' 상태로 시작될 수 있어 analyser가 항상 무음만 반환했습니다.
+수정: AudioContext 생성 직후 state가 'suspended'면 명시적으로 resume()을 호출하도록
+추가했습니다.
+
+[3. 꼬리질문 규칙 대폭 보강 (기존 4개 → 21개)]
+"꼬리질문이랑 대분류 질문도 수정해보자" 요청에 따라, 이전 개인 모의면접 자료를 정리해둔
+data/drafts/questions_ver2_followups.md(개인정보 제거됨, git 제외 파일)를 바탕으로 새
+꼬리질문 규칙 14개를 병합했습니다. 추가로 사용자가 예시로 든 "'프로젝트'라는 단어가
+나오면 '그 경험을 살려 당사에서 무엇을 할 수 있는지' 질문으로 이어지게" 요청을 위해
+새 질문 project_contribution을 만들고, team_project/effort_in_school_days/
+problem_solving 세 질문에 대해 최우선순위(5)로 연결했습니다.
+- data/drafts/project_contribution_question.json (새 질문 초안)
+- data/drafts/followup_rules_batch2.txt (새 꼬리질문 규칙 17줄)
+- npm run merge-data 실행 → data/questions.json 59→60개, public/data/follow_ups.txt 4→21줄
+- HowToInputData.md §7에 이번 작업을 실전 예시로 추가하고, 같은 질문에 여러 규칙이 겹칠 때
+  우선순위 숫자를 어떻게 정해야 하는지(더 구체적인 규칙일수록 높게) 설명을 보강해서, 사용자가
+  직접 비슷한 규칙을 추가할 수 있게 했습니다.
+
+[아직 처리하지 않은 것 — 확인 필요]
+역질문 모드(reverse) 카테고리 질문이 여전히 1개뿐이라 실제로는 매번 같은 질문만 나옵니다.
+이번 요청 범위에는 포함되지 않았다고 판단해 손대지 않았습니다 — 필요하시면 말씀해주세요.
+
+파일: features/interview/hooks/useInterviewMachine.ts, useAudioLevel.ts, HowToInputData.md,
+  data/questions.json, public/data/follow_ups.txt,
+신규(임시 초안, git 제외): data/drafts/project_contribution_question.json,
+  data/drafts/followup_rules_batch2.txt

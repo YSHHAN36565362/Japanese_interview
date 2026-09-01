@@ -126,3 +126,49 @@ npm run merge-data
   (`readme_5.md` §7 참고). 다른 트리거가 필요해지면 알려주시면 스크립트/파서를 함께 확장하겠습니다.
 - Supabase에 있는 개인별 실제 면접 기록(세션/답변)은 이 스크립트와 전혀 관계없습니다. 이 스크립트는
   오직 "질문 은행"(`data/questions.json`, `public/data/follow_ups.txt`)만 다룹니다.
+
+---
+
+## 7. 실전 예시 — "프로젝트"라는 단어가 나오면 특정 꼬리질문으로 이어지게 하기
+
+실제로 이번에 추가한 예시로 설명합니다: "team_project 질문에 답할 때 'プロジェクト'라는 단어가
+나오면, '그 경험을 살려 당사에서 어떤 일을 할 수 있다고 생각하나요?'라고 이어서 묻고 싶다."
+
+**1단계 — 꼬리질문 대상이 될 새 질문을 만든다** (`data/drafts/project_contribution_question.json`):
+```json
+{
+  "questions": [
+    {
+      "id": "project_contribution",
+      "category": "culture_fit",
+      "expectedDurationSec": 60,
+      "textJa": "その経験を活かして、当社ではどのようなことができると思いますか。",
+      "tags": ["follow_up"]
+    }
+  ]
+}
+```
+
+**2단계 — 어떤 질문 뒤에, 어떤 단어가 나오면 이어질지 규칙을 쓴다** (`data/drafts/followup_rules_batch2.txt`):
+```
+team_project | プロジェクト | project_contribution | 5
+```
+`team_project`에 답할 때 답변에 "プロジェクト"가 들리면 `project_contribution`으로 이어진다는
+뜻이고, 맨 뒤 `5`는 우선순위입니다.
+
+**3단계** — `npm run merge-data` 실행. 끝.
+
+### 우선순위(마지막 숫자)를 왜 신경 써야 하는가
+
+한 질문(parent id)에 여러 규칙이 걸려 있을 수 있습니다. 예를 들어 `team_project`에는 이미
+`team_project | チーム,プロジェクト,担当 | role_detail | 1`(담당 역할을 되묻는 규칙)이 있었는데,
+여기에 "プロジェクト" 키워드로 새 규칙(`project_contribution`, 우선순위 5)을 추가하면 **숫자가
+큰 규칙부터 먼저 검사**하므로, "プロジェクト"라는 단어만 나와도 새 규칙이 먼저 걸립니다.
+
+중요한 점: `project_contribution`이 **그 인터뷰 세션 안에서 이미 한 번 물어봤다면**, 엔진이
+자동으로 그 규칙을 건너뛰고 그 다음 우선순위 규칙(`role_detail`)으로 넘어갑니다. 즉 같은
+질문을 두 번 묻지 않으면서도 자연스럽게 다음 단계 꼬리질문으로 이어집니다 — 이 동작을 위해
+별도로 손댈 코드는 없고, 규칙에 우선순위만 잘 매겨주면 됩니다.
+
+**정리**: 여러 키워드가 겹칠 수 있는 상황이면, 더 구체적으로 물어보고 싶은 꼬리질문에 더 높은
+우선순위 숫자를 주세요. 겹치지 않는 키워드라면 순서는 상관없습니다.

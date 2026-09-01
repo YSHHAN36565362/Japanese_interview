@@ -81,7 +81,12 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
   }, [])
 
   const handleTtsStarted = useCallback(() => setPhase('interviewerSpeaking'), [])
-  const handleTtsEnded = useCallback(() => setPhase((p) => (p === 'interviewerSpeaking' ? 'questionReady' : p)), [])
+
+  // 면접관 음성이 끝나면, 마이크를 쓸 수 있는 경우 바로 답변 녹음을 시작한다(자동 마이크 on).
+  // 텍스트 모드(sttSupported=false)인 경우에는 questionReady로 두어 사용자가 직접 입력하게 한다.
+  const handleTtsEnded = useCallback(() => {
+    setPhase((p) => (p === 'interviewerSpeaking' ? (sttSupported ? 'listening' : 'questionReady') : p))
+  }, [sttSupported])
 
   const startListening = useCallback(() => {
     if (phase !== 'questionReady') return

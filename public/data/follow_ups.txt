@@ -18,3 +18,21 @@ strength | チーム,協力 | role | 1
 team_project | チーム,プロジェクト,担当 | role_detail | 1
 team_project | Python,SQL,機械学習,データ | tech_reason | 2
 problem_solving | エラー,失敗,課題 | how_solved | 1
+
+team_project | プロジェクト | project_contribution | 5
+effort_in_school_days | プロジェクト | project_contribution | 5
+problem_solving | プロジェクト | project_contribution | 5
+self_pr | 力,強み | skill_other_context | 1
+strength | 大切,重要 | why_important_value | 2
+motto | 大切,重要 | why_important_value | 1
+team_project | フィードバック,ユーザー,アプリ | specific_feedback_received | 4
+effort_in_school_days | フィードバック,ユーザー,アプリ | specific_feedback_received | 1
+tech_trend | 精度,結果,成果,パーセント | concrete_results_numbers | 1
+programming_history | 精度,結果,成果,パーセント | concrete_results_numbers | 1
+why_this_company | 従う,方針,決定 | non_negotiable_standard | 2
+why_this_company | 貴社,御社,当社 | why_not_other_company | 1
+opinion_conflict_communication | 意見,対立,分かれ | opinion_split_decision | 1
+conflict | 意見,対立,分かれ | opinion_split_decision | 1
+years_in_japan | 安定,定年,長く | long_term_reason_beyond_stability | 1
+why_japan | 安定,定年,長く | long_term_reason_beyond_stability | 1
+explain_tech_term_japanese | 技術用語,説明 | explain_oop | 1
