@@ -1,8 +1,8 @@
 import './globals.css'
 import type { ReactNode } from 'react'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MatrixBackground from '@/components/MatrixBackground'
+import SiteChrome from '@/components/SiteChrome'
 
 export const metadata = {
   title: 'Voice Interview JP (데모)',
@@ -23,36 +23,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         <div className="page-bg-fill" aria-hidden="true" />
         <MatrixBackground />
-        <header className="topbar">
-          <div className="topbar-titlebar">
-            <span className="mac-dot red" />
-            <span className="mac-dot yellow" />
-            <span className="mac-dot green" />
-            <Link href="/" className="topbar-tabtitle">
-              Voice Interview JP
-            </Link>
-          </div>
-          <div className="topbar-toolbar-outer">
-            <div className="container topbar-toolbar">
-              <nav className="nav">
-                <Link href="/interview">면접 시작</Link>
-                <Link href="/level-check">레벨 체크</Link>
-                <Link href="/dashboard">마이페이지</Link>
-              </nav>
-              {user ? (
-                <span className="user-email">{user.email ?? '게스트 세션'}</span>
-              ) : (
-                <Link href="/login" className="topbar-enter-link">
-                  입장하기
-                </Link>
-              )}
-            </div>
-          </div>
-        </header>
-        <main className="container main">{children}</main>
-        <footer className="footer">
-          <div className="container">무료 배포 데모 · Next.js + Vercel + Supabase + Web Speech API</div>
-        </footer>
+        <SiteChrome userEmail={user?.email ?? null} isLoggedIn={!!user}>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   )

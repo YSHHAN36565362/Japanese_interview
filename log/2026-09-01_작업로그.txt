@@ -389,3 +389,134 @@ lib/questionBank.ts가 이 파일을 fetch해서 파싱하고, lib/followUp.ts�
 (임시로 만들었다가 테스트 후 바로 삭제한 파일: app/dev-preview/page.tsx —
 실제 로그인 없이 Zoom UI만 미리 볼 수 있는 개발용 페이지였고, Chrome으로
 확인 후 삭제해 최종 코드에는 남아있지 않습니다.)
+
+===============================================================
+[3차 작업, 같은 날] 15. Zoom형 프런트엔드 가이드 기반 면접 진행 화면 전면 리팩터링
+===============================================================
+공유해주신 zoom_style_frontend_implementation_guide.md(Manus 작성)를 그대로 기준 삼아
+/interview/run/[sessionId] 화면 전체를 다시 만들었습니다. "모든 범위"라고 하신 대로,
+가이드의 상태 머신·레이아웃·프리플라이트·보조 패널·반응형 규칙을 전부 반영했습니다.
+
+[핵심 변경: 폴더 구조]
+기존에는 app/interview/run/[sessionId]/page.tsx 한 파일에 모든 로직이 있었는데,
+가이드가 제안한 features/interview/ 구조로 전면 분리했습니다.
+
+  features/interview/
+    types.ts, constants.ts
+    hooks/
+      useInterviewMachine.ts   ← 면접 진행의 중심 컨트롤러
+      useMediaDevices.ts       ← 마이크/카메라 스트림 (카메라는 버튼 누를 때만 요청)
+      useAudioLevel.ts         ← 음량 레벨(AnalyserNode), 평가용 아님·시각 피드백용
+      useSpeechRecognition.ts  ← "listening" 단계에서만 켜지는 STT (의도치 않은 재시작 방지)
+      useSpeechSynthesis.ts    ← 질문 낭독 TTS + 상태 전이 연동
+      useSessionTimer.ts       ← 질문별 경과 시간
+    lib/
+      evaluateAnswer.ts, followUpEngine.ts, choonMatcher.ts
+      transcriptNormalizer.ts  ← (신규) 승인된 STT 보정 사전을 답변에 자동 적용
+    components/
+      PreflightDialog, RoomHeader, InterviewStage, SelfPreview,
+      TranscriptPanel, CoachingPanel, RoomControls, InterviewRoom
+
+  app/interview/run/[sessionId]/page.tsx는 이제 sessionId/mode만 읽어
+  <InterviewRoom>에 넘기는 얇은 로더로 축소했습니다 (가이드 §5 그대로).
+
+[핵심 변경: 면접 상태 머신]
+개별 useState(isFollowUp, saving, finished 등)로 흩어져 있던 상태를
+가이드의 InterviewPhase(preflight→questionReady→interviewerSpeaking→listening→
+answerReview→saving→completed)로 명시화했습니다. TTS 재생 중에는 마이크를 켤 수 없고,
+"답변 완료"를 눌러도 곧바로 저장되지 않고 반드시 답변 검토(answerReview) 단계를 거친
+뒤에만 "다음 질문"으로 저장·진행됩니다.
+(참고: followUpReady/fallbackText는 별도 화면 없이 기존 흐름에 자연스럽게 흡수하는
+쪽으로 단순화했습니다 — 저장 직후 곧바로 다음/꼬리 질문으로 전환, STT 미지원은
+sttSupported 플래그로 처리. readme_4.md §9에 이 단순화 이유를 적어뒀습니다.)
+
+[핵심 변경: 레이아웃 — 데스크톱 3영역 + 고정 컨트롤]
+상단 48px(RoomHeader: 나가기/모드·레벨·경어모드/질문 N/전체·타이머/연결상태),
+하단 76px(RoomControls: 마이크/카메라/자막/패널/다시듣기/화상녹화(로컬)/음성녹음(로컬)
++ 답변 완료·다음 질문 + 종료), 그 사이 스테이지 + 352px 보조 패널(대화/STAR/메모 탭).
+1280px 이상은 패널이 상시 컬럼, 768~1279px는 80% 폭 드로어, 767px 이하는 하단 시트로
+전환되도록 CSS 미디어쿼리를 가이드의 표(§2) 그대로 구현했습니다. 셀프 카메라/파형
+미리보기 크기도 240×135 / 200×112 / 112×150로 브레이크포인트별로 다르게 뒀습니다.
+
+[핵심 변경: 집중 모드]
+사이트 공통 상단바(macOS Safari 테마)를 면접 진행 화면에서는 완전히 숨기도록
+components/SiteChrome.tsx를 새로 만들어 layout.tsx에 연결했습니다. 경로가
+/interview/run/으로 시작하면 상단바·푸터를 아예 렌더링하지 않고, 그 화면만
+전체 화면(100dvh)을 씁니다. 다른 화면(홈/로그인/레벨체크/모드선택/결과/마이페이지)은
+기존 그대로 상단바가 보입니다.
+
+[핵심 변경: 프리플라이트]
+면접실 진입 즉시 마이크 권한을 요청하지 않고, 먼저 "카메라는 기본적으로 저장 안 됨",
+"음성 인식은 브라우저에 따라 외부 서버 처리 가능", "마이크 없이도 텍스트 모드 가능"을
+안내하는 다이얼로그(PreflightDialog)를 보여줍니다. "마이크 테스트 시작"을 눌러야
+실제 권한을 요청하고, 레벨 미터로 정상 감지 여부를 보여준 뒤에만 "입장하기"가
+활성화됩니다. 마이크가 안 되면 "텍스트 모드로 계속하기"로 바로 진입 가능합니다.
+
+[정리/삭제된 것]
+기존에 만들었던 CameraPreview.tsx(드래그·리사이즈 플로팅 카메라), ZoomControlBar.tsx,
+WaveformVisualizer.tsx는 새 구조(SelfPreview + RoomControls + useAudioLevel)로
+완전히 대체되어 삭제했습니다. 자유 드래그/리사이즈 방식 대신, 가이드가 지정한
+"스테이지 안에 도킹된 고정 위치·브레이크포인트별 크기" 방식으로 바뀌었습니다.
+레벨 체크 화면에서 쓰는 MicToggle, lib/useSpeechRecognition.ts(단순 버전),
+lib/feedback.ts, lib/followUp.ts, lib/questionBank.ts 등 기존 로직은 그대로 두고
+features/interview/lib/*에서 재사용(재노출/조합)하는 방식으로 연결했습니다 (중복 구현 없음).
+
+[의도적으로 채택하지 않은 것]
+가이드는 Zustand를 제안했지만, 새 의존성을 추가하지 않고 React 로컬 state로
+UI 상태(패널 열림, 자막 표시, 탭 선택)를 분리했습니다. 목적(서버 상태와 UI 상태 분리)은
+동일하게 달성했습니다.
+
+===============================================================
+[3차 작업] 빌드 및 Chrome 테스트
+===============================================================
+- npx next build 재검증: TypeScript 컴파일 통과, 7개 라우트 정상 생성.
+- 실제 Supabase 로그인 없이도 UI를 확인할 수 있도록 임시 미리보기 페이지
+  (app/dev-preview/page.tsx)를 만들어 Chrome으로 직접 확인 후 삭제했습니다.
+- 확인된 것: 프리플라이트 다이얼로그(안내 문구·마이크 테스트·레벨 미터·입장하기
+  활성화 조건), 데스크톱 3영역 레이아웃 전체(상단바/스테이지/셀프 프리뷰/보조
+  패널/하단 컨트롤 바), 자막·패널 토글 버튼의 활성 상태 표시, 화상 녹화 버튼이
+  카메라 꺼진 상태에서 비활성화되는 것. 실제 화면이 가이드의 ASCII 레이아웃과
+  거의 그대로 일치하는 것을 스크린샷으로 확인했습니다.
+- 확인하지 못한 것: 이 세션의 Chrome 자동화 환경은 창 크기 조절(resize_window)이
+  실제 뷰포트(window.innerWidth)에 반영되지 않아, 태블릿/모바일 반응형
+  브레이크포인트는 코드(CSS 미디어쿼리)로는 구현했지만 화면으로 직접 검증하지
+  못했습니다. 실제 브라우저 창을 좁혀서 확인해주시면 좋겠습니다.
+- 실제 Supabase 프로젝트를 붙인 로그인→레벨체크→면접 진행→결과 전체 흐름도
+  이 세션에서는 끝까지 테스트하지 못했습니다 (실 프로젝트 정보 없음).
+
+===============================================================
+[3차 작업] 참고: 다른 탭에서 진행 중이신 작업 확인
+===============================================================
+작업 도중 data/ 폴더 아래에 제가 만들지 않은 파일들이 생긴 것을 확인했습니다
+(data/questions_ver1.json, data/readme_4 복사본.md, data/Question data/ 폴더 등).
+말씀하신 "다른 탭에서 예상질문·꼬리질문 데이터 작성"이 진행 중인 것으로 보여
+전혀 건드리지 않고 그대로 두었습니다. data/questions.json(제가 관리하는 원본
+파일)은 이번 작업에서 수정하지 않았습니다.
+
+===============================================================
+[3차 작업] 문서 업데이트
+===============================================================
+readme_4.md의 §3-4(면접 진행 화면 설명)와 §9(가이드 대비 구현 상태 비교표)를
+새 구조에 맞게 다시 작성했습니다. SETUP.md의 §0 폴더 구성도 features/interview/,
+public/data/follow_ups.txt를 반영해 갱신했습니다.
+
+===============================================================
+[3차 작업] 파일 목록
+===============================================================
+신규:
+  features/interview/ (전체 — types.ts, constants.ts, hooks/*, lib/*, components/*)
+  components/SiteChrome.tsx
+
+삭제:
+  components/CameraPreview.tsx
+  components/ZoomControlBar.tsx
+  components/WaveformVisualizer.tsx
+
+수정:
+  app/interview/run/[sessionId]/page.tsx (얇은 로더로 축소)
+  app/layout.tsx (SiteChrome 연결)
+  app/globals.css (면접실 전용 CSS 전면 교체 — 이전 Zoom 스타일 CSS는 제거)
+  readme_4.md (§3-4, §6, §9 갱신)
+  SETUP.md (§0 폴더 구성 갱신)
+
+(임시로 만들었다가 테스트 후 바로 삭제한 파일: app/dev-preview/page.tsx)

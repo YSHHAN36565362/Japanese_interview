@@ -12,6 +12,15 @@
   --warn-fg: #8a5a00;
   --error-bg: #fde8e8;
   --error-fg: #9b1c1c;
+
+  /* zoom_style_frontend_implementation_guide.md §3 — 면접실(room) 전용 토큰 */
+  --surface-room: #121826;
+  --surface-panel: #1c2536;
+  --room-text-primary: #f7f9fc;
+  --accent-listening: #3bcb8e;
+  --accent-speaking: #6ea8fe;
+  --accent-warning: #f4b740;
+  --room-danger: #e35d6a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1225,178 +1234,566 @@ a {
 }
 
 /* ============================================================
-   Zoom 스타일 — 면접 진행 화면의 화상회의 느낌 UI
+   면접실(Room) — zoom_style_frontend_implementation_guide.md 기반 전면 재구현
    ============================================================ */
 
-/* 질문을 "면접관" 참가자 타일처럼 보여주는 다크 톤 카드 */
-.zoom-tile {
-  position: relative;
-  background: linear-gradient(160deg, #1c1c1e 0%, #101012 100%);
-  border-radius: 14px;
-  padding: 28px 24px 52px;
-  color: #f2f2f4;
-  overflow: hidden;
+.room-shell {
+  min-height: 100dvh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-room);
+  color: var(--room-text-primary);
 }
 
-.zoom-tile-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #3a3a3c;
+/* --- 1단: 48px 상단 상태 바 --- */
+.room-header {
+  height: 48px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: 700;
-  color: #c7c7cb;
-  margin-bottom: 16px;
+  gap: 16px;
+  padding: 0 16px;
+  background: #0d1220;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
 }
 
-.zoom-tile-name {
-  position: absolute;
-  left: 16px;
-  bottom: 14px;
-  font-size: 12px;
-  color: #d8d8da;
-  background: rgba(0, 0, 0, 0.45);
-  padding: 4px 10px;
+.room-exit-btn {
+  background: none;
+  border: none;
+  color: var(--room-text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 10px;
   border-radius: 6px;
 }
 
-.zoom-tile .question-ja {
-  color: #fff;
+.room-exit-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* 셀프 카메라 미리보기 (드래그 이동 + 모서리 크기 조절) */
-.camera-preview {
-  position: fixed;
-  z-index: 500;
-  border-radius: 12px;
+.room-header-meta {
+  display: flex;
+  gap: 6px;
+  color: #b7c0d1;
+  white-space: nowrap;
+}
+
+.room-header-progress {
+  flex: 1;
+  text-align: center;
+  color: var(--room-text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.room-header-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-listening);
+  white-space: nowrap;
+}
+
+.room-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-listening);
+}
+
+/* --- 본문: 스테이지 + 보조 패널 --- */
+.room-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1280px) {
+  .room-body {
+    grid-template-columns: minmax(0, 1fr) 352px;
+  }
+}
+
+.room-stage-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.room-stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 32px 24px 64px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #1a2233 0%, #0f1420 100%);
+}
+
+.room-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #2a3550;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #cdd6e8;
+  transition: box-shadow 0.2s ease;
+}
+
+.room-avatar.speaking {
+  box-shadow: 0 0 0 6px rgba(110, 168, 254, 0.25);
+  animation: room-avatar-pulse 1.6s infinite;
+}
+
+@keyframes room-avatar-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 6px rgba(110, 168, 254, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(110, 168, 254, 0.12);
+  }
+}
+
+.room-speaker-name {
+  font-size: 13px;
+  color: #9fb0cc;
+}
+
+.room-speaking-indicator {
+  color: var(--accent-speaking);
+}
+
+.room-question-ja {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--room-text-primary);
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+.room-answer-goal {
+  font-size: 12px;
+  color: #8b96ab;
+}
+
+.room-phase-status {
+  font-size: 13px;
+  color: #aab4c8;
+  min-height: 18px;
+}
+
+.room-subtitle {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 80%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* --- 셀프 카메라/파형 미리보기 (스테이지 안에 도킹) --- */
+.room-self-preview {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 240px;
+  height: 135px;
+  border-radius: 10px;
   overflow: hidden;
   background: #000;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  cursor: grab;
-  touch-action: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.camera-preview:active {
-  cursor: grabbing;
+@media (max-width: 1279px) {
+  .room-self-preview {
+    width: 200px;
+    height: 112px;
+  }
 }
 
-.camera-preview-video {
+@media (max-width: 767px) {
+  .room-self-preview {
+    width: 112px;
+    height: 150px;
+    right: 12px;
+    bottom: 12px;
+  }
+}
+
+.room-self-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transform: scaleX(-1);
   display: block;
-  pointer-events: none;
 }
 
-.camera-preview-error {
+.room-self-fallback {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  font-size: 12px;
-  color: #f2b8b8;
-  text-align: center;
-}
-
-.camera-preview-label {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  font-size: 11px;
-  color: #f0f0f0;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 8px;
-  border-radius: 5px;
-  pointer-events: none;
-}
-
-.camera-preview-resize-handle {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 18px;
-  height: 18px;
-  cursor: nwse-resize;
-  touch-action: none;
-}
-
-.camera-preview-resize-handle::after {
-  content: '';
-  position: absolute;
-  right: 4px;
-  bottom: 4px;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid rgba(255, 255, 255, 0.6);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
-}
-
-/* Zoom 하단 툴바 느낌의 컨트롤 바 */
-.zoom-bar {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-  padding: 14px;
-  background: #1c1c1e;
-  border-radius: 14px;
-  margin-bottom: 16px;
-}
-
-.zoom-btn {
-  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  background: #2c2c2e;
-  color: #e5e5e7;
+  justify-content: center;
+  gap: 8px;
+  background: #1a2233;
+}
+
+.room-self-initial {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2a3550;
+  color: #cdd6e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.room-self-waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 28px;
+}
+
+.room-self-waveform-bar {
+  width: 4px;
+  background: var(--accent-listening);
+  border-radius: 2px;
+  transition: height 0.1s ease;
+}
+
+.room-self-label {
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  font-size: 10px;
+  color: #f0f0f0;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* --- 우측 보조 패널: 대화 / STAR / 메모 --- */
+.room-aux-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface-panel);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+@media (max-width: 1279px) {
+  .room-aux-panel {
+    position: fixed;
+    top: 48px;
+    right: 0;
+    bottom: 76px;
+    width: 80%;
+    max-width: 420px;
+    z-index: 400;
+    box-shadow: -12px 0 30px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@media (max-width: 767px) {
+  .room-aux-panel {
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+    top: auto;
+    height: 60vh;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+.room-aux-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.room-aux-tab {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 11px;
-  font-weight: 500;
+  color: #9fb0cc;
+  padding: 8px 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.12s ease;
+  font-size: 13px;
 }
 
-.zoom-btn svg {
-  width: 22px;
-  height: 22px;
+.room-aux-tab.active {
+  background: var(--accent-speaking);
+  color: #0b1120;
+  font-weight: 700;
 }
 
-.zoom-btn:hover:not(:disabled) {
-  background: #3a3a3c;
-  transform: translateY(-1px);
+.room-transcript-panel,
+.room-coaching-panel,
+.room-notes-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.zoom-btn:disabled {
+.room-transcript-line {
+  font-size: 13px;
+  color: #cdd6e8;
+}
+
+.room-transcript-interviewer {
+  color: var(--accent-speaking);
+}
+
+.room-transcript-input {
+  min-height: 160px;
+}
+
+.room-panel-title {
+  font-size: 13px;
+  color: #9fb0cc;
+  margin: 8px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.room-star-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #cdd6e8;
+}
+
+.room-star-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-star-checklist li.done {
+  color: var(--accent-listening);
+}
+
+.room-star-check {
+  font-size: 15px;
+}
+
+.room-signal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #cdd6e8;
+}
+
+/* --- 2단: 76px 하단 고정 컨트롤 바 --- */
+.room-controls {
+  height: 76px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 20px;
+  background: #0d1220;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.room-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.room-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.room-control-btn {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--room-text-primary);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.room-control-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.room-control-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.zoom-btn.off {
-  background: #48484a;
-  color: #ff8a80;
+.room-control-btn.active {
+  background: var(--accent-listening);
+  color: #0b1120;
 }
 
-.zoom-btn.recording {
-  background: #e0453c;
+.room-control-btn.recording {
+  background: var(--room-danger);
   color: #fff;
-  animation: zoom-rec-pulse 1.4s infinite;
+  animation: room-rec-pulse 1.4s infinite;
 }
 
-@keyframes zoom-rec-pulse {
+@keyframes room-rec-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(224, 69, 60, 0.5);
+    box-shadow: 0 0 0 0 rgba(227, 93, 106, 0.5);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(224, 69, 60, 0);
+    box-shadow: 0 0 0 8px rgba(227, 93, 106, 0);
   }
+}
+
+.room-end-btn {
+  background: var(--room-danger);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.room-end-btn:hover {
+  background: #c94d59;
+}
+
+@media (max-width: 767px) {
+  .room-controls {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+  .room-controls-left {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .room-controls-right {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-header-meta {
+    display: none;
+  }
+}
+
+/* --- 프리플라이트 다이얼로그 --- */
+.preflight-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 9, 16, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 900;
+}
+
+.preflight-card {
+  background: var(--surface-panel);
+  color: var(--room-text-primary);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 460px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preflight-card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.preflight-notice-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #b7c0d1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preflight-mic-test {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preflight-mic-level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preflight-level-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.preflight-level-fill {
+  height: 100%;
+  background: var(--accent-listening);
+  transition: width 0.1s ease;
+}
+
+.preflight-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
 }

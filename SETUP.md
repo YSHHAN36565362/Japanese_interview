@@ -19,12 +19,17 @@ app/                  Next.js App Router 페이지
   page.tsx            홈
   login/               공유 비밀번호 입력 → 익명 로그인 (이메일 발송 없음)
   level-check/         최초 레벨 체크(자가 신고 + 장음/경어 진단)
-  interview/           모드 선택 → 면접 진행 → 결과 리포트
+  interview/           모드 선택 화면 (면접 진행 자체는 features/interview 참고)
+    run/[sessionId]/   InterviewRoom을 렌더링하는 얇은 로더
   dashboard/           마이페이지 (세션 목록, STT 보정 사전, 로그아웃)
-components/           재사용 UI 컴포넌트
+components/           사이트 공통 재사용 UI 컴포넌트 (SiteChrome, MacWindow, HeroCard 등)
+features/interview/    ★ 면접 진행 화면("면접실") 전용 — 상태 머신, 훅, 하위 컴포넌트
+                       (zoom_style_frontend_implementation_guide.md 기반, 자세한 내용은 readme_4.md §3-4·§9)
 lib/                  Supabase 클라이언트, Web Speech 훅, 질문 은행 로더, 피드백/꼬리질문 규칙 엔진
 data/
-  questions.json      ★ 질문 · 꼬리질문 원본 (git으로 관리, 여기를 직접 수정/추가하세요)
+  questions.json      ★ 질문 원본 (git으로 관리, 여기를 직접 수정/추가하세요)
+public/data/
+  follow_ups.txt      ★ 꼬리질문 규칙 원본 (일반 텍스트, git으로 관리)
 supabase/
   schema.sql                     테이블 + RLS 정책 (세션/답변 등 "개인별 기록"만 저장)
   migrate_local_questions.sql    구버전(questions 테이블 사용)에서 전환할 때만 1회 실행
