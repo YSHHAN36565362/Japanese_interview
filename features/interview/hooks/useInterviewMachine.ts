@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   REAL_MODE_INTRO_QUESTION,
+  getBasicTrackQuestions,
+  getQuestionById,
   getQuestionsByCategory,
   getRandomClosingQuestion,
   sampleMainQuestions,
@@ -81,11 +83,24 @@ export function useInterviewMachine({
       // 비슷한 주제의 질문(예: 스트레스 해소법 여러 버전)이 한 세션에 같이 나오지 않도록,
       // group이 같은 질문 중 하나만 무작위로 골라서 풀을 구성한다. 실전 모드에서 지원 직무
       // (소프트웨어/반도체)를 골랐다면 그 track과 안 맞는 전용 질문은 애초에 후보에서 뺀다.
-      const pool = sampleMainQuestions(categories, poolSize, isRealMode ? track : undefined)
-      // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
-      // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
-      const reverseQuestions = isRealMode ? getQuestionsByCategory(['reverse']) : []
-      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool, ...reverseQuestions] : pool
+      // "기본 모드"(general)는 무작위 추출이 아니라, 실제 면접에서 거의 항상 나오는 대표
+      // 질문 12개를 정해진 순서 그대로 쓴다(getBasicTrackQuestions).
+      const isBasicTrack = isRealMode && track === 'general'
+      // 실전 모드는 REAL_MODE_INTRO_QUESTION이 이미 자기소개 역할을 하므로, 대분류 풀에
+      // 있는 self_intro("自己紹介をお願いします。")가 무작위로 또 뽑혀서 자기소개를 두 번
+      // 묻는 일이 없도록 실전 모드에서만 제외한다.
+      const pool = isBasicTrack
+        ? getBasicTrackQuestions()
+        : sampleMainQuestions(categories, poolSize, isRealMode ? track : undefined, isRealMode ? ['self_intro'] : undefined)
+      // 실전 모드는 자기소개로 시작한다. 마무리는 기본 모드만 "마지막으로 하고 싶은 말"
+      // (final_word)로 끝내고, 소프트웨어/반도체 트랙은 그대로 역질문
+      // ("最後に、何か質問はありますか。")으로 마무리한다.
+      const closingQuestions = isRealMode
+        ? isBasicTrack
+          ? [getQuestionById('final_word')].filter((q): q is BankQuestion => !!q)
+          : getQuestionsByCategory(['reverse'])
+        : []
+      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool, ...closingQuestions] : pool
 
       setQuestions(finalQuestions)
       setCurrentQuestion(finalQuestions[0] ?? null)

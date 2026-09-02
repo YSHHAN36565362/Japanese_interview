@@ -827,3 +827,63 @@ corrected_answer_text, duration_seconds, politeness_score_ratio, feedback_result
 [검증]
 실제 프로덕션 환경(Vercel + 실제 Supabase 프로젝트)에서 Chrome으로 전 과정을 직접
 조작하고, curl로 DB 상태까지 교차 확인하는 이중 검증으로 완료했습니다.
+
+===============================================================
+[13차 작업] 실전 모드 지원 직무에 "기본" 추가(고정 12문항) + (재확인 중 발견) 실전 모드에서
+           자기소개가 두 번 나올 수 있던 버그 수정
+===============================================================
+
+[1. "소프트웨어/반도체 말고 기본 모드도 넣어달라"는 요청]
+사용자가 실제 IT 취업 면접에서 거의 항상 나오는 질문 10개(+메모 4개)를 정리해서 주셨고,
+"자기소개는 처음에, 마지막으로 하고 싶은 말은 끝에 고정하고 나머지만 이 목록으로 채우면
+될 것 같다"는 요청대로 구현했습니다.
+
+- lib/questionBank.ts: JobTrack에 'general' 추가. 소프트웨어/반도체는 큰 풀(174개)에서
+  무작위로 뽑지만, 기본 모드는 무작위가 아니라 BASIC_TRACK_QUESTION_IDS에 정해둔 12개를
+  정해진 순서 그대로 반환하는 getBasicTrackQuestions()를 새로 추가했다. 12개 중 7개는
+  기존 대분류 질문을 재사용(motivation, how_found_job_posting, why_japan,
+  company_choice_criteria, effort_in_school_days, strengths_and_weaknesses,
+  post_join_aspiration)했고, 5개는 신규 추가(job_role_desired, why_this_industry,
+  extracurricular_activities, hardship_experience, it_training_reason) — 전부
+  data/questions.json에 "basic_track" 태그를 붙였다. 근접 중복 방지를 위해
+  extracurricular_activities는 part_time_job과, hardship_experience는
+  setback_experience/failure_experience_general과 그룹으로 묶었다.
+- useInterviewMachine.ts: track==='general'이면 sampleMainQuestions 대신
+  getBasicTrackQuestions()를 쓰고, 마무리 질문도 다른 트랙(역질문)과 다르게
+  final_word("最後に一言お願いします。")로 고정했다.
+- app/interview/page.tsx의 JOB_TRACKS, features/interview/constants.ts의 TRACK_LABEL,
+  app/interview/run/[sessionId]/page.tsx의 track 파싱에 'general'/"기본"을 추가했다.
+
+병합 결과: 대분류 175개(신규 5개), 전체 질문 은행 247개.
+
+[2. (재확인 중 자체 발견) 실전 모드에서 "自己紹介をお願いします。"가 두 번 나올 수 있던 버그]
+"다시해줘"라는 요청으로 방금 구현한 기본/소프트웨어/반도체 트랙을 실제 questionBank.ts
+로직을 그대로 가져온 dev-preview 페이지로 재검증하는 과정에서 발견했습니다: 소프트웨어
+트랙으로 세션을 구성해보니, 실전 모드가 항상 맨 앞에 붙이는 REAL_MODE_INTRO_QUESTION
+("簡単に自己紹介をお願いします。")과는 별개로, 대분류 질문 중 하나인 self_intro
+("自己紹介をお願いします。")가 무작위 풀에도 그대로 남아있어서 같은 세션에 우연히 함께
+뽑히면 자기소개를 사실상 두 번 묻는 상황이 생길 수 있었습니다(이건 이번 기본 모드
+작업과 무관하게 예전부터 있던 버그입니다 — 우연히 재검증 중에 눈에 띄었습니다).
+
+수정: lib/questionBank.ts의 sampleMainQuestions()에 excludeIds 매개변수를 추가하고,
+useInterviewMachine.ts가 실전 모드에서는 항상 'self_intro'를 후보에서 제외하도록
+고쳤다(연습/기술 면접 모드는 REAL_MODE_INTRO_QUESTION이 안 붙으므로 self_intro가 그대로
+정상적인 대분류 질문으로 남아 있어도 된다 — 실전 모드에서만 제외).
+
+[검증]
+- Node로 sampleMainQuestions 로직을 재현해 600회(소프트웨어/반도체 × 300회) 시뮬레이션한
+  결과 self_intro가 단 한 번도 안 나옴을 확인.
+- 실제 lib/questionBank.ts/useInterviewMachine.ts 함수를 그대로 import하는 dev-preview
+  페이지를 Chrome에서 열어, 기본/소프트웨어 트랙 각각의 실제 큐(질문 id+본문 순서)를
+  화면에 그대로 렌더링해서 육안으로 확인 — 기본 모드는 정확히 요청한 12개 순서(자기소개→
+  job_role_desired→motivation→...→post_join_aspiration→final_word) 그대로 나왔고,
+  소프트웨어 트랙 수정 후에는 self_intro가 사라진 것을 확인했다.
+- npx tsc --noEmit, npm run build 모두 통과. 개발 서버 정상 응답 확인. 검증용 dev-preview
+  페이지는 확인 후 바로 삭제했다.
+
+파일 수정: data/questions.json(신규 5개+basic_track 태그 7개+그룹 2개),
+  lib/questionBank.ts(JobTrack 'general', getBasicTrackQuestions,
+  sampleMainQuestions의 excludeIds), features/interview/hooks/useInterviewMachine.ts
+  (기본 트랙 분기, self_intro 제외), features/interview/constants.ts(TRACK_LABEL),
+  app/interview/page.tsx(JOB_TRACKS), app/interview/run/[sessionId]/page.tsx(track 파싱),
+  QuestionBankExplained.md

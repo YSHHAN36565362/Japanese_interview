@@ -9,7 +9,8 @@ export default function InterviewRunPage() {
   const searchParams = useSearchParams()
   const mode = searchParams.get('mode') ?? 'practice'
   const trackParam = searchParams.get('track')
-  const track: JobTrack | undefined = trackParam === 'software' || trackParam === 'semiconductor' ? trackParam : undefined
+  const track: JobTrack | undefined =
+    trackParam === 'software' || trackParam === 'semiconductor' || trackParam === 'general' ? trackParam : undefined
 
   return <InterviewRoom sessionId={params.sessionId} mode={mode} track={track} />
 }

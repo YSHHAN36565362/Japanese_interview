@@ -3,7 +3,10 @@ import bank from '@/data/questions.json'
 export type QuestionCategory = 'personality' | 'technical' | 'culture_fit' | 'reverse'
 export type FollowUpTriggerType = 'keyword' | 'missing_keyword' | 'answer_length' | 'random'
 
-export type JobTrack = 'software' | 'semiconductor'
+// 'general'(기본 모드)은 다른 두 트랙과 달리 큰 풀에서 무작위로 뽑지 않고, 아래
+// BASIC_TRACK_QUESTION_IDS에 정해둔 소수의 "면접에서 거의 100% 나오는" 질문만 고정된
+// 순서로 그대로 쓴다 — getBasicTrackQuestions() 참고.
+export type JobTrack = 'software' | 'semiconductor' | 'general'
 
 export interface BankQuestion {
   id: string
@@ -75,14 +78,46 @@ export function getMainQuestionsByCategory(categories: string[]): BankQuestion[]
   )
 }
 
+// "기본 모드" 전용 — 실제 면접에서 거의 항상 나오는 대표 질문만 정해진 순서로 고정한
+// 목록. 다른 트랙(소프트웨어/반도체)처럼 큰 풀에서 무작위로 뽑지 않고, 이 12개를 그대로
+// 순서대로 쓴다(자기소개는 REAL_MODE_INTRO_QUESTION이, 마무리는 final_word가 별도로 앞뒤에
+// 붙는다 — useInterviewMachine.ts 참고).
+const BASIC_TRACK_QUESTION_IDS = [
+  'job_role_desired',
+  'motivation',
+  'how_found_job_posting',
+  'why_japan',
+  'company_choice_criteria',
+  'why_this_industry',
+  'effort_in_school_days',
+  'extracurricular_activities',
+  'hardship_experience',
+  'strengths_and_weaknesses',
+  'it_training_reason',
+  'post_join_aspiration',
+]
+
+export function getBasicTrackQuestions(): BankQuestion[] {
+  return BASIC_TRACK_QUESTION_IDS.map((id) => getQuestionById(id)).filter(
+    (q): q is BankQuestion => !!q
+  )
+}
+
 // 세션 질문 풀을 뽑을 때 "거의 같은 질문"(예: 스트레스 해소법 vs 스트레스 대처법, 학창시절
 // 힘쓴 일 vs 어린 시절 힘쓴 일)이 한 세션에 함께 나오지 않도록, group이 같은 질문들 중
 // 하나만 무작위로 골라 뽑는다. group이 없는 질문은 자기 자신의 id를 그룹으로 취급한다.
-export function sampleMainQuestions(categories: string[], poolSize: number, track?: JobTrack): BankQuestion[] {
+export function sampleMainQuestions(
+  categories: string[],
+  poolSize: number,
+  track?: JobTrack,
+  excludeIds?: string[]
+): BankQuestion[] {
   const all = getMainQuestionsByCategory(categories)
   // track이 주어지면, 다른 track 전용으로 태깅된 질문만 제외한다(track이 없는 공통 질문은
   // 그대로 포함). track을 아예 안 넘기면(연습/기술 면접 모드) 필터링 없이 전부 후보가 된다.
-  const candidates = track ? all.filter((q) => !q.track || q.track === track) : all
+  const trackFiltered = track ? all.filter((q) => !q.track || q.track === track) : all
+  const excludeSet = new Set(excludeIds ?? [])
+  const candidates = excludeSet.size ? trackFiltered.filter((q) => !excludeSet.has(q.id)) : trackFiltered
   const groups = new Map<string, BankQuestion[]>()
   for (const q of candidates) {
     const key = q.group ?? q.id

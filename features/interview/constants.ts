@@ -13,6 +13,7 @@ export const MODE_LABEL: Record<string, string> = {
 }
 
 export const TRACK_LABEL: Record<string, string> = {
+  general: '기본',
   software: '소프트웨어',
   semiconductor: '반도체',
 }

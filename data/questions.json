@@ -24,7 +24,8 @@
       "expectedDurationSec": 90,
       "textJa": "志望動機を教えてください。",
       "tags": [
-        "motivation"
+        "motivation",
+        "basic_track"
       ]
     },
     {
@@ -153,7 +154,8 @@
       "expectedDurationSec": 90,
       "textJa": "長所と短所を教えてください。",
       "tags": [
-        "strengths_and_weaknesses"
+        "strengths_and_weaknesses",
+        "basic_track"
       ]
     },
     {
@@ -220,7 +222,8 @@
       "textJa": "学生時代に最も力を入れたことは何ですか。",
       "tags": [
         "effort_in_school_days",
-        "gakuchika"
+        "gakuchika",
+        "basic_track"
       ]
     },
     {
@@ -239,7 +242,8 @@
       "textJa": "挫折した経験はありますか。その経験から何を学びましたか。",
       "tags": [
         "setback_experience"
-      ]
+      ],
+      "group": "hardship_experience"
     },
     {
       "id": "leadership_experience",
@@ -266,7 +270,8 @@
       "textJa": "アルバイト経験について教えてください。",
       "tags": [
         "part_time_job"
-      ]
+      ],
+      "group": "extracurricular_activities"
     },
     {
       "id": "childhood_effort",
@@ -285,7 +290,8 @@
       "expectedDurationSec": 90,
       "textJa": "なぜ日本で働きたいのですか。",
       "tags": [
-        "why_japan"
+        "why_japan",
+        "basic_track"
       ]
     },
     {
@@ -340,7 +346,8 @@
       "expectedDurationSec": 60,
       "textJa": "入社後の抱負を教えてください。",
       "tags": [
-        "post_join_aspiration"
+        "post_join_aspiration",
+        "basic_track"
       ]
     },
     {
@@ -715,7 +722,8 @@
       "id": "failure_experience_general",
       "category": "personality",
       "expectedDurationSec": 90,
-      "textJa": "大きな失敗をした経験と、それをどう乗り越えたか教えてください。"
+      "textJa": "大きな失敗をした経験と、それをどう乗り越えたか教えてください。",
+      "group": "hardship_experience"
     },
     {
       "id": "long_term_goal",
@@ -1390,7 +1398,10 @@
       "id": "how_found_job_posting",
       "category": "culture_fit",
       "expectedDurationSec": 60,
-      "textJa": "当社の求人をどのように知りましたか。"
+      "textJa": "当社の求人をどのように知りましたか。",
+      "tags": [
+        "basic_track"
+      ]
     },
     {
       "id": "team_meeting_experience",
@@ -1697,7 +1708,8 @@
       "expectedDurationSec": 60,
       "textJa": "就職先の会社を選ぶとき、何を基準にしていますか。",
       "tags": [
-        "company_choice_criteria"
+        "company_choice_criteria",
+        "basic_track"
       ]
     },
     {
@@ -1987,6 +1999,58 @@
       "tags": [
         "project_realworld_application",
         "follow_up"
+      ]
+    },
+    {
+      "id": "job_role_desired",
+      "category": "culture_fit",
+      "expectedDurationSec": 45,
+      "textJa": "当社でどのような仕事をしたいですか。",
+      "tags": [
+        "job_role_desired",
+        "basic_track"
+      ]
+    },
+    {
+      "id": "why_this_industry",
+      "category": "culture_fit",
+      "expectedDurationSec": 45,
+      "textJa": "なぜこの業界に興味を持ったのですか。",
+      "tags": [
+        "why_this_industry",
+        "basic_track"
+      ]
+    },
+    {
+      "id": "extracurricular_activities",
+      "category": "personality",
+      "expectedDurationSec": 45,
+      "textJa": "サークル活動・アルバイト経験など、学業以外の活動について教えてください。",
+      "tags": [
+        "extracurricular_activities",
+        "basic_track"
+      ],
+      "group": "extracurricular_activities"
+    },
+    {
+      "id": "hardship_experience",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "今まで一番苦労したことは何ですか。",
+      "tags": [
+        "hardship_experience",
+        "basic_track"
+      ],
+      "group": "hardship_experience"
+    },
+    {
+      "id": "it_training_reason",
+      "category": "culture_fit",
+      "expectedDurationSec": 45,
+      "textJa": "日本ＩＴ研修に参加した理由を教えてください。",
+      "tags": [
+        "it_training_reason",
+        "basic_track"
       ]
     }
   ]

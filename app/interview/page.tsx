@@ -8,6 +8,7 @@ import LoadingDots from '@/components/LoadingDots'
 import type { JobTrack } from '@/lib/questionBank'
 
 const JOB_TRACKS: { id: JobTrack; label: string }[] = [
+  { id: 'general', label: '기본' },
   { id: 'software', label: '소프트웨어' },
   { id: 'semiconductor', label: '반도체' },
 ]
