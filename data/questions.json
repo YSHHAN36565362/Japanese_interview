@@ -45,7 +45,8 @@
       "textJa": "あなたの弱みは何ですか。",
       "tags": [
         "weakness"
-      ]
+      ],
+      "group": "strengths_weaknesses"
     },
     {
       "id": "team_project",
@@ -72,7 +73,8 @@
       "textJa": "チームで意見が対立したとき、どのように対応しますか。",
       "tags": [
         "conflict"
-      ]
+      ],
+      "group": "team_opinion_conflict"
     },
     {
       "id": "stress",
@@ -108,9 +110,7 @@
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "チーム内でのあなた自身の役割は何でしたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "role_detail",
@@ -156,7 +156,8 @@
       "tags": [
         "strengths_and_weaknesses",
         "basic_track"
-      ]
+      ],
+      "group": "strengths_weaknesses"
     },
     {
       "id": "character_reputation",
@@ -261,7 +262,8 @@
       "textJa": "チームで意見が違うとき、どのようにコミュニケーションを取りますか。",
       "tags": [
         "opinion_conflict_communication"
-      ]
+      ],
+      "group": "team_opinion_conflict"
     },
     {
       "id": "part_time_job",
@@ -329,7 +331,8 @@
       "textJa": "専攻と異なる職種に、なぜ応募したのですか。",
       "tags": [
         "major_mismatch_reason"
-      ]
+      ],
+      "group": "major_mismatch"
     },
     {
       "id": "company_impression",
@@ -477,9 +480,9 @@
       "expectedDurationSec": 90,
       "textJa": "「オブジェクト指向」について日本語で説明してください。",
       "tags": [
-        "explain_oop",
-        "follow_up"
-      ]
+        "explain_oop"
+      ],
+      "track": "software"
     },
     {
       "id": "final_word",
@@ -527,8 +530,7 @@
       "expectedDurationSec": 60,
       "textJa": "会社の方針に従うという回答が多いですが、絶対に譲れない基準はありますか。",
       "tags": [
-        "non_negotiable_standard",
-        "follow_up"
+        "non_negotiable_standard"
       ]
     },
     {
@@ -537,9 +539,9 @@
       "expectedDurationSec": 60,
       "textJa": "意見が正反対に分かれた場合、どのように決めますか。",
       "tags": [
-        "opinion_split_decision",
-        "follow_up"
-      ]
+        "opinion_split_decision"
+      ],
+      "group": "team_opinion_conflict"
     },
     {
       "id": "long_term_reason_beyond_stability",
@@ -547,9 +549,9 @@
       "expectedDurationSec": 60,
       "textJa": "長く働きたい理由は、安定性だけですか。",
       "tags": [
-        "long_term_reason_beyond_stability",
-        "follow_up"
-      ]
+        "long_term_reason_beyond_stability"
+      ],
+      "group": "why_japan"
     },
     {
       "id": "if_not_selected",
@@ -557,8 +559,7 @@
       "expectedDurationSec": 60,
       "textJa": "今回、もし不合格だった場合、今後はどうしますか。",
       "tags": [
-        "if_not_selected",
-        "follow_up"
+        "if_not_selected"
       ]
     },
     {
@@ -584,7 +585,8 @@
       "id": "company_research",
       "category": "culture_fit",
       "expectedDurationSec": 60,
-      "textJa": "当社についてどの程度調べましたか。何を知っていますか。"
+      "textJa": "当社についてどの程度調べましたか。何を知っていますか。",
+      "group": "company_research_detail"
     },
     {
       "id": "team_vs_individual",
@@ -636,27 +638,27 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "どのようなテストを、どのくらいの頻度で書いていますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "track": "software",
+      "group": "testing_practice"
     },
     {
       "id": "debugging_detail",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "具体的にどのようなツールや方法を使いますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "track": "software",
+      "group": "debugging_method"
     },
     {
       "id": "security_detail",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "具体的にどのような対策をしましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "track": "software",
+      "group": "security_practice"
     },
     {
       "id": "failure_lesson_detail",
@@ -672,27 +674,24 @@
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "具体的にどのような行動をとりましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "group": "pressure_response"
     },
     {
       "id": "feedback_detail",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "印象に残っている指摘はありますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "group": "feedback_receiving_detail"
     },
     {
       "id": "research_detail",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "具体的にどのような情報を調べましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "group": "company_research_detail"
     },
     {
       "id": "decision_making_style",
@@ -704,7 +703,8 @@
       "id": "handling_pressure",
       "category": "personality",
       "expectedDurationSec": 60,
-      "textJa": "プレッシャーの大きい状況で、どのように対応しますか。"
+      "textJa": "プレッシャーの大きい状況で、どのように対応しますか。",
+      "group": "pressure_response"
     },
     {
       "id": "time_management",
@@ -742,7 +742,8 @@
       "id": "feedback_receiving",
       "category": "personality",
       "expectedDurationSec": 60,
-      "textJa": "上司や同僚からの指摘を、どのように受け止めますか。"
+      "textJa": "上司や同僚からの指摘を、どのように受け止めますか。",
+      "group": "feedback_receiving_detail"
     },
     {
       "id": "tech_stack_choice",
@@ -763,7 +764,8 @@
       "category": "technical",
       "expectedDurationSec": 90,
       "textJa": "テストコードやユニットテストを書いた経験はありますか。",
-      "track": "software"
+      "track": "software",
+      "group": "testing_practice"
     },
     {
       "id": "code_review_experience",
@@ -777,7 +779,8 @@
       "category": "technical",
       "expectedDurationSec": 90,
       "textJa": "バグを発見したとき、どのように原因を特定しますか。",
-      "track": "software"
+      "track": "software",
+      "group": "debugging_method"
     },
     {
       "id": "database_experience",
@@ -791,7 +794,8 @@
       "category": "technical",
       "expectedDurationSec": 90,
       "textJa": "セキュリティを意識して開発した経験はありますか。",
-      "track": "software"
+      "track": "software",
+      "group": "security_practice"
     },
     {
       "id": "agile_experience",
@@ -889,72 +893,56 @@
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "チーム内で公式な役割以外に、雰囲気作りやコミュニケーション面ではどのような役割を担うことが多いですか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_role_tier2",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "メンバーの力量が異なる場合、業務分担はどのような基準で決めましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_role_tier3",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "入社後、ご自身が望まない役割を任された場合、どのように取り組みますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_conflict_tier1",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "チームメンバーの意見が強く対立したとき、具体的にどのように解決しましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_conflict_tier2",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "もし相手が、ご自身の意見やデータに全く納得しない場合、どう対応しますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_conflict_tier3",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "同僚ではなく直属の上司や先輩の意見が、ご自身の考えと明らかに異なる場合はどう行動しますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_freeride_tier1",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "チームメンバーの一人が担当業務を期限通りに行わなかったとき、どのように対処しましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "tp_freeride_tier2",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "直接話し合っても態度が変わらない場合、プロジェクトを完成させるためにどのような決断をしますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "fail_cause_tier1",
@@ -988,18 +976,14 @@
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "既存のやり方を捨てて新しい方法を選ぶとき、もう少し試すか諦めるかの判断基準は何でしたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "fail_pivot_tier2",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "実務で納期が迫っているのに計画通りに進まない場合、完成度を下げても期限を守りますか、期限を延ばしてでも完成度を高めますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "weak_perfection_tier1",
@@ -1015,45 +999,35 @@
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "短所を補うために、ご自身で作った具体的な行動ルールはありますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "weak_perfection_tier3",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "スピードと正確さが同時に求められる実務環境で、二つの価値が衝突するときどうバランスを取りますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "weak_kindness_tier1",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "他人を助けるあまり、ご自身の業務スケジュールに支障が出たことはありませんか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "weak_kindness_tier2",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "ご自身の業務量がすでに飽和状態のとき、同僚や上司から追加業務を頼まれたらどう対応しますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "motiv_strength_tier1",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "当社の強みは、競合他社と比べてどのような差別化点があると思いますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "motiv_strength_tier2",
@@ -1078,9 +1052,8 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "非専攻者として、既存の専攻者と競争するために別途学習・準備したことは何ですか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "group": "major_mismatch"
     },
     {
       "id": "major_mismatch_tier2",
@@ -1096,9 +1069,7 @@
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "ご自身と性向や価値観が正反対の人と協業しなければならなかったことはありますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "adapt_person_tier2",
@@ -1114,27 +1085,21 @@
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "非常に厳格、あるいは感情的な上司に出会った場合、どう対処しますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "adapt_rule_tier1",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "マニュアルや原則を必ず守るべき状況と、素早い柔軟性が必要な状況、どちらをより重要だと考えますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "adapt_rule_tier2",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "現場のマニュアルにない突発的な緊急事態が発生した場合、どのような手順で行動しますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "adapt_new_environment",
@@ -1165,18 +1130,14 @@
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "現職（前職）で改善が難しいと感じた点は具体的に何ですか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "mentoring_detail",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "指導する際、相手のレベルに合わせてどのように教え方を変えましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "oss_detail",
@@ -1450,9 +1411,7 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "リモートワークで工夫していたコミュニケーション方法はありますか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "side_project_detail",
@@ -1598,9 +1557,8 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "どのようなツールやフレームワークを使ってテストを自動化しましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": [],
+      "track": "software"
     },
     {
       "id": "graduation_research_detail",
@@ -1616,9 +1574,7 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "インターンシップで実際にどのような業務を担当しましたか。",
-      "tags": [
-        "follow_up"
-      ]
+      "tags": []
     },
     {
       "id": "test_automation_experience",
@@ -1965,8 +1921,7 @@
       "expectedDurationSec": 45,
       "textJa": "モデルの性能は、どのような指標で評価しましたか。具体的な数値も教えてください。",
       "tags": [
-        "ml_evaluation_metric",
-        "follow_up"
+        "ml_evaluation_metric"
       ]
     },
     {
@@ -1976,8 +1931,7 @@
       "expectedDurationSec": 40,
       "textJa": "過学習(オーバーフィッティング)ではないと、どのように確認しましたか。",
       "tags": [
-        "ml_overfitting_check",
-        "follow_up"
+        "ml_overfitting_check"
       ]
     },
     {
@@ -1987,8 +1941,7 @@
       "expectedDurationSec": 45,
       "textJa": "データの前処理では、具体的にどのようなことを行いましたか。",
       "tags": [
-        "ml_data_preprocessing",
-        "follow_up"
+        "ml_data_preprocessing"
       ]
     },
     {

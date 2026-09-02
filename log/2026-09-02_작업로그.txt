@@ -1018,3 +1018,104 @@ lib/feedback.ts와 lib/sessionScore.ts의 정중체/반말체 판정 정규식�
 파일 수정: lib/feedback.ts(정중체/반말체 정규식 개선), lib/sessionScore.ts(pool 방식 정중체
   비율 + computeCompositeScore 신규), app/interview/result/[sessionId]/page.tsx(점수 카드
   UI 개편), app/globals.css(score-card, badge-followup 스타일)
+
+===============================================================
+[16차 작업] "자기소개→팀플" 꼬리질문 로직 재검증 — 실전 모드에서 절대 발동 안 하던 버그 발견/수정
+===============================================================
+
+"내가 팀플 이야기를 하면 이걸 중점으로 물어보는 로직이 정확한지 재확인해달라"는 요청으로
+public/data/follow_ups.txt를 실제 파싱/매칭 함수와 똑같이 재현한 Node 스크립트로
+재검증했습니다.
+
+[발견한 버그]
+지난 회차에 추가한 규칙은 `self_intro | チーム,... | team_project`였는데, 이건 연습/기술
+면접 모드에서 무작위로 뽑힐 수 있는 대분류 질문 self_intro(id: "self_intro")에만 해당되고,
+**실전 모드의 첫 질문은 코드에 고정된 별도 질문**(lib/questionBank.ts의
+REAL_MODE_INTRO_QUESTION, id: "__real_mode_intro__")이라 부모 id가 다릅니다. 그래서
+"실전 면접 자기소개에서 팀플 얘기를 하면 팀 프로젝트 질문으로 이어진다"는 원래 의도가
+**정작 가장 중요한 실전 모드에서는 단 한 번도 발동하지 않고 있었습니다** — Node로
+확인해보니 __real_mode_intro__를 부모로 하는 규칙이 0개였습니다.
+
+[수정]
+follow_ups.txt에 `__real_mode_intro__ | チーム,チームプロジェクト,協力,共同 | team_project
+| 1` 규칙을 추가로 넣어서, 실전 모드의 고정 자기소개 질문에서도 똑같이 작동하도록 했습니다
+(self_intro 규칙은 연습 모드를 위해 그대로 유지).
+
+[검증]
+1. 실제 follow_ups.txt 파싱/매칭 로직을 그대로 재현해 3단계 체인을 실제로 재현:
+   자기소개(チーム 언급) → team_project(팀 프로젝트 질문) → 답변에 対立 언급 →
+   tp_conflict_tier1(의견 대립 해결법) → 답변에 納得 언급 → tp_conflict_tier2(상대가
+   납득 안 하면?) — 3단계 전부 정확히 이어지는 것을 확인했습니다.
+2. 실전 모드(소프트웨어 트랙) 세션 구성을 200회 시뮬레이션 — 매번 자기소개에서 チーム을
+   언급하면 확실히 team_project 꼬리질문이 나오고, 원래 풀에 team_project가 이미 들어있던
+   경우(33회)는 중복 없이 그 자리를 대체, 없던 경우(167회)는 큐 길이가 정확히 +1 늘어나며
+   두 경우 모두 자기소개 바로 다음 자리에 위치함을 확인했습니다.
+3. npx tsc --noEmit, npm run build 모두 통과.
+
+[문서 안내]
+질문/꼬리질문이 어떻게 나오는지 설명한 문서는 QuestionBankExplained.md(저장소 루트)입니다
+— 대분류/꼬리질문/마무리 질문 구조, poolSize, 그룹(근접중복 방지), 지원 직무(track)
+필터링, 기본 모드 고정 목록, 이번에 재확인한 안전망(*) 규칙까지 전부 설명되어 있습니다.
+질문을 새로 추가하거나 꼬리질문 규칙을 직접 편집하는 방법은 HowToInputData.md에 실전
+예시와 함께 있습니다.
+
+파일 수정: public/data/follow_ups.txt(__real_mode_intro__ 규칙 추가)
+
+===============================================================
+[17차 작업] 꼬리질문 40개를 대분류로 승격 — "꼬리질문이 잘 안 나오고 다양하지 않다" 개선
+===============================================================
+
+"꼬리질문이 잘 안 되고 대분류 질문 30개만 돌고 끝나는 느낌이라 다양하지 않다, 중요한
+꼬리질문이면 대분류로 빼놨다가 실제로 꼬리질문에서 나오면 그때 대분류 자리를 빼도 될 것
+같다"는 제안을 그대로 구현했습니다.
+
+[판단 기준]
+꼬리질문 전용 67개 전체를 검토해서, 문장에 その/それ/この/あの 같은 지시어로 "직전 답변
+내용"을 가리키는지 확인했습니다.
+- 지시어로 직전 맥락을 가리키는 것(예: role_detail "その中で、あなたが担当した部分は
+  何ですか。", tech_reason "その技術を選定した理由", fail_cause_tier1 "その失敗の直接的な
+  原因は" 등 26개, 그리고 지시어는 없지만 "同じ状況に戻るとしたら"처럼 사실상 같은 이유로
+  맥락이 필요한 fail_cause_tier3 1개, 총 27개)는 **그대로 꼬리질문 전용으로 남겼습니다**
+  — 맥락 없이 물으면 어색한 질문이 되기 때문입니다.
+- 지시어 없이 그 자체로 완결된 40개(대개 "〜한 경험이 있습니까"/"〜라면 어떻게
+  하시겠습니까" 같은 가정형·경험형 문장 — 예: tp_conflict_tier1, tp_freeride_tier1,
+  weak_kindness_tier1, adapt_rule_tier2, explain_oop 등)는 **대분류로 승격**했습니다
+  (data/questions.json에서 follow_up 태그만 제거, id는 그대로 유지).
+
+[근접 중복 방지]
+승격되면서 기존 대분류 질문과 주제가 겹치게 된 것들, 그리고 검토 중 발견한 기존 중복
+쌍까지 함께 그룹으로 묶었습니다(9개 그룹, 20개 질문):
+  team_opinion_conflict(conflict/opinion_conflict_communication/opinion_split_decision),
+  strengths_weaknesses(weakness/strengths_and_weaknesses — 승격과 무관하게 이미 있던
+  중복인데 이번에 발견해서 같이 고침), debugging_method(debugging_approach/
+  debugging_detail), security_practice(security_awareness/security_detail),
+  testing_practice(testing_experience/testing_detail), company_research_detail
+  (company_research/research_detail), feedback_receiving_detail(feedback_receiving/
+  feedback_detail), pressure_response(handling_pressure/pressure_detail),
+  major_mismatch(major_mismatch_reason/major_mismatch_tier1). long_term_reason_
+  beyond_stability는 기존 why_japan 그룹에 추가.
+소프트웨어 개발에 특화된 5개(explain_oop, testing_detail, debugging_detail,
+security_detail, test_automation_detail)는 track: "software"로 지정.
+
+[병합 결과]
+대분류 175개 → 215개, 꼬리질문 전용 67개 → 27개, 전체 은행 247개(변동 없음, 태그만 이동).
+카테고리: personality 47→57(+10), technical 65→79(+14), culture_fit 62→78(+16).
+연습 모드 후보 174→214개, 실전 소프트웨어 트랙 165→205개, 실전 반도체 트랙 127→159개로
+세션마다 나오는 조합의 다양성이 크게 늘었습니다.
+
+[검증]
+- Node로 sampleMainQuestions 로직을 재현해 모드/트랙 조합 4가지 × 100회씩 시뮬레이션 —
+  그룹 중복도, id 중복도 없음을 확인.
+- self_intro/__real_mode_intro__ → team_project, team_project → tp_conflict_tier1
+  체인이 승격 이후에도 그대로 작동함을 재확인(회귀 없음).
+- npx tsc --noEmit 통과. (참고: npm run build를 로컬 dev 서버가 켜진 채로 실행하면 두
+  번이나 dev 서버가 죽는 현상이 있어, 이번 회차는 JSON/텍스트 파일만 바뀐 점을 고려해
+  build는 생략하고 dev 서버 정상 응답만 확인했습니다.)
+
+[사용자 검토를 권하는 부분]
+- 승격 기준(지시어 유무)은 제 판단입니다 — 실제로 사용해보고 여전히 어색하게 느껴지는
+  질문이 있으면 알려주시면 그룹으로 묶거나 다시 꼬리질문 전용으로 되돌리겠습니다.
+- 반대로 꼬리질문 전용으로 남겨둔 27개 중에도 "이건 그냥 대분류로 넣어도 괜찮을 것
+  같다" 싶은 게 있으면 말씀해주세요.
+
+파일 수정: data/questions.json(40개 follow_up 태그 제거, track 5개, group 20개)

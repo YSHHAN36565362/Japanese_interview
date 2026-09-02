@@ -112,7 +112,12 @@ team_project | 活か,応用,実務 | project_realworld_application | 2
 # 시작 시 뽑힌 풀에 이미 들어있을 수도 있는데, 이렇게 꼬리질문으로 먼저 물어보면
 # useInterviewMachine.ts가 나중 자리의 중복을 자동으로 제거해서 같은 질문이 두 번
 # 나오지 않는다.
+# 주의(2026-09-02 재확인 중 발견): 연습/기술 면접 모드의 자기소개는 이 규칙대로 id가
+# "self_intro"이지만, 실전 모드의 첫 질문은 코드에 고정된 별도 질문
+# (lib/questionBank.ts의 REAL_MODE_INTRO_QUESTION, id "__real_mode_intro__")이라 부모
+# id가 다르다 — 실전 모드에서도 똑같이 작동하도록 같은 규칙을 그 id로도 추가했다.
 self_intro | チーム,チームプロジェクト,協力,共同 | team_project | 1
+__real_mode_intro__ | チーム,チームプロジェクト,協力,共同 | team_project | 1
 
 # 2026-09-02 추가: 안전망 규칙 — 중요한 꼬리질문인데 사용자가 정확히 그 키워드를 말하지
 # 않으면 영영 못 물어보는 게 아쉬워서, 아래 질문들은 다른 규칙이 하나도 안 맞았을 때만
