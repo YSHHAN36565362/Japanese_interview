@@ -16,7 +16,7 @@ export default async function DashboardPage() {
     return (
       <div className="card">
         <p>로그인 후 이용할 수 있습니다.</p>
-        <Link className="btn btn-primary" href="/login">
+        <Link className="btn btn-primary" href="/login?redirect=/dashboard">
           로그인
         </Link>
       </div>

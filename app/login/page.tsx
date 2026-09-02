@@ -1,13 +1,18 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { sanitizeIdNumber, idNumberToEmail, idNumberToPassword } from '@/lib/authNumber'
 import MacWindow from '@/components/MacWindow'
 
 export default function LoginPage() {
   const router = useRouter()
+  // 마이페이지처럼 로그인이 필요한 화면에서 "로그인" 버튼을 눌러 여기로 온 경우, 로그인 후
+  // 항상 /interview로 보내면 원래 가려던 곳(예: 마이페이지)에 다시 못 들어가는 것처럼
+  // 느껴진다 — redirect 쿼리로 원래 목적지를 받아서 로그인 후 그리로 돌려보낸다.
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/interview'
   const [idNumber, setIdNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [guestLoading, setGuestLoading] = useState(false)
@@ -31,7 +36,7 @@ export default function LoginPage() {
       }
       return
     }
-    router.push('/interview')
+    router.push(redirectTo)
     router.refresh()
   }
 
@@ -70,7 +75,7 @@ export default function LoginPage() {
     }
 
     setLoading(false)
-    router.push('/interview')
+    router.push(redirectTo)
     router.refresh()
   }
 

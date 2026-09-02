@@ -180,7 +180,7 @@ export function useInterviewMachine({
     setLastFeedback({ questionTextJa: currentQuestion.textJa, analysis })
 
     if (!isGuestRef.current) {
-      await supabase.from('session_answers').insert({
+      const { error: saveError } = await supabase.from('session_answers').insert({
         session_id: sessionId,
         question_id: isFollowUp ? null : currentQuestion.id,
         follow_up_question_id: isFollowUp ? currentQuestion.id : null,
@@ -192,6 +192,13 @@ export function useInterviewMachine({
         filler_counts: analysis.fillerBreakdown,
         feedback_result: analysis,
       })
+      // 이 insert 실패를 그동안 아무 데도 표시하지 않아서, 저장이 실패해도 사용자는 계속
+      // 다음 질문으로 넘어가며 답변이 전혀 저장되지 않는 것을 전혀 알 수 없었다(2026-09-02
+      // 실제 배포본에서 발견 — Supabase 스키마 불일치로 매 답변이 조용히 실패하고 있었음).
+      // 면접 흐름 자체는 막지 않되, 화면에 눈에 띄는 경고를 남겨서 최소한 알아챌 수 있게 한다.
+      if (saveError) {
+        setError(`답변 저장에 실패했습니다 (진행은 계속됩니다): ${saveError.message}`)
+      }
 
       if (suggestion) {
         await supabase.from('user_custom_terms').upsert(

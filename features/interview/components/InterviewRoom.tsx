@@ -196,6 +196,7 @@ export default function InterviewRoom({
               {(videoRecorder.error || audioRecorder.error) && (
                 <p className="badge badge-error">{videoRecorder.error || audioRecorder.error}</p>
               )}
+              {machine.error && <p className="badge badge-error">{machine.error}</p>}
             </div>
 
             {panelOpen && (
