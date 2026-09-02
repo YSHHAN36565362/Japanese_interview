@@ -10,9 +10,13 @@ interface Options {
 
 const VOICE_STORAGE_KEY = 'voiceInterviewJp:ttsVoiceURI'
 const RATE_STORAGE_KEY = 'voiceInterviewJp:ttsRate'
+const PITCH_STORAGE_KEY = 'voiceInterviewJp:ttsPitch'
 const DEFAULT_RATE = 0.95
 const MIN_RATE = 0.5
 const MAX_RATE = 1.4
+const DEFAULT_PITCH = 1
+const MIN_PITCH = 0.5
+const MAX_PITCH = 1.5
 
 export type VoiceOption = { id: string; name: string }
 export type SpeakingBoundary = { charIndex: number; charLength: number } | null
@@ -27,14 +31,17 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
   const [nativeVoices, setNativeVoices] = useState<SpeechSynthesisVoice[]>([])
   const [voiceURI, setVoiceURIState] = useState<string>('')
   const [rate, setRateState] = useState<number>(DEFAULT_RATE)
+  const [pitch, setPitchState] = useState<number>(DEFAULT_PITCH)
   const [speakingBoundary, setSpeakingBoundary] = useState<SpeakingBoundary>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const saved = Number(window.localStorage.getItem(RATE_STORAGE_KEY))
-    if (saved && saved >= MIN_RATE && saved <= MAX_RATE) setRateState(saved)
+    const savedRate = Number(window.localStorage.getItem(RATE_STORAGE_KEY))
+    if (savedRate && savedRate >= MIN_RATE && savedRate <= MAX_RATE) setRateState(savedRate)
+    const savedPitch = Number(window.localStorage.getItem(PITCH_STORAGE_KEY))
+    if (savedPitch && savedPitch >= MIN_PITCH && savedPitch <= MAX_PITCH) setPitchState(savedPitch)
   }, [])
 
   const setRate = useCallback((next: number) => {
@@ -42,6 +49,14 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
     setRateState(clamped)
     if (typeof window !== 'undefined') window.localStorage.setItem(RATE_STORAGE_KEY, String(clamped))
     if (audioRef.current) audioRef.current.playbackRate = clamped
+  }, [])
+
+  // 피치(음높이)는 브라우저 기본 음성(SpeechSynthesisUtterance.pitch)에만 적용된다 —
+  // VOICEVOX는 외부 오디오 파일을 그대로 재생하는 방식이라 피치를 실시간으로 바꿀 수 없다.
+  const setPitch = useCallback((next: number) => {
+    const clamped = Math.min(MAX_PITCH, Math.max(MIN_PITCH, Math.round(next * 100) / 100))
+    setPitchState(clamped)
+    if (typeof window !== 'undefined') window.localStorage.setItem(PITCH_STORAGE_KEY, String(clamped))
   }, [])
 
   const refreshVoices = useCallback(() => {
@@ -100,7 +115,16 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       const utter = new SpeechSynthesisUtterance(text)
       utter.lang = 'ja-JP'
       utter.rate = rate
-      const selected = nativeVoices.find((v) => v.voiceURI === voiceURI)
+      utter.pitch = pitch
+      // React state(nativeVoices)는 최초 몇 번의 재생 시점엔 아직 비어있을 수 있어서(음성
+      // 목록이 비동기로 채워지는 도중), 그 state만 보고 매칭하면 목소리를 못 찾아
+      // utter.voice가 비워진 채 브라우저가 임의로 고르는 기본값이 나가버려 "분명 같은
+      // 설정인데 가끔 다른 목소리가 나온다"는 문제가 있었다. window.speechSynthesis.
+      // getVoices()는 항상 그 순간의 실제 목록을 동기로 돌려주므로, 이걸 우선 사용해서
+      // 매번 같은 voiceURI가 같은 목소리로 확실히 연결되게 한다.
+      const liveVoices = window.speechSynthesis.getVoices()
+      const selected =
+        liveVoices.find((v) => v.voiceURI === voiceURI) ?? nativeVoices.find((v) => v.voiceURI === voiceURI)
       if (selected) utter.voice = selected
       utter.onstart = () => {
         setSpeakingBoundary(null)
@@ -123,7 +147,7 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       }
       window.speechSynthesis.speak(utter)
     },
-    [onStart, onEnd, nativeVoices, voiceURI, rate]
+    [onStart, onEnd, nativeVoices, voiceURI, rate, pitch]
   )
 
   const speak = useCallback(
@@ -192,6 +216,11 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
     defaultRate: DEFAULT_RATE,
     minRate: MIN_RATE,
     maxRate: MAX_RATE,
+    pitch,
+    setPitch,
+    defaultPitch: DEFAULT_PITCH,
+    minPitch: MIN_PITCH,
+    maxPitch: MAX_PITCH,
     speakingBoundary,
   }
 }

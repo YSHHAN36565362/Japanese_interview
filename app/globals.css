@@ -2509,12 +2509,19 @@ a {
 
 .mode-track-picker-buttons {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  width: 100%;
 }
 
+/* 3개(기본/소프트웨어/반도체)가 좁은 모드 카드 안에서도 한 줄에 들어가도록, 글자 크기와
+   여백을 눈에 띄게 줄이고 flex:1로 폭을 균등하게 나눠 가진다(2026-09-02: 버튼이 너무
+   커서 줄바꿈되던 문제 수정). */
 .btn-3d-track {
-  font-size: 14px;
-  padding: 0.65em 1.1em;
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 12px;
+  padding: 0.45em 0.3em;
+  white-space: nowrap;
   background: var(--surface-panel);
   color: var(--room-text-primary);
   border: 1px solid var(--border);

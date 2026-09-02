@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import MacWindow from '@/components/MacWindow'
 import LoadingDots from '@/components/LoadingDots'
+import ResumeInputStep from '@/components/ResumeInputStep'
 import type { JobTrack } from '@/lib/questionBank'
+import { RESUME_PRIORITY_STORAGE_KEY } from '@/lib/resumePriorityStorage'
 
 const JOB_TRACKS: { id: JobTrack; label: string }[] = [
   { id: 'general', label: '기본' },
@@ -42,6 +44,10 @@ export default function InterviewModeSelectPage() {
   // 실전 모드는 "다른 직무 질문이 안 섞이게" 지원 직무(소프트웨어/반도체)를 먼저 골라야 한다 —
   // 카드를 누르면 바로 시작하는 대신, 이 카드 안에서만 직무 선택 버튼을 펼쳐서 보여준다.
   const [pickingTrackFor, setPickingTrackFor] = useState<string | null>(null)
+  // 직무를 고른 뒤, 세션을 바로 시작하지 않고 이력서/자기소개 붙여넣기(선택) 단계를 한 번
+  // 더 보여준다 — 값이 있으면 그 트랙으로 진행할 준비가 된 것이고, 이 단계의 "스킵하기"나
+  // "반영하고 시작하기"를 누르면 실제로 startSession이 호출된다.
+  const [resumeStepTrack, setResumeStepTrack] = useState<JobTrack | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -55,10 +61,14 @@ export default function InterviewModeSelectPage() {
     })
   }, [router])
 
-  async function startSession(mode: string, track?: JobTrack) {
+  async function startSession(mode: string, track?: JobTrack, resumePriorityIds?: string[]) {
     if (!userId) return
     setStarting(true)
     const trackQuery = track ? `&track=${track}` : ''
+
+    if (resumePriorityIds && resumePriorityIds.length > 0 && typeof window !== 'undefined') {
+      window.sessionStorage.setItem(RESUME_PRIORITY_STORAGE_KEY, JSON.stringify(resumePriorityIds))
+    }
 
     // 게스트("번호 없이 시작하기")는 sessions 행 자체를 만들지 않는다 — 로컬에서만 쓰는
     // id로 진행하고, 답변도 Supabase에 저장하지 않는다(useInterviewMachine.ts 참고).
@@ -112,7 +122,7 @@ export default function InterviewModeSelectPage() {
                         type="button"
                         className="btn-3d btn-3d-track"
                         disabled={starting}
-                        onClick={() => startSession('real', t.id)}
+                        onClick={() => setResumeStepTrack(t.id)}
                       >
                         {t.label}
                       </button>
@@ -135,6 +145,16 @@ export default function InterviewModeSelectPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {resumeStepTrack && (
+        <ResumeInputStep
+          onContinue={(matchedIds) => {
+            const track = resumeStepTrack
+            setResumeStepTrack(null)
+            startSession('real', track, matchedIds)
+          }}
+        />
       )}
     </MacWindow>
   )

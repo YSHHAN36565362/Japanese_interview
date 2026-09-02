@@ -13,6 +13,8 @@ import {
   type BankQuestion,
   type JobTrack,
 } from '@/lib/questionBank'
+import { applyResumePriority } from '@/lib/resumeKeywords'
+import { RESUME_PRIORITY_STORAGE_KEY } from '@/lib/resumePriorityStorage'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
 import { decideFollowUp } from '../lib/followUpEngine'
 import { loadUserCustomTerms, normalizeTranscript, findSuggestion, type CustomTerm } from '../lib/transcriptNormalizer'
@@ -89,9 +91,24 @@ export function useInterviewMachine({
       // 실전 모드는 REAL_MODE_INTRO_QUESTION이 이미 자기소개 역할을 하므로, 대분류 풀에
       // 있는 self_intro("自己紹介をお願いします。")가 무작위로 또 뽑혀서 자기소개를 두 번
       // 묻는 일이 없도록 실전 모드에서만 제외한다.
-      const pool = isBasicTrack
+      let pool = isBasicTrack
         ? getBasicTrackQuestions()
         : sampleMainQuestions(categories, poolSize, isRealMode ? track : undefined, isRealMode ? ['self_intro'] : undefined)
+      // 실전 모드(기본 트랙 제외) 시작 직전에 이력서/자기소개를 붙여넣었다면(ResumeInputStep,
+      // app/interview/page.tsx), 그 키워드로 매칭된 질문을 세션 풀에 우선 포함시킨다.
+      // 기본 모드는 고정 목록이라 적용하지 않는다.
+      if (isRealMode && !isBasicTrack && typeof window !== 'undefined') {
+        const raw = window.sessionStorage.getItem(RESUME_PRIORITY_STORAGE_KEY)
+        window.sessionStorage.removeItem(RESUME_PRIORITY_STORAGE_KEY)
+        if (raw) {
+          try {
+            const priorityIds = JSON.parse(raw) as string[]
+            pool = applyResumePriority(pool, priorityIds)
+          } catch {
+            // 파싱 실패 시 그냥 원래 풀을 그대로 쓴다.
+          }
+        }
+      }
       // 실전 모드는 자기소개로 시작한다. 마무리는 기본 모드만 "마지막으로 하고 싶은 말"
       // (final_word)로 끝내고, 소프트웨어/반도체 트랙은 그대로 역질문
       // ("最後に、何か質問はありますか。")으로 마무리한다.

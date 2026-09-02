@@ -185,6 +185,11 @@ export default function InterviewRoom({
                 defaultRate={tts.defaultRate}
                 minRate={tts.minRate}
                 maxRate={tts.maxRate}
+                pitch={tts.pitch}
+                onPitchChange={tts.setPitch}
+                defaultPitch={tts.defaultPitch}
+                minPitch={tts.minPitch}
+                maxPitch={tts.maxPitch}
               />
               <SelfPreview
                 cameraOn={media.cameraOn}

@@ -5,6 +5,7 @@ import type { BankQuestion } from '@/lib/questionBank'
 import type { InterviewPhase } from '../types'
 import type { SpeakingBoundary, VoiceOption } from '../hooks/useSpeechSynthesis'
 import { PHASE_STATUS_TEXT } from '../constants'
+import { VOICEVOX_PREFIX } from '@/lib/voicevoxTts'
 import VoiceWaveform from './VoiceWaveform'
 
 export default function InterviewStage({
@@ -24,6 +25,11 @@ export default function InterviewStage({
   defaultRate,
   minRate,
   maxRate,
+  pitch,
+  onPitchChange,
+  defaultPitch,
+  minPitch,
+  maxPitch,
 }: {
   question: BankQuestion
   phase: InterviewPhase
@@ -41,7 +47,13 @@ export default function InterviewStage({
   defaultRate: number
   minRate: number
   maxRate: number
+  pitch: number
+  onPitchChange: (pitch: number) => void
+  defaultPitch: number
+  minPitch: number
+  maxPitch: number
 }) {
+  const isVoicevoxVoice = voiceURI.startsWith(VOICEVOX_PREFIX)
   const speaking = phase === 'interviewerSpeaking'
   const [photoFailed, setPhotoFailed] = useState(false)
   const listeningPhase = phase === 'listening'
@@ -142,6 +154,40 @@ export default function InterviewStage({
             onClick={() => onRateChange(rate + 0.1)}
             disabled={rate >= maxRate}
             aria-label="속도 빠르게"
+          >
+            ＋
+          </button>
+        </div>
+        <div
+          className="room-rate-control"
+          role="group"
+          aria-label="면접관 목소리 톤(피치) 조절"
+          title={isVoicevoxVoice ? '외부(VOICEVOX) 음성은 피치 조절을 지원하지 않습니다' : undefined}
+        >
+          <button
+            type="button"
+            className="room-rate-btn"
+            onClick={() => onPitchChange(pitch - 0.1)}
+            disabled={isVoicevoxVoice || pitch <= minPitch}
+            aria-label="톤 낮게"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            className="room-rate-value"
+            onClick={() => onPitchChange(defaultPitch)}
+            disabled={isVoicevoxVoice}
+            title="눌러서 기본 톤으로 되돌리기"
+          >
+            톤 {pitch.toFixed(1)}
+          </button>
+          <button
+            type="button"
+            className="room-rate-btn"
+            onClick={() => onPitchChange(pitch + 0.1)}
+            disabled={isVoicevoxVoice || pitch >= maxPitch}
+            aria-label="톤 높게"
           >
             ＋
           </button>
