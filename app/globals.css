@@ -270,6 +270,12 @@ a {
   color: var(--error-fg);
 }
 
+/* 세션 리포트 qa-list에서 "꼬리 질문"을 일반 "질문"과 색으로 구분한다(2026-09-02). */
+.badge-followup {
+  background: rgba(91, 140, 255, 0.16);
+  color: #8fb3ff;
+}
+
 .muted {
   color: var(--muted);
 }
@@ -470,6 +476,63 @@ a {
 .stat-card span {
   font-size: 12px;
   color: var(--muted);
+}
+
+/* 세션 리포트의 정중체 비율/종합 점수 카드 — 일반 stat-card보다 눈에 띄게, 점수 구간별로
+   색을 달리해서 한눈에 "좋음/보통/개선 필요"를 알 수 있게 한다(2026-09-02). */
+.score-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.score-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--muted);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.score-card strong {
+  font-size: 28px;
+}
+
+.score-card span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.score-card-detail {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.score-card-good {
+  border-left-color: #3bcb8e;
+}
+.score-card-good strong {
+  color: #3bcb8e;
+}
+
+.score-card-mid {
+  border-left-color: #e6aa3c;
+}
+.score-card-mid strong {
+  color: #e6aa3c;
+}
+
+.score-card-bad {
+  border-left-color: #e05a5a;
+}
+.score-card-bad strong {
+  color: #e05a5a;
 }
 
 .qa-list {
