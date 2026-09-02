@@ -9,6 +9,7 @@ import {
   getRandomClosingQuestion,
   sampleMainQuestions,
   type BankQuestion,
+  type JobTrack,
 } from '@/lib/questionBank'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
 import { decideFollowUp } from '../lib/followUpEngine'
@@ -16,7 +17,15 @@ import { loadUserCustomTerms, normalizeTranscript, findSuggestion, type CustomTe
 import { MODE_TO_CATEGORY } from '../constants'
 import type { InterviewPhase, LastFeedback } from '../types'
 
-export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mode: string }) {
+export function useInterviewMachine({
+  sessionId,
+  mode,
+  track,
+}: {
+  sessionId: string
+  mode: string
+  track?: JobTrack
+}) {
   const router = useRouter()
 
   const [phase, setPhase] = useState<InterviewPhase>('preflight')
@@ -64,12 +73,15 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       const categories = MODE_TO_CATEGORY[mode] ?? ['personality']
       const isRealMode = mode === 'real'
       // 질문 은행이 대폭 늘어난 것을 세션에도 반영해 한 번에 더 다양한 질문이 나오게 한다.
-      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독 22개뿐) 모드마다
+      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독) 모드마다
       // poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은 조합만 나오게 된다.
-      const poolSize = isRealMode ? 16 : mode === 'technical' ? 18 : 20
+      // 2026-09-02: "16개는 너무 적다, 꼬리질문 제외 30개 정도는 되어야 한다"는 요청으로
+      // 세 모드 모두 상당히 늘렸다(대분류 총량이 149→170개로 늘어난 것도 반영).
+      const poolSize = isRealMode ? 28 : mode === 'technical' ? 24 : 30
       // 비슷한 주제의 질문(예: 스트레스 해소법 여러 버전)이 한 세션에 같이 나오지 않도록,
-      // group이 같은 질문 중 하나만 무작위로 골라서 풀을 구성한다.
-      const pool = sampleMainQuestions(categories, poolSize)
+      // group이 같은 질문 중 하나만 무작위로 골라서 풀을 구성한다. 실전 모드에서 지원 직무
+      // (소프트웨어/반도체)를 골랐다면 그 track과 안 맞는 전용 질문은 애초에 후보에서 뺀다.
+      const pool = sampleMainQuestions(categories, poolSize, isRealMode ? track : undefined)
       // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
       // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
       const reverseQuestions = isRealMode ? getQuestionsByCategory(['reverse']) : []
@@ -214,7 +226,11 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         // 포함되게 한다 — 이전에는 currentQuestion만 바꾸고 questions/queueIndex는 그대로라
         // 꼬리질문이 진행 표시에 전혀 반영되지 않았다.
         setQuestions((prev) => {
-          const next = [...prev]
+          // 꼬리질문의 대상이 대분류 질문(예: team_project)이라, 세션 시작 시 뽑힌 풀에
+          // 이미 예정되어 있을 수도 있다 — 그대로 두면 지금 꼬리질문으로 물어보고 나서
+          // 나중에 또 같은 질문이 나온다. 지금 물어볼 것이므로 이후 자리에 남아있는 같은
+          // id는 미리 제거해서 같은 질문이 세션에서 두 번 나오지 않게 한다.
+          const next = prev.filter((q) => q.id !== followUpQuestion.id)
           next.splice(queueIndex + 1, 0, followUpQuestion)
           return next
         })

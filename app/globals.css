@@ -2494,6 +2494,45 @@ a {
   max-width: 220px;
 }
 
+/* 실전 모드 카드 안에서 펼쳐지는 지원 직무(소프트웨어/반도체) 선택 — 다른 직무 전용
+   질문이 섞이지 않도록 시작 전에 먼저 고르게 한다. */
+.mode-track-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-track-picker-label {
+  margin: 0;
+}
+
+.mode-track-picker-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-3d-track {
+  font-size: 14px;
+  padding: 0.65em 1.1em;
+  background: var(--surface-panel);
+  color: var(--room-text-primary);
+  border: 1px solid var(--border);
+}
+
+.mode-track-picker-cancel {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.mode-track-picker-cancel:hover {
+  color: var(--room-text-primary);
+}
+
 /* ============================================================
    실전 모드 — 일본어 질문 블러 처리 (듣기 연습용, hover 시 선명해짐)
    ============================================================ */

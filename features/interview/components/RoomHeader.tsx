@@ -1,17 +1,19 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { getTotalQuestionCount } from '@/lib/questionBank'
-import { MODE_LABEL } from '../constants'
+import { getMainQuestionCount } from '@/lib/questionBank'
+import { MODE_LABEL, TRACK_LABEL } from '../constants'
 
 export default function RoomHeader({
   mode,
+  track,
   questionIndex,
   totalQuestions,
   timerFormatted,
   onExit,
 }: {
   mode: string
+  track?: string
   questionIndex: number
   totalQuestions: number
   timerFormatted: string
@@ -31,10 +33,11 @@ export default function RoomHeader({
       </button>
       <div className="room-header-meta">
         <span>{MODE_LABEL[mode] ?? mode}</span>
+        {track && TRACK_LABEL[track] && <span> · {TRACK_LABEL[track]}</span>}
       </div>
       <div className="room-header-progress">
         질문 {questionIndex} / {totalQuestions}
-        <span className="room-header-bank-total"> (전체 {getTotalQuestionCount()}개)</span> · {timerFormatted}
+        <span className="room-header-bank-total"> (대분류 총 {getMainQuestionCount()}개)</span> · {timerFormatted}
       </div>
       <div className="room-header-status">
         <span className="room-status-dot" aria-hidden="true" />

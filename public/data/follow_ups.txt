@@ -13,6 +13,11 @@
 #
 # 예) 아래 줄은 "strength" 질문에 답할 때, 답변에 "チーム" 또는 "協力"이 나오면
 #     "role"이라는 질문(data/questions.json에 있는 id)을 이어서 묻는다는 뜻입니다.
+#
+# 감지할단어 칸에 '*' 하나만 쓰면 "무슨 말을 하든 상관없이 50% 확률로 발동"하는 안전망
+# 규칙이 된다(2026-09-02 추가). 중요한 꼬리질문인데 정작 그 키워드를 말 안 하면 영영
+# 못 물어보는 게 아쉬워서 만든 기능 — 우선순위를 낮게 줘서, 다른 키워드 규칙이 전부 안
+# 맞았을 때만 마지막으로 시도되게 하는 용도다. 아래 "안전망 규칙" 구역 참고.
 
 strength | チーム,協力 | role | 1
 team_project | チーム,プロジェクト,担当 | role_detail | 1
@@ -93,3 +98,31 @@ admitting_mistakes | ミス,対応,対策 | mistake_detail | 1
 test_automation_experience | ツール,フレームワーク,自動化 | test_automation_detail | 1
 graduation_research_topic | 研究,苦労,テーマ | graduation_research_detail | 1
 internship_experience | インターン,業務,担当 | internship_detail | 1
+
+# 2026-09-02 추가: 머신러닝/데이터 프로젝트(소프트웨어 트랙) 꼬리질문 체인
+ml_project_experience | モデル,手法,アルゴリズム | ml_model_choice_reason | 1
+ml_project_experience | 精度,結果,スコア,評価 | ml_evaluation_metric | 1
+ml_evaluation_metric | 過学習,オーバーフィッティング | ml_overfitting_check | 1
+ml_project_experience | 前処理,データ,クリーニング | ml_data_preprocessing | 1
+ml_project_experience | 活か,応用,実務 | project_realworld_application | 2
+team_project | 活か,応用,実務 | project_realworld_application | 2
+
+# 2026-09-02 추가: 자기소개에서 팀 프로젝트 관련 단어가 나오면, 그 자리에서 바로
+# team_project(팀 프로젝트 경험) 질문으로 파고든다. team_project는 대분류 질문이라 세션
+# 시작 시 뽑힌 풀에 이미 들어있을 수도 있는데, 이렇게 꼬리질문으로 먼저 물어보면
+# useInterviewMachine.ts가 나중 자리의 중복을 자동으로 제거해서 같은 질문이 두 번
+# 나오지 않는다.
+self_intro | チーム,チームプロジェクト,協力,共同 | team_project | 1
+
+# 2026-09-02 추가: 안전망 규칙 — 중요한 꼬리질문인데 사용자가 정확히 그 키워드를 말하지
+# 않으면 영영 못 물어보는 게 아쉬워서, 아래 질문들은 다른 규칙이 하나도 안 맞았을 때만
+# 마지막으로 검사해서(우선순위 -1) 50% 확률로라도 물어본다('*'는 무조건 통과가 아니라
+# "무슨 말을 하든 확인은 해본다"는 뜻 — 그래도 매번 나오지 않게 절반은 걸러진다).
+team_project | * | tp_conflict_tier1 | -1
+why_this_company | * | why_not_other_company | -1
+motivation | * | motiv_strength_tier1 | -1
+problem_solving | * | how_solved | -1
+opinion_conflict_communication | * | opinion_split_decision | -1
+conflict | * | opinion_split_decision | -1
+setback_experience | * | fail_cause_tier1 | -1
+failure_experience_general | * | fail_cause_tier1 | -1

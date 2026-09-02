@@ -5,7 +5,8 @@
     "questions[].category": "personality | technical | culture_fit | reverse",
     "questions[].expectedDurationSec": "권장 답변 시간(초). 타이머/짧은 답변 판정 기준으로 쓰입니다.",
     "questions[].textJa": "질문 본문(일본어). 실제 면접관은 난이도와 무관하게 항상 경어로 질문하므로 한국어 번역이나 난이도 구분 없이 일본어 질문만 둡니다.",
-    "questions[].group": "(선택) 비슷한 주제의 질문끼리 묶는 그룹 id. 같은 group을 가진 질문들은 한 세션에서 절대 동시에 나오지 않고, 그 그룹 중 하나만 무작위로 뽑힙니다(lib/questionBank.ts의 sampleMainQuestions 참고). 그룹이 없으면 그 질문 하나가 곧 그룹입니다."
+    "questions[].group": "(선택) 비슷한 주제의 질문끼리 묶는 그룹 id. 같은 group을 가진 질문들은 한 세션에서 절대 동시에 나오지 않고, 그 그룹 중 하나만 무작위로 뽑힙니다(lib/questionBank.ts의 sampleMainQuestions 참고). 그룹이 없으면 그 질문 하나가 곧 그룹입니다.",
+    "questions[].track": "(선택) 'software' | 'semiconductor'. 실전 모드 시작 시 사용자가 고른 지원 직무와 다르면 이 질문은 그 세션에서 제외됩니다. 없으면(공통) 모든 트랙에서 나올 수 있습니다."
   },
   "questions": [
     {
@@ -98,7 +99,8 @@
       "textJa": "あなたの専門分野における最新の技術トレンドについてどう思いますか。",
       "tags": [
         "tech_trend"
-      ]
+      ],
+      "group": "recent_tech_news"
     },
     {
       "id": "role",
@@ -450,7 +452,8 @@
       "textJa": "プログラミングの学習歴を教えてください。",
       "tags": [
         "programming_history"
-      ]
+      ],
+      "track": "software"
     },
     {
       "id": "explain_tech_term_japanese",
@@ -724,7 +727,8 @@
       "id": "work_life_balance",
       "category": "personality",
       "expectedDurationSec": 60,
-      "textJa": "仕事とプライベートのバランスについて、どのようにお考えですか。"
+      "textJa": "仕事とプライベートのバランスについて、どのようにお考えですか。",
+      "group": "work_life_priority"
     },
     {
       "id": "feedback_receiving",
@@ -736,85 +740,99 @@
       "id": "tech_stack_choice",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "現在得意としている技術スタックを教えてください。"
+      "textJa": "現在得意としている技術スタックを教えてください。",
+      "track": "software"
     },
     {
       "id": "version_control_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "バージョン管理システム(Gitなど)の使用経験について教えてください。"
+      "textJa": "バージョン管理システム(Gitなど)の使用経験について教えてください。",
+      "track": "software"
     },
     {
       "id": "testing_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "テストコードやユニットテストを書いた経験はありますか。"
+      "textJa": "テストコードやユニットテストを書いた経験はありますか。",
+      "track": "software"
     },
     {
       "id": "code_review_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "コードレビューの経験について教えてください。どのような点を意識していますか。"
+      "textJa": "コードレビューの経験について教えてください。どのような点を意識していますか。",
+      "track": "software"
     },
     {
       "id": "debugging_approach",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "バグを発見したとき、どのように原因を特定しますか。"
+      "textJa": "バグを発見したとき、どのように原因を特定しますか。",
+      "track": "software"
     },
     {
       "id": "database_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "データベース設計やSQLの経験について教えてください。"
+      "textJa": "データベース設計やSQLの経験について教えてください。",
+      "track": "software"
     },
     {
       "id": "security_awareness",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "セキュリティを意識して開発した経験はありますか。"
+      "textJa": "セキュリティを意識して開発した経験はありますか。",
+      "track": "software"
     },
     {
       "id": "agile_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "アジャイルやスクラム開発の経験はありますか。"
+      "textJa": "アジャイルやスクラム開発の経験はありますか。",
+      "track": "software"
     },
     {
       "id": "cloud_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "クラウドサービス(AWS、GCPなど)の利用経験について教えてください。"
+      "textJa": "クラウドサービス(AWS、GCPなど)の利用経験について教えてください。",
+      "track": "software"
     },
     {
       "id": "api_design_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "APIの設計・開発経験について教えてください。"
+      "textJa": "APIの設計・開発経験について教えてください。",
+      "track": "software"
     },
     {
       "id": "performance_optimization",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "パフォーマンス改善に取り組んだ経験はありますか。"
+      "textJa": "パフォーマンス改善に取り組んだ経験はありますか。",
+      "track": "software"
     },
     {
       "id": "learning_new_tech",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "新しい技術を学ぶとき、どのように学習していますか。"
+      "textJa": "新しい技術を学ぶとき、どのように学習していますか。",
+      "group": "tech_catchup_habit"
     },
     {
       "id": "code_quality_opinion",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "保守しやすいコードとは何だと思いますか。"
+      "textJa": "保守しやすいコードとは何だと思いますか。",
+      "track": "software"
     },
     {
       "id": "failure_in_development",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "開発中に大きな失敗をした経験と、そこから学んだことを教えてください。"
+      "textJa": "開発中に大きな失敗をした経験と、そこから学んだことを教えてください。",
+      "track": "software"
     },
     {
       "id": "documentation_habit",
@@ -1243,91 +1261,106 @@
       "id": "git_conflict_resolution",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "Gitでコンフリクト（競合）が発生した経験はありますか。どのように解決しましたか。"
+      "textJa": "Gitでコンフリクト（競合）が発生した経験はありますか。どのように解決しましたか。",
+      "track": "software"
     },
     {
       "id": "ci_cd_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "CI/CDパイプラインを構築、または運用した経験はありますか。"
+      "textJa": "CI/CDパイプラインを構築、または運用した経験はありますか。",
+      "track": "software"
     },
     {
       "id": "docker_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "Dockerなどのコンテナ技術を使った経験はありますか。"
+      "textJa": "Dockerなどのコンテナ技術を使った経験はありますか。",
+      "track": "software"
     },
     {
       "id": "database_design_choice",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "SQLとNoSQLは、それぞれどのような場面で使い分けるべきだと思いますか。"
+      "textJa": "SQLとNoSQLは、それぞれどのような場面で使い分けるべきだと思いますか。",
+      "track": "software"
     },
     {
       "id": "incident_response_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "本番環境で障害が発生した経験はありますか。どのように対応しましたか。"
+      "textJa": "本番環境で障害が発生した経験はありますか。どのように対応しましたか。",
+      "track": "software"
     },
     {
       "id": "tech_debt_opinion",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "技術的負債について、どのように考え、どう対処すべきだと思いますか。"
+      "textJa": "技術的負債について、どのように考え、どう対処すべきだと思いますか。",
+      "track": "software"
     },
     {
       "id": "pair_programming_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "ペアプログラミングやモブプログラミングの経験はありますか。"
+      "textJa": "ペアプログラミングやモブプログラミングの経験はありますか。",
+      "track": "software"
     },
     {
       "id": "code_readability_opinion",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "読みやすいコードを書くために、普段意識していることは何ですか。"
+      "textJa": "読みやすいコードを書くために、普段意識していることは何ですか。",
+      "track": "software"
     },
     {
       "id": "estimation_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "開発の見積もり（工数見積もり）をした経験はありますか。難しかった点は何ですか。"
+      "textJa": "開発の見積もり（工数見積もり）をした経験はありますか。難しかった点は何ですか。",
+      "track": "software"
     },
     {
       "id": "requirement_gathering_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "要件定義や仕様策定に関わった経験はありますか。"
+      "textJa": "要件定義や仕様策定に関わった経験はありますか。",
+      "track": "software"
     },
     {
       "id": "oss_contribution",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "オープンソースソフトウェア（OSS）に貢献した経験はありますか。"
+      "textJa": "オープンソースソフトウェア（OSS）に貢献した経験はありますか。",
+      "track": "software"
     },
     {
       "id": "monitoring_logging_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "システムの監視やログ設計に関わった経験はありますか。"
+      "textJa": "システムの監視やログ設計に関わった経験はありますか。",
+      "track": "software"
     },
     {
       "id": "microservice_vs_monolith",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "マイクロサービスとモノリシックアーキテクチャ、それぞれのメリット・デメリットをどう考えますか。"
+      "textJa": "マイクロサービスとモノリシックアーキテクチャ、それぞれのメリット・デメリットをどう考えますか。",
+      "track": "software"
     },
     {
       "id": "algorithm_data_structure",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "アルゴリズムやデータ構造について、どの程度学習していますか。得意な分野はありますか。"
+      "textJa": "アルゴリズムやデータ構造について、どの程度学習していますか。得意な分野はありますか。",
+      "track": "software"
     },
     {
       "id": "release_deployment_process",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "リリース作業やデプロイのプロセスに関わった経験はありますか。"
+      "textJa": "リリース作業やデプロイのプロセスに関わった経験はありますか。",
+      "track": "software"
     },
     {
       "id": "business_manner_understanding",
@@ -1432,7 +1465,8 @@
       "id": "preferred_language_reason",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "得意なプログラミング言語は何ですか。その言語を選ぶ理由は何ですか。"
+      "textJa": "得意なプログラミング言語は何ですか。その言語を選ぶ理由は何ですか。",
+      "track": "software"
     },
     {
       "id": "remote_work_experience",
@@ -1444,13 +1478,15 @@
       "id": "tool_familiarity",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "普段よく使う開発ツールやIDEを教えてください。"
+      "textJa": "普段よく使う開発ツールやIDEを教えてください。",
+      "track": "software"
     },
     {
       "id": "code_review_receiving_attitude",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "自分のコードにレビューで指摘を受けたとき、どのように受け止めますか。"
+      "textJa": "自分のコードにレビューで指摘を受けたとき、どのように受け止めますか。",
+      "track": "software"
     },
     {
       "id": "multiple_priority_handling",
@@ -1468,7 +1504,8 @@
       "id": "side_project_experience",
       "category": "technical",
       "expectedDurationSec": 90,
-      "textJa": "個人的に取り組んでいるサイドプロジェクトや自己学習はありますか。"
+      "textJa": "個人的に取り組んでいるサイドプロジェクトや自己学習はありますか。",
+      "track": "software"
     },
     {
       "id": "admitting_mistakes",
@@ -1480,19 +1517,22 @@
       "id": "code_ownership_opinion",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "自分が書いたコードに対する責任感について、どのように考えていますか。"
+      "textJa": "自分が書いたコードに対する責任感について、どのように考えていますか。",
+      "track": "software"
     },
     {
       "id": "documentation_writing_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "技術ドキュメントやAPI仕様書を書いた経験はありますか。"
+      "textJa": "技術ドキュメントやAPI仕様書を書いた経験はありますか。",
+      "track": "software"
     },
     {
       "id": "ses_contract_understanding",
       "category": "culture_fit",
       "expectedDurationSec": 60,
-      "textJa": "SES（システムエンジニアリングサービス）契約や派遣契約について、どの程度理解していますか。"
+      "textJa": "SES（システムエンジニアリングサービス）契約や派遣契約について、どの程度理解していますか。",
+      "track": "software"
     },
     {
       "id": "multiple_offers_priority",
@@ -1573,43 +1613,50 @@
       "id": "test_automation_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "テスト自動化に取り組んだ経験はありますか。"
+      "textJa": "テスト自動化に取り組んだ経験はありますか。",
+      "track": "software"
     },
     {
       "id": "performance_testing_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "負荷テストやパフォーマンステストを行った経験はありますか。"
+      "textJa": "負荷テストやパフォーマンステストを行った経験はありますか。",
+      "track": "software"
     },
     {
       "id": "api_security_understanding",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "APIの認証・認可について、どの程度理解していますか。"
+      "textJa": "APIの認証・認可について、どの程度理解していますか。",
+      "track": "software"
     },
     {
       "id": "frontend_backend_preference",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "フロントエンドとバックエンド、どちらにより興味がありますか。理由も教えてください。"
+      "textJa": "フロントエンドとバックエンド、どちらにより興味がありますか。理由も教えてください。",
+      "track": "software"
     },
     {
       "id": "database_migration_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "データベースのマイグレーション（移行）作業をした経験はありますか。"
+      "textJa": "データベースのマイグレーション（移行）作業をした経験はありますか。",
+      "track": "software"
     },
     {
       "id": "log_analysis_experience",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "ログを分析して問題を解決した経験はありますか。"
+      "textJa": "ログを分析して問題を解決した経験はありますか。",
+      "track": "software"
     },
     {
       "id": "waterfall_vs_agile_understanding",
       "category": "technical",
       "expectedDurationSec": 60,
-      "textJa": "ウォーターフォール開発とアジャイル開発の違いをどのように理解していますか。"
+      "textJa": "ウォーターフォール開発とアジャイル開発の違いをどのように理解していますか。",
+      "track": "software"
     },
     {
       "id": "upstream_downstream_process",
@@ -1681,6 +1728,265 @@
       "textJa": "日本でのキャリアをどのくらいの期間続けたいと考えていますか。",
       "tags": [
         "years_in_japan_career"
+      ]
+    },
+    {
+      "id": "work_meaning",
+      "category": "personality",
+      "expectedDurationSec": 40,
+      "textJa": "あなたにとって、仕事とはどのようなものですか。",
+      "tags": [
+        "work_meaning"
+      ]
+    },
+    {
+      "id": "money_meaning",
+      "category": "personality",
+      "expectedDurationSec": 40,
+      "textJa": "あなたにとって、お金とはどのようなものですか。",
+      "tags": [
+        "money_meaning"
+      ]
+    },
+    {
+      "id": "student_vs_worker_diff",
+      "category": "personality",
+      "expectedDurationSec": 45,
+      "textJa": "学生(またはこれまでの立場)と社会人の違いは何だと思いますか。",
+      "tags": [
+        "student_vs_worker_diff"
+      ]
+    },
+    {
+      "id": "work_family_priority",
+      "category": "culture_fit",
+      "expectedDurationSec": 40,
+      "textJa": "仕事と家庭、どちらがより大切だと思いますか。",
+      "tags": [
+        "work_family_priority"
+      ],
+      "group": "work_life_priority"
+    },
+    {
+      "id": "work_fulfillment",
+      "category": "personality",
+      "expectedDurationSec": 40,
+      "textJa": "仕事のやりがいは、どのようなことだと思いますか。",
+      "tags": [
+        "work_fulfillment"
+      ]
+    },
+    {
+      "id": "early_turnover_opinion",
+      "category": "culture_fit",
+      "expectedDurationSec": 45,
+      "textJa": "入社してすぐに会社を辞める人について、どう思いますか。",
+      "tags": [
+        "early_turnover_opinion"
+      ]
+    },
+    {
+      "id": "organization_priority_value",
+      "category": "culture_fit",
+      "expectedDurationSec": 45,
+      "textJa": "組織で働く上で、最も重要だと思うことは何ですか。",
+      "tags": [
+        "organization_priority_value"
+      ]
+    },
+    {
+      "id": "self_metaphor_description",
+      "category": "personality",
+      "expectedDurationSec": 40,
+      "textJa": "あなたを動物や色に例えると何ですか。理由も教えてください。",
+      "tags": [
+        "self_metaphor_description"
+      ]
+    },
+    {
+      "id": "ml_project_experience",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 60,
+      "textJa": "機械学習や統計を活用したプロジェクトの経験はありますか。",
+      "tags": [
+        "ml_project_experience"
+      ]
+    },
+    {
+      "id": "ml_vs_statistics_opinion",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 45,
+      "textJa": "機械学習と統計学の違いは何だと思いますか。",
+      "tags": [
+        "ml_vs_statistics_opinion"
+      ]
+    },
+    {
+      "id": "nlp_llm_experience",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 50,
+      "textJa": "自然言語処理やLLM(大規模言語モデル)を扱った経験はありますか。",
+      "tags": [
+        "nlp_llm_experience"
+      ]
+    },
+    {
+      "id": "prompt_engineering_habit",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 40,
+      "textJa": "プロンプトを作成するとき、どのような工夫をしていますか。",
+      "tags": [
+        "prompt_engineering_habit"
+      ]
+    },
+    {
+      "id": "why_semiconductor_industry",
+      "category": "culture_fit",
+      "track": "semiconductor",
+      "expectedDurationSec": 50,
+      "textJa": "半導体業界に興味を持ったきっかけは何ですか。",
+      "tags": [
+        "why_semiconductor_industry"
+      ]
+    },
+    {
+      "id": "semiconductor_process_understanding",
+      "category": "technical",
+      "track": "semiconductor",
+      "expectedDurationSec": 60,
+      "textJa": "半導体の製造工程について、知っていることを教えてください。",
+      "tags": [
+        "semiconductor_process_understanding"
+      ]
+    },
+    {
+      "id": "semiconductor_news_interest",
+      "category": "technical",
+      "track": "semiconductor",
+      "expectedDurationSec": 45,
+      "textJa": "半導体業界の最近のニュースで、気になっているものはありますか。",
+      "tags": [
+        "semiconductor_news_interest"
+      ],
+      "group": "recent_tech_news"
+    },
+    {
+      "id": "cleanroom_attitude",
+      "category": "culture_fit",
+      "track": "semiconductor",
+      "expectedDurationSec": 35,
+      "textJa": "クリーンルームでの勤務や、防塵服の着用に抵抗はありませんか。",
+      "tags": [
+        "cleanroom_attitude"
+      ]
+    },
+    {
+      "id": "equipment_trouble_response",
+      "category": "technical",
+      "track": "semiconductor",
+      "expectedDurationSec": 55,
+      "textJa": "半導体製造装置にトラブルが発生した場合、どのように対応しますか。",
+      "tags": [
+        "equipment_trouble_response"
+      ]
+    },
+    {
+      "id": "detail_oriented_work_attitude",
+      "category": "personality",
+      "track": "semiconductor",
+      "expectedDurationSec": 40,
+      "textJa": "細かい作業や、小さなミスも許されない環境について、どう思いますか。",
+      "tags": [
+        "detail_oriented_work_attitude"
+      ]
+    },
+    {
+      "id": "client_site_dispatch_work",
+      "category": "culture_fit",
+      "track": "semiconductor",
+      "expectedDurationSec": 45,
+      "textJa": "客先(取引先)常駐で働くことについて、どのように考えていますか。",
+      "tags": [
+        "client_site_dispatch_work"
+      ]
+    },
+    {
+      "id": "physical_stamina_concern",
+      "category": "personality",
+      "track": "semiconductor",
+      "expectedDurationSec": 35,
+      "textJa": "装置の設置やメンテナンス業務など、体力を使う仕事に不安はありませんか。",
+      "tags": [
+        "physical_stamina_concern"
+      ]
+    },
+    {
+      "id": "semiconductor_tech_catchup",
+      "category": "technical",
+      "track": "semiconductor",
+      "expectedDurationSec": 45,
+      "textJa": "半導体業界は技術の変化が速いですが、新しい知識をどのようにキャッチアップしますか。",
+      "tags": [
+        "semiconductor_tech_catchup"
+      ],
+      "group": "tech_catchup_habit"
+    },
+    {
+      "id": "ml_model_choice_reason",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 45,
+      "textJa": "そのモデル(手法)を選んだ理由は何ですか。他の方法も検討しましたか。",
+      "tags": [
+        "ml_model_choice_reason",
+        "follow_up"
+      ]
+    },
+    {
+      "id": "ml_evaluation_metric",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 45,
+      "textJa": "モデルの性能は、どのような指標で評価しましたか。具体的な数値も教えてください。",
+      "tags": [
+        "ml_evaluation_metric",
+        "follow_up"
+      ]
+    },
+    {
+      "id": "ml_overfitting_check",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 40,
+      "textJa": "過学習(オーバーフィッティング)ではないと、どのように確認しましたか。",
+      "tags": [
+        "ml_overfitting_check",
+        "follow_up"
+      ]
+    },
+    {
+      "id": "ml_data_preprocessing",
+      "category": "technical",
+      "track": "software",
+      "expectedDurationSec": 45,
+      "textJa": "データの前処理では、具体的にどのようなことを行いましたか。",
+      "tags": [
+        "ml_data_preprocessing",
+        "follow_up"
+      ]
+    },
+    {
+      "id": "project_realworld_application",
+      "category": "technical",
+      "expectedDurationSec": 40,
+      "textJa": "その経験は、実際の業務でどのように活かせると思いますか。",
+      "tags": [
+        "project_realworld_application",
+        "follow_up"
       ]
     }
   ]
