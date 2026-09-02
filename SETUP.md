@@ -54,9 +54,13 @@ supabase/
      정리하세요. 처음 만드는 프로젝트라면 이 단계는 건너뛰어도 됩니다.
 3. 왼쪽 메뉴 **Authentication → Providers → Email**에서 두 가지를 확인하세요.
    - **Confirm email**(가입 확인 메일 요구) → **꺼주세요(Disable)**. 이 데모는 사용자가 입력한
-     "고유 번호"로 `id-번호@voiceinterviewjp.local` 같은 가짜 이메일을 만들어 Supabase
+     "고유 번호"로 `id-번호@voiceinterviewjp-users.com` 같은 가짜 이메일을 만들어 Supabase
      이메일/비밀번호 인증에 그대로 씁니다(진짜 메일함이 없으므로 확인 메일이 절대 오지 않습니다).
      이 토글이 켜져 있으면 회원가입은 되지만 로그인이 완료되지 않습니다.
+     - ⚠️ 처음에는 `.local` 도메인을 썼는데, Supabase가 "Email address ... is invalid"로
+       거부하는 문제가 있어(`.local`/`.test` 등은 예약된 TLD라 형식 검증에서 걸림)
+       `.com` 형태로 바꿨습니다(`lib/authNumber.ts`). 혹시 같은 오류가 다시 보이면 이
+       파일의 `EMAIL_DOMAIN` 값을 다른 평범한 도메인 형식으로 바꿔보세요.
    - **Secure email change**(이메일 변경 시 재확인 요구) → 켜져 있다면 **꺼주세요**. 마이페이지의
      "고유 번호 변경" 기능은 내부적으로 계정의 이메일/비밀번호를 바꾸는 방식인데, 이 토글이 켜져
      있으면 마찬가지로 도착하지 않을 확인 메일을 기다리게 됩니다.

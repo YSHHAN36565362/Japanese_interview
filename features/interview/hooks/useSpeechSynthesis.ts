@@ -9,8 +9,13 @@ interface Options {
 }
 
 const VOICE_STORAGE_KEY = 'voiceInterviewJp:ttsVoiceURI'
+const RATE_STORAGE_KEY = 'voiceInterviewJp:ttsRate'
+const DEFAULT_RATE = 0.95
+const MIN_RATE = 0.5
+const MAX_RATE = 1.4
 
 export type VoiceOption = { id: string; name: string }
+export type SpeakingBoundary = { charIndex: number; charLength: number } | null
 
 // 질문 낭독 전용 TTS 훅. 재생 중에는 STT를 시작하지 않도록 onStart/onEnd 콜백으로
 // 면접 상태 머신에 TTS_STARTED/TTS_ENDED 이벤트를 보낸다 (가이드 §7-4).
@@ -21,8 +26,23 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
   const [supported, setSupported] = useState(true)
   const [nativeVoices, setNativeVoices] = useState<SpeechSynthesisVoice[]>([])
   const [voiceURI, setVoiceURIState] = useState<string>('')
+  const [rate, setRateState] = useState<number>(DEFAULT_RATE)
+  const [speakingBoundary, setSpeakingBoundary] = useState<SpeakingBoundary>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const saved = Number(window.localStorage.getItem(RATE_STORAGE_KEY))
+    if (saved && saved >= MIN_RATE && saved <= MAX_RATE) setRateState(saved)
+  }, [])
+
+  const setRate = useCallback((next: number) => {
+    const clamped = Math.min(MAX_RATE, Math.max(MIN_RATE, Math.round(next * 100) / 100))
+    setRateState(clamped)
+    if (typeof window !== 'undefined') window.localStorage.setItem(RATE_STORAGE_KEY, String(clamped))
+    if (audioRef.current) audioRef.current.playbackRate = clamped
+  }, [])
 
   const refreshVoices = useCallback(() => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -79,15 +99,31 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       window.speechSynthesis.cancel()
       const utter = new SpeechSynthesisUtterance(text)
       utter.lang = 'ja-JP'
-      utter.rate = 0.95
+      utter.rate = rate
       const selected = nativeVoices.find((v) => v.voiceURI === voiceURI)
       if (selected) utter.voice = selected
-      utter.onstart = () => onStart?.()
-      utter.onend = () => onEnd?.()
-      utter.onerror = () => onEnd?.()
+      utter.onstart = () => {
+        setSpeakingBoundary(null)
+        onStart?.()
+      }
+      utter.onend = () => {
+        setSpeakingBoundary(null)
+        onEnd?.()
+      }
+      utter.onerror = () => {
+        setSpeakingBoundary(null)
+        onEnd?.()
+      }
+      // 브라우저가 일본어처럼 띄어쓰기가 없는 언어에서는 charLength를 안 주는 경우가 많아서,
+      // 없으면 글자 하나 단위로 잡는다 — 요미가나 점처럼 "지금 읽고 있는 글자"만 짚어주는
+      // 용도라 오히려 한 글자씩 정확히 짚는 편이 더 자연스럽다.
+      utter.onboundary = (e: SpeechSynthesisEvent) => {
+        const charLength = (e as unknown as { charLength?: number }).charLength || 1
+        setSpeakingBoundary({ charIndex: e.charIndex, charLength })
+      }
       window.speechSynthesis.speak(utter)
     },
-    [onStart, onEnd, nativeVoices, voiceURI]
+    [onStart, onEnd, nativeVoices, voiceURI, rate]
   )
 
   const speak = useCallback(
@@ -106,11 +142,13 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       const speakerId = Number(voiceURI.slice(VOICEVOX_PREFIX.length))
       const controller = new AbortController()
       abortRef.current = controller
+      setSpeakingBoundary(null)
       onStart?.()
       synthesizeVoicevox(text, speakerId, controller.signal)
         .then((objectUrl) => {
           if (controller.signal.aborted) return
           const audio = new Audio(objectUrl)
+          audio.playbackRate = rate
           audioRef.current = audio
           audio.onended = () => onEnd?.()
           // 재생 자체가 실패하면(자동재생 차단 등) 그냥 무음으로 넘어가지 않고 브라우저
@@ -125,7 +163,7 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
           if (!controller.signal.aborted) speakNative(text)
         })
     },
-    [voiceURI, speakNative, onStart, onEnd]
+    [voiceURI, speakNative, onStart, onEnd, rate]
   )
 
   const cancel = useCallback(() => {
@@ -137,9 +175,23 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel()
     }
+    setSpeakingBoundary(null)
   }, [])
 
   useEffect(() => () => cancel(), [cancel])
 
-  return { supported, speak, cancel, voices, voiceURI, setVoiceURI }
+  return {
+    supported,
+    speak,
+    cancel,
+    voices,
+    voiceURI,
+    setVoiceURI,
+    rate,
+    setRate,
+    defaultRate: DEFAULT_RATE,
+    minRate: MIN_RATE,
+    maxRate: MAX_RATE,
+    speakingBoundary,
+  }
 }

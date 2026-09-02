@@ -168,6 +168,13 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                 voiceURI={tts.voiceURI}
                 onVoiceChange={tts.setVoiceURI}
                 micListening={stt.listening}
+                micLevel={micLevel}
+                speakingBoundary={tts.speakingBoundary}
+                rate={tts.rate}
+                onRateChange={tts.setRate}
+                defaultRate={tts.defaultRate}
+                minRate={tts.minRate}
+                maxRate={tts.maxRate}
               />
               <SelfPreview
                 cameraOn={media.cameraOn}
@@ -216,6 +223,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                     interimTranscript={machine.interimTranscript}
                     onChange={machine.setDraftTranscript}
                     sttSupported={stt.supported && machine.sttSupported}
+                    isListening={machine.phase === 'listening'}
                   />
                 )}
 

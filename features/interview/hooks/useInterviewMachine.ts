@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   REAL_MODE_INTRO_QUESTION,
-  getMainQuestionsByCategory,
   getQuestionsByCategory,
   getRandomClosingQuestion,
-  shuffle,
+  sampleMainQuestions,
   type BankQuestion,
 } from '@/lib/questionBank'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
@@ -68,7 +67,9 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독 22개뿐) 모드마다
       // poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은 조합만 나오게 된다.
       const poolSize = isRealMode ? 16 : mode === 'technical' ? 18 : 20
-      const pool = shuffle(getMainQuestionsByCategory(categories)).slice(0, poolSize)
+      // 비슷한 주제의 질문(예: 스트레스 해소법 여러 버전)이 한 세션에 같이 나오지 않도록,
+      // group이 같은 질문 중 하나만 무작위로 골라서 풀을 구성한다.
+      const pool = sampleMainQuestions(categories, poolSize)
       // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
       // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
       const reverseQuestions = isRealMode ? getQuestionsByCategory(['reverse']) : []

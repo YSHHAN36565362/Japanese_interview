@@ -38,7 +38,12 @@ export default async function ResultPage({ params }: { params: Promise<{ session
   const rows = (answers ?? []).map((r) => {
     const isFollowUp = !!r.follow_up_question_id
     const question = getQuestionById((isFollowUp ? r.follow_up_question_id : r.question_id) ?? '')
-    return { ...r, isFollowUp, questionTextJa: question?.textJa ?? '(삭제되었거나 알 수 없는 질문)' }
+    return {
+      ...r,
+      isFollowUp,
+      questionTextJa: question?.textJa ?? '(삭제되었거나 알 수 없는 질문)',
+      expectedDurationSec: question?.expectedDurationSec ?? null,
+    }
   })
 
   const avgDuration = rows.length
@@ -112,8 +117,33 @@ export default async function ResultPage({ params }: { params: Promise<{ session
             <span className="badge">{r.isFollowUp ? '꼬리 질문' : '질문'}</span>
             <p className="question-ja">{r.questionTextJa}</p>
             <p>{r.corrected_answer_text}</p>
+            {r.duration_seconds != null && (
+              <p className="qa-duration-badge">
+                답변 시간 {Math.round(r.duration_seconds)}초
+                {r.expectedDurationSec != null && (
+                  <>
+                    {' '}
+                    / 목표 {r.expectedDurationSec}초
+                    <span
+                      className={
+                        r.duration_seconds > r.expectedDurationSec * 1.3
+                          ? ' qa-duration-tag qa-duration-tag-long'
+                          : r.duration_seconds < r.expectedDurationSec * 0.5
+                            ? ' qa-duration-tag qa-duration-tag-short'
+                            : ' qa-duration-tag qa-duration-tag-ok'
+                      }
+                    >
+                      {r.duration_seconds > r.expectedDurationSec * 1.3
+                        ? '길어요'
+                        : r.duration_seconds < r.expectedDurationSec * 0.5
+                          ? '짧아요'
+                          : '적당해요'}
+                    </span>
+                  </>
+                )}
+              </p>
+            )}
             <p className="muted small">
-              {r.duration_seconds != null && <>답변 {Math.round(r.duration_seconds)}초 · </>}
               {r.politeness_score_ratio != null && <>정중체 비율(추정) {r.politeness_score_ratio} · </>}
               필러 {Object.values((r.filler_counts ?? {}) as Record<string, number>).reduce((a, b) => a + b, 0)}회
             </p>

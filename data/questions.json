@@ -4,7 +4,8 @@
     "questions[].id": "다른 질문과 겹치지 않는 영문 slug (예: team_project). public/data/follow_ups.txt에서 이 id로 참조합니다.",
     "questions[].category": "personality | technical | culture_fit | reverse",
     "questions[].expectedDurationSec": "권장 답변 시간(초). 타이머/짧은 답변 판정 기준으로 쓰입니다.",
-    "questions[].textJa": "질문 본문(일본어). 실제 면접관은 난이도와 무관하게 항상 경어로 질문하므로 한국어 번역이나 난이도 구분 없이 일본어 질문만 둡니다."
+    "questions[].textJa": "질문 본문(일본어). 실제 면접관은 난이도와 무관하게 항상 경어로 질문하므로 한국어 번역이나 난이도 구분 없이 일본어 질문만 둡니다.",
+    "questions[].group": "(선택) 비슷한 주제의 질문끼리 묶는 그룹 id. 같은 group을 가진 질문들은 한 세션에서 절대 동시에 나오지 않고, 그 그룹 중 하나만 무작위로 뽑힙니다(lib/questionBank.ts의 sampleMainQuestions 참고). 그룹이 없으면 그 질문 하나가 곧 그룹입니다."
   },
   "questions": [
     {
@@ -74,6 +75,7 @@
     {
       "id": "stress",
       "category": "culture_fit",
+      "group": "stress_relief",
       "expectedDurationSec": 60,
       "textJa": "ストレスを感じたとき、どのように対処していますか。",
       "tags": [
@@ -173,6 +175,7 @@
     {
       "id": "hobby",
       "category": "personality",
+      "group": "hobby",
       "expectedDurationSec": 60,
       "textJa": "趣味を教えてください。",
       "tags": [
@@ -182,6 +185,7 @@
     {
       "id": "stress_relief_method",
       "category": "personality",
+      "group": "stress_relief",
       "expectedDurationSec": 60,
       "textJa": "ストレス解消法を教えてください。",
       "tags": [
@@ -209,6 +213,7 @@
     {
       "id": "effort_in_school_days",
       "category": "personality",
+      "group": "school_effort",
       "expectedDurationSec": 90,
       "textJa": "学生時代に最も力を入れたことは何ですか。",
       "tags": [
@@ -264,6 +269,7 @@
     {
       "id": "childhood_effort",
       "category": "personality",
+      "group": "school_effort",
       "expectedDurationSec": 60,
       "textJa": "小学生・中学生時代に頑張ったことは何ですか。",
       "tags": [
@@ -273,6 +279,7 @@
     {
       "id": "why_japan",
       "category": "culture_fit",
+      "group": "why_japan",
       "expectedDurationSec": 90,
       "textJa": "なぜ日本で働きたいのですか。",
       "tags": [
@@ -346,6 +353,7 @@
     {
       "id": "years_in_japan",
       "category": "culture_fit",
+      "group": "years_in_japan",
       "expectedDurationSec": 60,
       "textJa": "何年くらい日本で働きたいと考えていますか。",
       "tags": [
@@ -364,6 +372,7 @@
     {
       "id": "japan_impression",
       "category": "culture_fit",
+      "group": "japan_impression",
       "expectedDurationSec": 60,
       "textJa": "日本の印象を教えてください。",
       "tags": [
@@ -373,6 +382,7 @@
     {
       "id": "adapt_japan_life",
       "category": "culture_fit",
+      "group": "japan_life_adapt",
       "expectedDurationSec": 60,
       "textJa": "日本の生活に適応できますか。日本食は好きですか。",
       "tags": [
@@ -1612,6 +1622,66 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "インターンシップの経験はありますか。そこで学んだことを教えてください。"
+    },
+    {
+      "id": "japan_worry",
+      "category": "culture_fit",
+      "group": "japan_worry",
+      "expectedDurationSec": 60,
+      "textJa": "日本で働く、または生活することについて、不安に感じていることはありますか。",
+      "tags": [
+        "japan_worry"
+      ]
+    },
+    {
+      "id": "japan_like_point",
+      "category": "culture_fit",
+      "group": "japan_impression",
+      "expectedDurationSec": 45,
+      "textJa": "日本のどんなところが好きですか。",
+      "tags": [
+        "japan_like_point"
+      ]
+    },
+    {
+      "id": "company_choice_criteria",
+      "category": "culture_fit",
+      "group": "company_choice_criteria",
+      "expectedDurationSec": 60,
+      "textJa": "就職先の会社を選ぶとき、何を基準にしていますか。",
+      "tags": [
+        "company_choice_criteria"
+      ]
+    },
+    {
+      "id": "life_in_japan_experience",
+      "category": "culture_fit",
+      "group": "japan_life_adapt",
+      "expectedDurationSec": 45,
+      "textJa": "実際に日本で生活してみて、いかがですか。",
+      "tags": [
+        "life_in_japan_experience"
+      ]
+    },
+    {
+      "id": "day_off_activity",
+      "category": "personality",
+      "group": "hobby",
+      "expectedDurationSec": 30,
+      "textJa": "休日はどのように過ごすことが多いですか。",
+      "tags": [
+        "day_off_activity"
+      ]
+    },
+    {
+      "id": "years_in_japan_career",
+      "category": "culture_fit",
+      "group": "years_in_japan",
+      "expectedDurationSec": 45,
+      "textJa": "日本でのキャリアをどのくらいの期間続けたいと考えていますか。",
+      "tags": [
+        "years_in_japan_career"
+      ]
     }
   ]
 }

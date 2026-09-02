@@ -9,6 +9,10 @@ export interface BankQuestion {
   expectedDurationSec: number
   textJa: string
   tags?: string[]
+  // (선택) 비슷한 주제/거의 같은 질문끼리 묶는 그룹 id. sampleMainQuestions()가 세션 풀을
+  // 뽑을 때 같은 group의 질문은 절대 함께 뽑지 않고, 그 그룹 중 하나만 무작위로 고른다.
+  // 없으면 그 질문 하나가 곧 그룹(자기 자신하고만 겹치지 않으면 됨)이다.
+  group?: string
 }
 
 export interface BankFollowUp {
@@ -40,6 +44,12 @@ export function getQuestionsByCategory(categories: string[]): BankQuestion[] {
   return questions.filter((q) => categories.includes(q.category))
 }
 
+// data/questions.json 전체 질문 은행 크기(대분류 + 꼬리질문 전용 + 마무리 전용 모두 합산).
+// RoomHeader에 "질문 X / Y (전체 Z개)"처럼 은행 규모를 함께 보여줄 때 쓴다.
+export function getTotalQuestionCount(): number {
+  return questions.length
+}
+
 // 세션 시작 시 "대분류" 질문 풀을 뽑을 때 쓴다. tags에 'follow_up'(꼬리질문 전용) 또는
 // 'closing'(마무리 전용, 예: final_word)이 붙은 질문은 무작위 첫 질문 풀에서 제외한다 —
 // 이런 질문들은 decideFollowUp()의 getQuestionById로만 등장해야 한다.
@@ -49,6 +59,24 @@ export function getMainQuestionsByCategory(categories: string[]): BankQuestion[]
   return getQuestionsByCategory(categories).filter(
     (q) => !(q.tags ?? []).some((t) => NON_MAIN_TAGS.has(t))
   )
+}
+
+// 세션 질문 풀을 뽑을 때 "거의 같은 질문"(예: 스트레스 해소법 vs 스트레스 대처법, 학창시절
+// 힘쓴 일 vs 어린 시절 힘쓴 일)이 한 세션에 함께 나오지 않도록, group이 같은 질문들 중
+// 하나만 무작위로 골라 뽑는다. group이 없는 질문은 자기 자신의 id를 그룹으로 취급한다.
+export function sampleMainQuestions(categories: string[], poolSize: number): BankQuestion[] {
+  const candidates = getMainQuestionsByCategory(categories)
+  const groups = new Map<string, BankQuestion[]>()
+  for (const q of candidates) {
+    const key = q.group ?? q.id
+    const list = groups.get(key)
+    if (list) list.push(q)
+    else groups.set(key, [q])
+  }
+  const representatives = shuffle([...groups.values()]).map(
+    (members) => members[Math.floor(Math.random() * members.length)]
+  )
+  return shuffle(representatives).slice(0, poolSize)
 }
 
 // "마지막 질문하기" 버튼용 — 'closing' 태그가 붙은 질문 중 하나를 무작위로 고른다.

@@ -61,8 +61,19 @@ export function useSpeechRecognition({ enabled, lang = 'ja-JP', onFinal, onInter
       let interim = ''
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const chunk = event.results[i][0].transcript
-        if (event.results[i].isFinal) finalTextRef.current += chunk
-        else interim += chunk
+        if (event.results[i].isFinal) {
+          // 인식 엔진이 "final"로 확정하는 지점은 대부분 사용자가 말을 잠깐 끊은(쉰) 지점과
+          // 일치한다. 일본어 STT는 문장부호를 거의 안 붙여주므로, 그 끊긴 지점마다 마침표를
+          // 자동으로 넣어준다 — 전사가 훨씬 읽기 편해지고, 문장 단위로 나누는 채점 로직
+          // (STAR 체크·정중체 비율 등)도 더 정확해진다.
+          const trimmed = chunk.trim()
+          if (trimmed) {
+            const endsWithPunct = /[。！？、,.!?]$/.test(trimmed)
+            finalTextRef.current += trimmed + (endsWithPunct ? '' : '。')
+          }
+        } else {
+          interim += chunk
+        }
       }
       callbacksRef.current.onInterim(finalTextRef.current + interim)
       if (finalTextRef.current) callbacksRef.current.onFinal(finalTextRef.current)

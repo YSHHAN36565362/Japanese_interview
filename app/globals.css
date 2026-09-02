@@ -479,6 +479,36 @@ a {
   margin: 20px 0;
 }
 
+.qa-duration-badge {
+  font-size: 13px;
+  color: var(--room-text-primary, #e6e9ef);
+  margin: 4px 0;
+}
+
+.qa-duration-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.qa-duration-tag-ok {
+  background: rgba(59, 203, 142, 0.16);
+  color: #3bcb8e;
+}
+
+.qa-duration-tag-long {
+  background: rgba(230, 170, 60, 0.16);
+  color: #e6aa3c;
+}
+
+.qa-duration-tag-short {
+  background: rgba(230, 170, 60, 0.16);
+  color: #e6aa3c;
+}
+
 /* ============================================================
    좋아요 버튼 — Uiverse.io by Priyanshu02020, 검정 테마에 맞게 각색
    (원본의 translateX 버그를 translateY로 통일해 숫자가 위아래로 슬라이드되게 했다)
@@ -1534,6 +1564,11 @@ a {
   white-space: nowrap;
 }
 
+.room-header-bank-total {
+  color: var(--muted);
+  font-weight: 400;
+}
+
 .room-header-status {
   display: flex;
   align-items: center;
@@ -1663,6 +1698,67 @@ a {
   color: #8b96ab;
 }
 
+/* 요미가나 점처럼 지금 TTS가 읽고 있는 글자를 짚어준다 (::before의 작은 점 + 강조 색). */
+.room-question-reading {
+  position: relative;
+  color: var(--accent-listening);
+}
+
+.room-question-reading::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -0.85em;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-listening);
+}
+
+.room-stage-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.room-rate-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.room-rate-btn,
+.room-rate-value {
+  background: transparent;
+  border: none;
+  color: var(--room-text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+
+.room-rate-btn:hover:not(:disabled),
+.room-rate-value:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.room-rate-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.room-rate-value {
+  font-weight: 600;
+  min-width: 46px;
+}
+
 .room-phase-status {
   font-size: 13px;
   color: #aab4c8;
@@ -1691,6 +1787,10 @@ a {
 
 .room-mic-status-dot.listening {
   background: var(--accent-listening);
+  /* 마이크가 실제로 녹음 중임을 한눈에 알아보도록 다른 텍스트와 안 겹치는 선(flex gap)
+     안에서 눈에 띄게 키운다. */
+  width: 22px;
+  height: 22px;
   animation: room-mic-status-pulse 1.2s infinite;
 }
 
@@ -1700,7 +1800,45 @@ a {
     box-shadow: 0 0 0 0 rgba(59, 203, 142, 0.5);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(59, 203, 142, 0);
+    box-shadow: 0 0 0 10px rgba(59, 203, 142, 0);
+  }
+}
+
+/* 실전 면접에서 말할 때 음성 인식 상태를 보여주는 막대 파형(참고 이미지의 파형을
+   막대 클러스터 형태로 각색 — 실제 주파수 분석 없이 마이크 레벨 하나로 표현). */
+.voice-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 48px;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 2px;
+}
+
+.voice-waveform-bar {
+  flex: 1;
+  min-width: 2px;
+  max-width: 6px;
+  border-radius: 3px;
+  background: var(--muted);
+  height: 12%;
+  transition: height 0.09s ease-out, background 0.2s ease-out;
+}
+
+.voice-waveform.active .voice-waveform-bar {
+  background: var(--accent-listening);
+  animation: voice-waveform-idle 1.4s ease-in-out infinite;
+}
+
+@keyframes voice-waveform-idle {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
@@ -2128,6 +2266,11 @@ a {
 
 @media (max-width: 480px) {
   .room-header-meta {
+    display: none;
+  }
+  /* "(전체 210개)" 부분까지 더하면 좁은 화면에서 질문 진행 줄이 가로로 넘친다 —
+     모바일에서는 은행 전체 개수는 생략하고 "질문 X/Y · 시간"만 보여준다. */
+  .room-header-bank-total {
     display: none;
   }
 }
