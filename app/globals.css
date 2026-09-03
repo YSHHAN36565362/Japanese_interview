@@ -2131,6 +2131,14 @@ a {
   min-height: 160px;
 }
 
+/* 지금 인식 중인 내용의 실시간 미리보기 — 편집 가능한 답변 박스와는 분리된 줄이라,
+   박스 값을 덮어써서 "지워도 안 지워지는" 문제를 일으키지 않는다(2026-09-02). */
+.room-transcript-interim {
+  font-style: italic;
+  opacity: 0.8;
+  margin: -4px 0 0;
+}
+
 .room-panel-title {
   font-size: 13px;
   color: #9fb0cc;

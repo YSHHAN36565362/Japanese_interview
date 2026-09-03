@@ -4,6 +4,7 @@ import MacWindow from '@/components/MacWindow'
 import LogoutButton from '@/components/LogoutButton'
 import ChangeNumberForm from '@/components/ChangeNumberForm'
 import SessionList from '@/components/SessionList'
+import CustomTermManager from '@/components/CustomTermManager'
 import { formatKST } from '@/lib/formatDate'
 
 export default async function DashboardPage() {
@@ -79,15 +80,12 @@ export default async function DashboardPage() {
 
       <section className="card">
         <h2>내 STT 보정 사전</h2>
-        <p className="muted small">답변 중 &quot;적용&quot;을 누른 기술 용어 표기가 여기에 쌓입니다.</p>
-        {(!terms || terms.length === 0) && <p className="muted">아직 등록된 항목이 없습니다.</p>}
-        <ul>
-          {(terms ?? []).map((t: any) => (
-            <li key={t.id}>
-              {t.spoken_variation} → {t.correct_term} ({t.category})
-            </li>
-          ))}
-        </ul>
+        <p className="muted small">
+          답변 중 &quot;적용&quot;을 누른 기술 용어 표기가 자동으로 쌓이고, 이름처럼 카타카나·영어라
+          인식이 잘 안 되는 표현은 아래에서 직접 추가할 수도 있습니다. 다음 면접부터 확정 답변에
+          자동으로 반영됩니다.
+        </p>
+        <CustomTermManager terms={terms ?? []} />
       </section>
     </MacWindow>
   )

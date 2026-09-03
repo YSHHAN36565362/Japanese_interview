@@ -147,7 +147,6 @@ export function getRandomClosingQuestion(): BankQuestion | undefined {
 // 지금까지는 이 텍스트 파일 형식에서 쓸 방법이 없었다). 중요한 꼬리질문인데 사용자가 그
 // 키워드를 말하지 않으면 영영 못 물어보는 문제를 완화하려고, 우선순위를 낮게(예: -1)
 // 줘서 다른 키워드 규칙이 전부 안 맞았을 때만 마지막으로 시도되게 하는 용도로 쓴다.
-let followUpsCache: BankFollowUp[] | null = null
 
 function parseFollowUpsText(text: string): BankFollowUp[] {
   const rules: BankFollowUp[] = []
@@ -175,16 +174,31 @@ function parseFollowUpsText(text: string): BankFollowUp[] {
   return rules
 }
 
+// 2026-09-02 발견한 버그: `if (followUpsCache)`는 진리값 검사라서, 빈 배열 []도 자바스크립트
+// 에서는 truthy다 — 그런데 fetch가 한 번이라도 실패하거나(네트워크 순간 끊김 등) 응답이
+// 파싱 가능한 규칙을 하나도 못 찾으면 followUpsCache가 []로 굳어버리고, 그 뒤로는 이
+// 진리값 검사를 통과해서 다시는 fetch를 시도하지 않는다 — 즉 세션 초반에 단 한 번만
+// 실패해도 그 세션 내내 꼬리질문이 영원히 하나도 안 나오게 되는 심각한 버그였다.
+// 이제는 "성공(규칙 1개 이상)"일 때만 캐시하고, 실패하거나 규칙이 0개면 캐시를 비워서
+// 다음 호출 때 다시 시도하게 한다. 동시에 여러 곳에서 부르는 경우를 대비해 진행 중인
+// Promise 자체를 캐시해 중복 fetch도 막는다.
+let followUpsPromise: Promise<BankFollowUp[]> | null = null
+
 async function loadFollowUps(): Promise<BankFollowUp[]> {
-  if (followUpsCache) return followUpsCache
-  try {
-    const res = await fetch('/data/follow_ups.txt', { cache: 'no-store' })
-    const text = await res.text()
-    followUpsCache = parseFollowUpsText(text)
-  } catch {
-    followUpsCache = []
+  if (!followUpsPromise) {
+    followUpsPromise = fetch('/data/follow_ups.txt', { cache: 'no-store' })
+      .then((res) => res.text())
+      .then((text) => {
+        const rules = parseFollowUpsText(text)
+        if (rules.length === 0) followUpsPromise = null
+        return rules
+      })
+      .catch(() => {
+        followUpsPromise = null
+        return []
+      })
   }
-  return followUpsCache
+  return followUpsPromise
 }
 
 export async function getFollowUpsFor(parentId: string): Promise<BankFollowUp[]> {
