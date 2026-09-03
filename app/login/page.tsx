@@ -31,7 +31,7 @@ export default function LoginPage() {
       }
       return
     }
-    router.push('/interview')
+    router.push('/interview/resume')
     router.refresh()
   }
 
@@ -70,7 +70,7 @@ export default function LoginPage() {
     }
 
     setLoading(false)
-    router.push('/interview')
+    router.push('/interview/resume')
     router.refresh()
   }
 

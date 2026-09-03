@@ -15,6 +15,8 @@ export default function InterviewStage({
   voices,
   voiceURI,
   onVoiceChange,
+  volume,
+  onVolumeChange,
   micListening,
 }: {
   question: BankQuestion
@@ -25,6 +27,8 @@ export default function InterviewStage({
   voices: VoiceOption[]
   voiceURI: string
   onVoiceChange: (uri: string) => void
+  volume: number
+  onVolumeChange: (v: number) => void
   micListening: boolean
 }) {
   const speaking = phase === 'interviewerSpeaking'
@@ -67,6 +71,20 @@ export default function InterviewStage({
             ))}
           </select>
         )}
+        <div className="room-volume-control" title="면접관 목소리 크기">
+          <span aria-hidden="true">{volume === 0 ? '🔇' : '🔊'}</span>
+          <input
+            type="range"
+            className="room-volume-slider"
+            min={0}
+            max={1}
+            step={0.05}
+            value={volume}
+            onChange={(e) => onVolumeChange(Number(e.target.value))}
+            aria-label="면접관 목소리 크기"
+          />
+          <span className="room-volume-value">{Math.round(volume * 100)}%</span>
+        </div>
         <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
       </div>
       <p

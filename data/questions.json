@@ -675,6 +675,24 @@
       ]
     },
     {
+      "id": "elaborate_reason",
+      "category": "personality",
+      "expectedDurationSec": 60,
+      "textJa": "もう少し具体的にお聞かせいただけますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
+      "id": "concrete_example_request",
+      "category": "technical",
+      "expectedDurationSec": 60,
+      "textJa": "具体的なエピソードや経験を教えていただけますか。",
+      "tags": [
+        "follow_up"
+      ]
+    },
+    {
       "id": "decision_making_style",
       "category": "personality",
       "expectedDurationSec": 60,

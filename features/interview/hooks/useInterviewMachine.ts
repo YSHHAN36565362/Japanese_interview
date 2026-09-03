@@ -9,6 +9,7 @@ import {
   getQuestionsByCategory,
   getRandomClosingQuestion,
   shuffle,
+  type BankFollowUp,
   type BankQuestion,
 } from '@/lib/questionBank'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
@@ -16,6 +17,11 @@ import { decideFollowUp } from '../lib/followUpEngine'
 import { loadUserCustomTerms, normalizeTranscript, findSuggestion, type CustomTerm } from '../lib/transcriptNormalizer'
 import { MODE_TO_CATEGORY } from '../constants'
 import type { InterviewPhase, LastFeedback } from '../types'
+import type { ParsedResume } from '@/lib/resume/types'
+import { buildResumeMainQuestions } from '@/lib/resume/resumeQuestions'
+import { buildResumeFollowUps } from '@/lib/resume/followUpSynth'
+
+const RESUME_STORAGE_KEY = 'kmove_resume'
 
 export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mode: string }) {
   const router = useRouter()
@@ -31,6 +37,8 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
   const [isFollowUp, setIsFollowUp] = useState(false)
   const [isFinalQuestion, setIsFinalQuestion] = useState(false)
   const askedFollowUpsRef = useRef<Set<string>>(new Set())
+  const resumeExtraRulesRef = useRef<BankFollowUp[]>([])
+  const resumeExtraQuestionsRef = useRef<BankQuestion[]>([])
 
   const [interimTranscript, setInterimTranscript] = useState('')
   const [draftTranscript, setDraftTranscript] = useState('')
@@ -62,13 +70,52 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
       setIsGuest(guest)
       customTermsRef.current = guest ? [] : await loadUserCustomTerms(data.user.id)
 
+      // 이력서 업로드(/interview/resume)를 거쳤다면 그 결과에서 뽑은 질문·꼬리질문을 기존
+      // 무작위 풀과 섞어 쓴다. 로그인 사용자는 Supabase(user_resumes)에서, 게스트는
+      // sessionStorage에서만 읽는다(게스트 데이터는 Supabase에 절대 쓰지 않음).
+      let parsedResume: ParsedResume | null = null
+      if (guest) {
+        try {
+          const raw = sessionStorage.getItem(RESUME_STORAGE_KEY)
+          parsedResume = raw ? (JSON.parse(raw) as ParsedResume) : null
+        } catch {
+          parsedResume = null
+        }
+      } else {
+        const { data: resumeRow } = await supabase
+          .from('user_resumes')
+          .select('parsed_data')
+          .eq('user_id', data.user.id)
+          .maybeSingle()
+        parsedResume = (resumeRow?.parsed_data as ParsedResume | undefined) ?? null
+      }
+
       const categories = MODE_TO_CATEGORY[mode] ?? ['personality']
       const isRealMode = mode === 'real'
+
+      let resumeMainQuestions: BankQuestion[] = []
+      if (parsedResume) {
+        // 이력서 질문도 다른 메인 풀과 똑같이 모드의 카테고리 필터를 따라야 한다 — 그렇지 않으면
+        // "기술 면접"(categories=['technical']) 모드에도 personality/culture_fit인 자소서
+        // 질문이 섞여 들어와 모드 취지에 어긋난다.
+        resumeMainQuestions = buildResumeMainQuestions(parsedResume).filter((q) => categories.includes(q.category))
+        const synth = buildResumeFollowUps(parsedResume)
+        resumeExtraRulesRef.current = synth.rules
+        resumeExtraQuestionsRef.current = synth.questions
+      }
+
       // 질문 은행이 대폭 늘어난 것을 세션에도 반영해 한 번에 더 다양한 질문이 나오게 한다.
-      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독 22개뿐) 모드마다
-      // poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은 조합만 나오게 된다.
+      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(예: technical 모드는 technical 카테고리만
+      // 씀) 모드마다 poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은
+      // 조합만 나오게 된다. (카테고리별 실제 보유 개수는 data/questions.json 참고 — 늘어나면
+      // 이 값도 다시 검토할 것.)
       const poolSize = isRealMode ? 16 : mode === 'technical' ? 18 : 20
-      const pool = shuffle(getMainQuestionsByCategory(categories)).slice(0, poolSize)
+      // 이력서 질문 개수만큼 무작위 풀에서 뺀 나머지로 채워 세션 총 질문 수는 그대로 유지한다.
+      const randomPool = shuffle(getMainQuestionsByCategory(categories)).slice(
+        0,
+        Math.max(poolSize - resumeMainQuestions.length, 0)
+      )
+      const pool = shuffle([...resumeMainQuestions, ...randomPool])
       // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
       // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
       const reverseQuestions = isRealMode ? getQuestionsByCategory(['reverse']) : []
@@ -173,6 +220,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         follow_up_question_id: isFollowUp ? currentQuestion.id : null,
         stt_raw_text: rawText,
         corrected_answer_text: finalText,
+        question_text_snapshot: currentQuestion.textJa,
         duration_seconds: durationSeconds,
         latency_to_first_speech_sec: latency,
         politeness_score_ratio: analysis.politenessRatio,
@@ -204,7 +252,10 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         finalText,
         durationSeconds,
         currentQuestion.expectedDurationSec,
-        askedFollowUpsRef.current
+        askedFollowUpsRef.current,
+        resumeExtraRulesRef.current,
+        resumeExtraQuestionsRef.current,
+        analysis
       )
       if (followUpQuestion) {
         askedFollowUpsRef.current.add(followUpQuestion.id)

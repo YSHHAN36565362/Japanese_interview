@@ -9,8 +9,16 @@ interface Options {
 }
 
 const VOICE_STORAGE_KEY = 'voiceInterviewJp:ttsVoiceURI'
+const VOLUME_STORAGE_KEY = 'voiceInterviewJp:ttsVolume'
 
 export type VoiceOption = { id: string; name: string }
+
+function loadStoredVolume(): number {
+  if (typeof window === 'undefined') return 1
+  const saved = window.localStorage.getItem(VOLUME_STORAGE_KEY)
+  const parsed = saved ? Number(saved) : NaN
+  return Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : 1
+}
 
 // 질문 낭독 전용 TTS 훅. 재생 중에는 STT를 시작하지 않도록 onStart/onEnd 콜백으로
 // 면접 상태 머신에 TTS_STARTED/TTS_ENDED 이벤트를 보낸다 (가이드 §7-4).
@@ -21,8 +29,22 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
   const [supported, setSupported] = useState(true)
   const [nativeVoices, setNativeVoices] = useState<SpeechSynthesisVoice[]>([])
   const [voiceURI, setVoiceURIState] = useState<string>('')
+  const [volume, setVolumeState] = useState<number>(1)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const volumeRef = useRef(1)
+
+  // 재생 중(특히 VOICEVOX 오디오 재생 도중) 슬라이더를 움직여도 바로 반영되도록,
+  // 최신 볼륨 값을 ref로도 들고 있는다 — speak()/speakNative()가 클로저로 캡처한
+  // 값이 아니라 항상 최신 값을 audio.volume/utter.volume에 적용해야 하기 때문이다.
+  useEffect(() => {
+    volumeRef.current = volume
+    if (audioRef.current) audioRef.current.volume = volume
+  }, [volume])
+
+  useEffect(() => {
+    setVolumeState(loadStoredVolume())
+  }, [])
 
   const refreshVoices = useCallback(() => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -70,6 +92,14 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
     }
   }, [])
 
+  const setVolume = useCallback((v: number) => {
+    const clamped = Math.min(1, Math.max(0, v))
+    setVolumeState(clamped)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(VOLUME_STORAGE_KEY, String(clamped))
+    }
+  }, [])
+
   const speakNative = useCallback(
     (text: string) => {
       if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -80,6 +110,7 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       const utter = new SpeechSynthesisUtterance(text)
       utter.lang = 'ja-JP'
       utter.rate = 0.95
+      utter.volume = volumeRef.current
       const selected = nativeVoices.find((v) => v.voiceURI === voiceURI)
       if (selected) utter.voice = selected
       utter.onstart = () => onStart?.()
@@ -111,6 +142,7 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
         .then((objectUrl) => {
           if (controller.signal.aborted) return
           const audio = new Audio(objectUrl)
+          audio.volume = volumeRef.current
           audioRef.current = audio
           audio.onended = () => onEnd?.()
           // 재생 자체가 실패하면(자동재생 차단 등) 그냥 무음으로 넘어가지 않고 브라우저
@@ -141,5 +173,5 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
 
   useEffect(() => () => cancel(), [cancel])
 
-  return { supported, speak, cancel, voices, voiceURI, setVoiceURI }
+  return { supported, speak, cancel, voices, voiceURI, setVoiceURI, volume, setVolume }
 }

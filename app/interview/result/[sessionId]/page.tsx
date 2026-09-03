@@ -34,11 +34,16 @@ export default async function ResultPage({ params }: { params: Promise<{ session
     )
   }
 
-  // 질문 텍스트는 Supabase가 아니라 로컬 data/questions.json(질문 은행)에서 가져온다.
+  // 질문 텍스트는 기본적으로 로컬 data/questions.json(질문 은행)에서 가져온다. 이력서 기반
+  // 질문(resume_*)은 그 파일에 없으므로, 답변 당시 저장해 둔 question_text_snapshot을 우선 쓴다.
   const rows = (answers ?? []).map((r) => {
     const isFollowUp = !!r.follow_up_question_id
     const question = getQuestionById((isFollowUp ? r.follow_up_question_id : r.question_id) ?? '')
-    return { ...r, isFollowUp, questionTextJa: question?.textJa ?? '(삭제되었거나 알 수 없는 질문)' }
+    return {
+      ...r,
+      isFollowUp,
+      questionTextJa: r.question_text_snapshot ?? question?.textJa ?? '(삭제되었거나 알 수 없는 질문)',
+    }
   })
 
   const avgDuration = rows.length

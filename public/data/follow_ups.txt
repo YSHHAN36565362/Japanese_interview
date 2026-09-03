@@ -3,13 +3,17 @@
 # 한 줄에 규칙 하나. '#'으로 시작하는 줄과 빈 줄은 무시됩니다.
 #
 # 형식:
-#   원래질문id | 감지할단어1,감지할단어2,... | 다음질문id | 우선순위(선택)
+#   원래질문id | 감지할단어1,감지할단어2,... | 다음질문id | 우선순위(선택) | 트리거타입(선택)
 #
 # - 원래질문id / 다음질문id : data/questions.json에 있는 질문의 "id" 값
 # - 감지할단어 : 사용자의 답변(음성 인식 텍스트)에 이 단어들 중 하나라도 포함되면 발동
 #   (쉼표로 여러 개 나열 가능, 공백은 자동으로 정리됩니다)
 # - 우선순위 : 숫자가 클수록 먼저 검사합니다. 안 적으면 0으로 취급합니다.
 #   (같은 질문에 여러 규칙이 동시에 맞을 때만 의미가 있습니다)
+# - 트리거타입(선택, 안 적으면 keyword) : keyword(기본, 감지할단어 중 하나라도 있으면 발동) /
+#   missing_keyword(감지할단어가 전부 없으면 발동) / answer_length(감지할단어 무시, 답변 시간이
+#   권장 시간의 절반 미만이면 발동) / missing_number(감지할단어 무시, 답변에 숫자·성과 표현이
+#   하나도 없으면 발동 — lib/feedback.ts의 hasNumberOrResult 재사용)
 #
 # 예) 아래 줄은 "strength" 질문에 답할 때, 답변에 "チーム" 또는 "協力"이 나오면
 #     "role"이라는 질문(data/questions.json에 있는 id)을 이어서 묻는다는 뜻입니다.
@@ -93,3 +97,133 @@ admitting_mistakes | ミス,対応,対策 | mistake_detail | 1
 test_automation_experience | ツール,フレームワーク,自動化 | test_automation_detail | 1
 graduation_research_topic | 研究,苦労,テーマ | graduation_research_detail | 1
 internship_experience | インターン,業務,担当 | internship_detail | 1
+
+# ---- 아래부터는 answer_length / missing_keyword 트리거 타입을 쓰는 규칙 ----
+# (5번째 컬럼으로 트리거 타입을 지정. 생략하면 keyword로 취급됨)
+
+# 예전에는 없던 질문(예: hobby, career_vision_5_10 등)에도 최소한의 꼬리질문이 붙도록,
+# 답변이 짧으면(권장 시간의 절반 미만) elaborate_reason으로, 구체적 사례 표현
+# (具体的には/例えば/実際に/一例として)이 전혀 없으면 concrete_example_request로 이어간다.
+# 질문마다 전용 꼬리질문을 만드는 대신, 이미 있는 범용 대상 질문 2개를 재사용한다.
+
+stress |  | elaborate_reason | 1 | answer_length
+character_reputation |  | elaborate_reason | 1 | answer_length
+group_position |  | elaborate_reason | 1 | answer_length
+hobby |  | elaborate_reason | 1 | answer_length
+stress_relief_method |  | elaborate_reason | 1 | answer_length
+respected_person |  | elaborate_reason | 1 | answer_length
+job_hunting_axis |  | elaborate_reason | 1 | answer_length
+company_impression |  | elaborate_reason | 1 | answer_length
+post_join_aspiration |  | elaborate_reason | 1 | answer_length
+career_vision_5_10 |  | elaborate_reason | 1 | answer_length
+living_alone |  | elaborate_reason | 1 | answer_length
+japan_impression |  | elaborate_reason | 1 | answer_length
+adapt_japan_life |  | elaborate_reason | 1 | answer_length
+family_consent |  | elaborate_reason | 1 | answer_length
+overtime_opinion |  | elaborate_reason | 1 | answer_length
+preferred_location |  | elaborate_reason | 1 | answer_length
+job_hunting_korea |  | elaborate_reason | 1 | answer_length
+desired_salary |  | elaborate_reason | 1 | answer_length
+jlpt_level |  | elaborate_reason | 1 | answer_length
+team_vs_individual |  | elaborate_reason | 1 | answer_length
+relocation_flexibility |  | elaborate_reason | 1 | answer_length
+work_style_expectation |  | elaborate_reason | 1 | answer_length
+long_term_commitment |  | elaborate_reason | 1 | answer_length
+cross_cultural_challenge |  | elaborate_reason | 1 | answer_length
+salary_negotiation |  | elaborate_reason | 1 | answer_length
+decision_making_style |  | elaborate_reason | 1 | answer_length
+time_management |  | elaborate_reason | 1 | answer_length
+communication_style |  | elaborate_reason | 1 | answer_length
+long_term_goal |  | elaborate_reason | 1 | answer_length
+work_life_balance |  | elaborate_reason | 1 | answer_length
+code_quality_opinion |  | elaborate_reason | 1 | answer_length
+documentation_habit |  | elaborate_reason | 1 | answer_length
+side_business_opinion |  | elaborate_reason | 1 | answer_length
+harassment_response |  | elaborate_reason | 1 | answer_length
+mental_health_management |  | elaborate_reason | 1 | answer_length
+paid_leave_attitude |  | elaborate_reason | 1 | answer_length
+evaluation_system_opinion |  | elaborate_reason | 1 | answer_length
+overseas_assignment_willingness |  | elaborate_reason | 1 | answer_length
+certification_motivation |  | elaborate_reason | 1 | answer_length
+japanese_learning_method |  | elaborate_reason | 1 | answer_length
+visa_status_check |  | elaborate_reason | 1 | answer_length
+boss_relationship_building |  | elaborate_reason | 1 | answer_length
+company_axis_alignment |  | elaborate_reason | 1 | answer_length
+database_design_choice |  | elaborate_reason | 1 | answer_length
+tech_debt_opinion |  | elaborate_reason | 1 | answer_length
+code_readability_opinion |  | elaborate_reason | 1 | answer_length
+business_manner_understanding |  | elaborate_reason | 1 | answer_length
+company_event_participation |  | elaborate_reason | 1 | answer_length
+welfare_expectation |  | elaborate_reason | 1 | answer_length
+long_term_career_plan |  | elaborate_reason | 1 | answer_length
+how_found_job_posting |  | elaborate_reason | 1 | answer_length
+team_meeting_experience |  | elaborate_reason | 1 | answer_length
+cross_team_collaboration |  | elaborate_reason | 1 | answer_length
+keigo_mistake_recovery |  | elaborate_reason | 1 | answer_length
+self_development_plan |  | elaborate_reason | 1 | answer_length
+unexpected_strength |  | elaborate_reason | 1 | answer_length
+handling_multiple_deadlines |  | elaborate_reason | 1 | answer_length
+receiving_negative_feedback |  | elaborate_reason | 1 | answer_length
+ses_contract_understanding |  | elaborate_reason | 1 | answer_length
+multiple_offers_priority |  | elaborate_reason | 1 | answer_length
+final_decision_criteria |  | elaborate_reason | 1 | answer_length
+pre_joining_preparation |  | elaborate_reason | 1 | answer_length
+goal_setting_method |  | elaborate_reason | 1 | answer_length
+time_management_method |  | elaborate_reason | 1 | answer_length
+conflict_prevention_habit |  | elaborate_reason | 1 | answer_length
+fear_of_failure_attitude |  | elaborate_reason | 1 | answer_length
+waterfall_vs_agile_understanding |  | elaborate_reason | 1 | answer_length
+
+major_study | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+leadership_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+part_time_job | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+childhood_effort | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+version_control_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+code_review_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+database_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+agile_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+cloud_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+api_design_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+performance_optimization | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+learning_new_tech | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+ci_cd_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+docker_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+pair_programming_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+estimation_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+requirement_gathering_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+monitoring_logging_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+microservice_vs_monolith | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+algorithm_data_structure | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+release_deployment_process | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+preferred_language_reason | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+tool_familiarity | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+code_review_receiving_attitude | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+multiple_priority_handling | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+knowledge_sharing_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+code_ownership_opinion | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+documentation_writing_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+performance_testing_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+api_security_understanding | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+frontend_backend_preference | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+database_migration_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+log_analysis_experience | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+upstream_downstream_process | 具体的には,例えば,実際に,一例として | concrete_example_request | 1 | missing_keyword
+
+# 회사에 대한 확신/의지가 강하게 드러나는 답변엔, 불합격 시 대처 방안(if_not_selected)도 물어본다.
+why_this_company | 絶対,必ず,どうしても | if_not_selected | 1
+
+# ---- missing_number 트리거 사용 예 ----
+# 아래 질문들은 성과를 숫자로 말하기 좋은 주제라, 답변에 숫자/성과 표현이 하나도
+# 없으면(hasNumberOrResult=false) concrete_results_numbers로 파고든다. 기존
+# missing_keyword 규칙(concrete_example_request, priority 1)보다 우선순위를 높여
+# 숫자가 없으면 이 규칙이 먼저 걸리고, 숫자는 있지만 구체적 사례가 없으면
+# 기존 규칙으로 넘어가도록 한다.
+
+performance_optimization |  | concrete_results_numbers | 2 | missing_number
+estimation_experience |  | concrete_results_numbers | 2 | missing_number
+database_migration_experience |  | concrete_results_numbers | 2 | missing_number
+log_analysis_experience |  | concrete_results_numbers | 2 | missing_number
+monitoring_logging_experience |  | concrete_results_numbers | 2 | missing_number
+release_deployment_process |  | concrete_results_numbers | 2 | missing_number
+algorithm_data_structure |  | concrete_results_numbers | 2 | missing_number
+performance_testing_experience |  | concrete_results_numbers | 2 | missing_number

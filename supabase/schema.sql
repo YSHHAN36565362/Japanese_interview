@@ -41,6 +41,21 @@ create table if not exists session_answers (
   answered_at timestamptz not null default now()
 );
 
+-- 이력서 기반 질문(resume_essay_*, resume_career_*, resume_followup_*)은 data/questions.json에
+-- 없으므로, 결과 화면이 질문 텍스트를 복원할 수 있도록 답변 당시 텍스트를 그대로 스냅샷해 둔다.
+alter table session_answers add column if not exists question_text_snapshot text;
+
+-- ============================================================
+-- user_resumes: K-Move 워드 양식 이력서 파싱 결과 (로그인 사용자만, 재업로드 시 덮어씀)
+-- 게스트(익명 로그인)는 이 테이블에 절대 쓰지 않는다 — sessionStorage에만 보관(app/interview/resume).
+-- ============================================================
+create table if not exists user_resumes (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  parsed_data jsonb not null,
+  source_filename text,
+  updated_at timestamptz not null default now()
+);
+
 -- ============================================================
 -- user_custom_terms: STT 오인식 보정 개인 사전 (기술 용어 · 장음 등)
 -- ============================================================
@@ -101,6 +116,7 @@ alter table session_answers enable row level security;
 alter table user_custom_terms enable row level security;
 alter table user_settings enable row level security;
 alter table diagnostic_results enable row level security;
+alter table user_resumes enable row level security;
 
 drop policy if exists "sessions_owner_all" on sessions;
 create policy "sessions_owner_all" on sessions
@@ -124,4 +140,8 @@ create policy "user_settings_owner_all" on user_settings
 
 drop policy if exists "diagnostic_results_owner_all" on diagnostic_results;
 create policy "diagnostic_results_owner_all" on diagnostic_results
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+drop policy if exists "user_resumes_owner_all" on user_resumes;
+create policy "user_resumes_owner_all" on user_resumes
   for all using (user_id = auth.uid()) with check (user_id = auth.uid());

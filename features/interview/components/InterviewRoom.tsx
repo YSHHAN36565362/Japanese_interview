@@ -167,6 +167,8 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                 voices={tts.voices}
                 voiceURI={tts.voiceURI}
                 onVoiceChange={tts.setVoiceURI}
+                volume={tts.volume}
+                onVolumeChange={tts.setVolume}
                 micListening={stt.listening}
               />
               <SelfPreview
