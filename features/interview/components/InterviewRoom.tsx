@@ -5,6 +5,7 @@ import { useMediaRecorder } from '@/lib/useMediaRecorder'
 import { useInterviewMachine } from '../hooks/useInterviewMachine'
 import { useMediaDevices } from '../hooks/useMediaDevices'
 import { useAudioLevel } from '../hooks/useAudioLevel'
+import type { JobTrack } from '@/lib/questionBank'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis'
 import { useSessionTimer } from '../hooks/useSessionTimer'
@@ -18,8 +19,16 @@ import CoachingPanel from './CoachingPanel'
 import RoomControls from './RoomControls'
 import LoadingDots from '@/components/LoadingDots'
 
-export default function InterviewRoom({ sessionId, mode }: { sessionId: string; mode: string }) {
-  const machine = useInterviewMachine({ sessionId, mode })
+export default function InterviewRoom({
+  sessionId,
+  mode,
+  track,
+}: {
+  sessionId: string
+  mode: string
+  track?: JobTrack
+}) {
+  const machine = useInterviewMachine({ sessionId, mode, track })
   const media = useMediaDevices()
   const micLevel = useAudioLevel(media.micStream)
 
@@ -150,6 +159,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
         <>
           <RoomHeader
             mode={mode}
+            track={track}
             questionIndex={machine.queueIndex + 1}
             totalQuestions={machine.questions.length}
             timerFormatted={timer.formatted}
@@ -170,6 +180,18 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                 volume={tts.volume}
                 onVolumeChange={tts.setVolume}
                 micListening={stt.listening}
+                micLevel={micLevel}
+                speakingBoundary={tts.speakingBoundary}
+                rate={tts.rate}
+                onRateChange={tts.setRate}
+                defaultRate={tts.defaultRate}
+                minRate={tts.minRate}
+                maxRate={tts.maxRate}
+                pitch={tts.pitch}
+                onPitchChange={tts.setPitch}
+                defaultPitch={tts.defaultPitch}
+                minPitch={tts.minPitch}
+                maxPitch={tts.maxPitch}
               />
               <SelfPreview
                 cameraOn={media.cameraOn}
@@ -181,6 +203,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
               {(videoRecorder.error || audioRecorder.error) && (
                 <p className="badge badge-error">{videoRecorder.error || audioRecorder.error}</p>
               )}
+              {machine.error && <p className="badge badge-error">{machine.error}</p>}
             </div>
 
             {panelOpen && (
@@ -218,6 +241,7 @@ export default function InterviewRoom({ sessionId, mode }: { sessionId: string; 
                     interimTranscript={machine.interimTranscript}
                     onChange={machine.setDraftTranscript}
                     sttSupported={stt.supported && machine.sttSupported}
+                    isListening={machine.phase === 'listening'}
                   />
                 )}
 

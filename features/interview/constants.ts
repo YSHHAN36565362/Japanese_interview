@@ -12,6 +12,12 @@ export const MODE_LABEL: Record<string, string> = {
   technical: '기술 면접',
 }
 
+export const TRACK_LABEL: Record<string, string> = {
+  general: '기본',
+  software: '소프트웨어',
+  semiconductor: '반도체',
+}
+
 // 상태별로 화면에 보여줄 문구. 색상만으로 상태를 전달하지 않기 위해 항상 텍스트를 함께 노출한다.
 export const PHASE_STATUS_TEXT: Record<string, string> = {
   preflight: '입장 준비 중입니다.',

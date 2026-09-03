@@ -270,6 +270,12 @@ a {
   color: var(--error-fg);
 }
 
+/* 세션 리포트 qa-list에서 "꼬리 질문"을 일반 "질문"과 색으로 구분한다(2026-09-02). */
+.badge-followup {
+  background: rgba(91, 140, 255, 0.16);
+  color: #8fb3ff;
+}
+
 .muted {
   color: var(--muted);
 }
@@ -472,11 +478,98 @@ a {
   color: var(--muted);
 }
 
+/* 세션 리포트의 정중체 비율/종합 점수 카드 — 일반 stat-card보다 눈에 띄게, 점수 구간별로
+   색을 달리해서 한눈에 "좋음/보통/개선 필요"를 알 수 있게 한다(2026-09-02). */
+.score-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.score-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--muted);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.score-card strong {
+  font-size: 28px;
+}
+
+.score-card span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.score-card-detail {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.score-card-good {
+  border-left-color: #3bcb8e;
+}
+.score-card-good strong {
+  color: #3bcb8e;
+}
+
+.score-card-mid {
+  border-left-color: #e6aa3c;
+}
+.score-card-mid strong {
+  color: #e6aa3c;
+}
+
+.score-card-bad {
+  border-left-color: #e05a5a;
+}
+.score-card-bad strong {
+  color: #e05a5a;
+}
+
 .qa-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin: 20px 0;
+}
+
+.qa-duration-badge {
+  font-size: 13px;
+  color: var(--room-text-primary, #e6e9ef);
+  margin: 4px 0;
+}
+
+.qa-duration-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.qa-duration-tag-ok {
+  background: rgba(59, 203, 142, 0.16);
+  color: #3bcb8e;
+}
+
+.qa-duration-tag-long {
+  background: rgba(230, 170, 60, 0.16);
+  color: #e6aa3c;
+}
+
+.qa-duration-tag-short {
+  background: rgba(230, 170, 60, 0.16);
+  color: #e6aa3c;
 }
 
 /* ============================================================
@@ -1534,6 +1627,11 @@ a {
   white-space: nowrap;
 }
 
+.room-header-bank-total {
+  color: var(--muted);
+  font-weight: 400;
+}
+
 .room-header-status {
   display: flex;
   align-items: center;
@@ -1682,6 +1780,67 @@ a {
   color: #8b96ab;
 }
 
+/* 요미가나 점처럼 지금 TTS가 읽고 있는 글자를 짚어준다 (::before의 작은 점 + 강조 색). */
+.room-question-reading {
+  position: relative;
+  color: var(--accent-listening);
+}
+
+.room-question-reading::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -0.85em;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-listening);
+}
+
+.room-stage-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.room-rate-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.room-rate-btn,
+.room-rate-value {
+  background: transparent;
+  border: none;
+  color: var(--room-text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+
+.room-rate-btn:hover:not(:disabled),
+.room-rate-value:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.room-rate-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.room-rate-value {
+  font-weight: 600;
+  min-width: 46px;
+}
+
 .room-phase-status {
   font-size: 13px;
   color: #aab4c8;
@@ -1710,6 +1869,10 @@ a {
 
 .room-mic-status-dot.listening {
   background: var(--accent-listening);
+  /* 마이크가 실제로 녹음 중임을 한눈에 알아보도록 다른 텍스트와 안 겹치는 선(flex gap)
+     안에서 눈에 띄게 키운다. */
+  width: 22px;
+  height: 22px;
   animation: room-mic-status-pulse 1.2s infinite;
 }
 
@@ -1719,7 +1882,45 @@ a {
     box-shadow: 0 0 0 0 rgba(59, 203, 142, 0.5);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(59, 203, 142, 0);
+    box-shadow: 0 0 0 10px rgba(59, 203, 142, 0);
+  }
+}
+
+/* 실전 면접에서 말할 때 음성 인식 상태를 보여주는 막대 파형(참고 이미지의 파형을
+   막대 클러스터 형태로 각색 — 실제 주파수 분석 없이 마이크 레벨 하나로 표현). */
+.voice-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 48px;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 2px;
+}
+
+.voice-waveform-bar {
+  flex: 1;
+  min-width: 2px;
+  max-width: 6px;
+  border-radius: 3px;
+  background: var(--muted);
+  height: 12%;
+  transition: height 0.09s ease-out, background 0.2s ease-out;
+}
+
+.voice-waveform.active .voice-waveform-bar {
+  background: var(--accent-listening);
+  animation: voice-waveform-idle 1.4s ease-in-out infinite;
+}
+
+@keyframes voice-waveform-idle {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
@@ -1949,6 +2150,14 @@ a {
   min-height: 160px;
 }
 
+/* 지금 인식 중인 내용의 실시간 미리보기 — 편집 가능한 답변 박스와는 분리된 줄이라,
+   박스 값을 덮어써서 "지워도 안 지워지는" 문제를 일으키지 않는다(2026-09-02). */
+.room-transcript-interim {
+  font-style: italic;
+  opacity: 0.8;
+  margin: -4px 0 0;
+}
+
 .room-panel-title {
   font-size: 13px;
   color: #9fb0cc;
@@ -2147,6 +2356,11 @@ a {
 
 @media (max-width: 480px) {
   .room-header-meta {
+    display: none;
+  }
+  /* "(전체 210개)" 부분까지 더하면 좁은 화면에서 질문 진행 줄이 가로로 넘친다 —
+     모바일에서는 은행 전체 개수는 생략하고 "질문 X/Y · 시간"만 보여준다. */
+  .room-header-bank-total {
     display: none;
   }
 }
@@ -2368,6 +2582,52 @@ a {
 
 .mode-3d-desc {
   max-width: 220px;
+}
+
+/* 실전 모드 카드 안에서 펼쳐지는 지원 직무(소프트웨어/반도체) 선택 — 다른 직무 전용
+   질문이 섞이지 않도록 시작 전에 먼저 고르게 한다. */
+.mode-track-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-track-picker-label {
+  margin: 0;
+}
+
+.mode-track-picker-buttons {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+/* 3개(기본/소프트웨어/반도체)가 좁은 모드 카드 안에서도 한 줄에 들어가도록, 글자 크기와
+   여백을 눈에 띄게 줄이고 flex:1로 폭을 균등하게 나눠 가진다(2026-09-02: 버튼이 너무
+   커서 줄바꿈되던 문제 수정). */
+.btn-3d-track {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 12px;
+  padding: 0.45em 0.3em;
+  white-space: nowrap;
+  background: var(--surface-panel);
+  color: var(--room-text-primary);
+  border: 1px solid var(--border);
+}
+
+.mode-track-picker-cancel {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.mode-track-picker-cancel:hover {
+  color: var(--room-text-primary);
 }
 
 /* ============================================================

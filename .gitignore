@@ -18,3 +18,4 @@ node_modules
 node_modules/
 npm-debug.log*
 面接官.jpg
+tsconfig.tsbuildinfo

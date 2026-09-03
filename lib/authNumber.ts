@@ -8,7 +8,10 @@
 // 저장 기록을 보고 지울 수 있다(복구 수단 없음) — 소규모(약 20명) 개인 연습용 데모라는
 // 전제하에 사용자가 이 트레이드오프를 감수하기로 한 설계다.
 
-const EMAIL_DOMAIN = 'voiceinterviewjp.local'
+// 주의: .local/.test/.invalid/.example 같은 예약된(reserved) TLD는 Supabase(GoTrue)의
+// 이메일 형식 검증에서 "Email address ... is invalid"로 거부될 수 있다(실제로 확인된 문제).
+// 실제 메일이 오가지 않는 가짜 주소이기만 하면 되므로, 예약되지 않은 평범한 형식의 도메인을 쓴다.
+const EMAIL_DOMAIN = 'voiceinterviewjp-users.com'
 
 export function sanitizeIdNumber(raw: string): string {
   return raw.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')

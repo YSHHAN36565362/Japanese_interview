@@ -13,8 +13,8 @@ export default async function HomePage() {
     <div className="home-hero">
       <HeroCard />
 
-      <h1 className="home-title">일본 IT 면접을 일본어로, 반복해서, 비용 부담 없이 연습하세요.</h1>
-      <p className="muted">브라우저 음성 인식/합성만 사용하는 완전 무료 모의 면접 트레이너 데모입니다.</p>
+      <h1 className="home-title">Mensetsu Dojo</h1>
+      <p className="muted">상단의 마이페이지에서 고유번호를 저장해, 면접을 저장해보세요.</p>
       <SupportBanner />
 
       <div className="cta-row cta-row-hero">

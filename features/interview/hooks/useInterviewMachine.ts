@@ -5,13 +5,18 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   REAL_MODE_INTRO_QUESTION,
-  getMainQuestionsByCategory,
+  getBasicTrackQuestions,
+  getQuestionById,
   getQuestionsByCategory,
   getRandomClosingQuestion,
+  sampleMainQuestions,
   shuffle,
   type BankFollowUp,
   type BankQuestion,
+  type JobTrack,
 } from '@/lib/questionBank'
+import { applyResumePriority } from '@/lib/resumeKeywords'
+import { RESUME_PRIORITY_STORAGE_KEY } from '@/lib/resumePriorityStorage'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
 import { decideFollowUp } from '../lib/followUpEngine'
 import { loadUserCustomTerms, normalizeTranscript, findSuggestion, type CustomTerm } from '../lib/transcriptNormalizer'
@@ -23,7 +28,15 @@ import { buildResumeFollowUps } from '@/lib/resume/followUpSynth'
 
 const RESUME_STORAGE_KEY = 'kmove_resume'
 
-export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mode: string }) {
+export function useInterviewMachine({
+  sessionId,
+  mode,
+  track,
+}: {
+  sessionId: string
+  mode: string
+  track?: JobTrack
+}) {
   const router = useRouter()
 
   const [phase, setPhase] = useState<InterviewPhase>('preflight')
@@ -104,22 +117,63 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         resumeExtraQuestionsRef.current = synth.questions
       }
 
-      // 질문 은행이 대폭 늘어난 것을 세션에도 반영해 한 번에 더 다양한 질문이 나오게 한다.
-      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(예: technical 모드는 technical 카테고리만
-      // 씀) 모드마다 poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은
-      // 조합만 나오게 된다. (카테고리별 실제 보유 개수는 data/questions.json 참고 — 늘어나면
-      // 이 값도 다시 검토할 것.)
-      const poolSize = isRealMode ? 16 : mode === 'technical' ? 18 : 20
-      // 이력서 질문 개수만큼 무작위 풀에서 뺀 나머지로 채워 세션 총 질문 수는 그대로 유지한다.
-      const randomPool = shuffle(getMainQuestionsByCategory(categories)).slice(
-        0,
-        Math.max(poolSize - resumeMainQuestions.length, 0)
-      )
-      const pool = shuffle([...resumeMainQuestions, ...randomPool])
-      // 실전 모드는 자기소개로 시작해서, 마지막엔 항상 역질문("최後に、何か質問はありますか。")으로 마무리한다.
-      // 역질문 모드는 더 이상 별도 모드로 선택하지 않는다.
-      const reverseQuestions = isRealMode ? getQuestionsByCategory(['reverse']) : []
-      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool, ...reverseQuestions] : pool
+      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독) 모드마다
+      // poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은 조합만 나오게 된다.
+      // 2026-09-02: "16개는 너무 적다, 꼬리질문 제외 30개 정도는 되어야 한다"는 요청으로
+      // 세 모드 모두 상당히 늘렸다(대분류 총량이 149→170개로 늘어난 것도 반영).
+      const poolSize = isRealMode ? 28 : mode === 'technical' ? 24 : 30
+      // 비슷한 주제의 질문(예: 스트레스 해소법 여러 버전)이 한 세션에 같이 나오지 않도록,
+      // group이 같은 질문 중 하나만 무작위로 골라서 풀을 구성한다. 실전 모드에서 지원 직무
+      // (소프트웨어/반도체)를 골랐다면 그 track과 안 맞는 전용 질문은 애초에 후보에서 뺀다.
+      // "기본 모드"(general)는 무작위 추출이 아니라, 실제 면접에서 거의 항상 나오는 대표
+      // 질문 12개를 정해진 순서 그대로 쓴다(getBasicTrackQuestions).
+      const isBasicTrack = isRealMode && track === 'general'
+      // 실전 모드는 REAL_MODE_INTRO_QUESTION이 이미 자기소개 역할을 하므로, 대분류 풀에
+      // 있는 self_intro("自己紹介をお願いします。")가 무작위로 또 뽑혀서 자기소개를 두 번
+      // 묻는 일이 없도록 실전 모드에서만 제외한다.
+      // (docx 이력서) 질문 개수만큼 무작위 풀에서 뺀 나머지로 채워 세션 총 질문 수는 그대로
+      // 유지한다 — 기본 트랙은 고정 12개라 이 크기 조정 대상이 아니다.
+      const randomPoolSize = Math.max(poolSize - resumeMainQuestions.length, 0)
+      let pool = isBasicTrack
+        ? getBasicTrackQuestions()
+        : sampleMainQuestions(
+            categories,
+            randomPoolSize,
+            isRealMode ? track : undefined,
+            isRealMode ? ['self_intro'] : undefined
+          )
+      // 실전 모드(기본 트랙 제외) 시작 직전에 이력서/자기소개를 붙여넣었다면(ResumeInputStep,
+      // app/interview/page.tsx), 그 키워드로 매칭된 질문을 세션 풀에 우선 포함시킨다.
+      // 기본 모드는 고정 목록이라 적용하지 않는다.
+      if (isRealMode && !isBasicTrack && typeof window !== 'undefined') {
+        const raw = window.sessionStorage.getItem(RESUME_PRIORITY_STORAGE_KEY)
+        window.sessionStorage.removeItem(RESUME_PRIORITY_STORAGE_KEY)
+        if (raw) {
+          try {
+            const priorityIds = JSON.parse(raw) as string[]
+            pool = applyResumePriority(pool, priorityIds)
+          } catch {
+            // 파싱 실패 시 그냥 원래 풀을 그대로 쓴다.
+          }
+        }
+      }
+      // .docx로 업로드한 이력서(app/interview/resume)에서 뽑은 질문(자소서/경력/희망직종)을
+      // 무작위 풀과 섞는다. ResumeInputStep(텍스트 붙여넣기, 위 블록)이 이미 pool의 순서를
+      // 조정했더라도 이 질문들은 그와 별개로 항상 포함된다 — 서로 다른 자료(파싱된 구조 vs
+      // 붙여넣은 원문)에서 나온 것이라 하나를 배제할 이유가 없다. 기본 트랙(고정 12개, 항상
+      // 같은 순서)은 이 취지를 해치므로 섞지 않는다.
+      if (resumeMainQuestions.length > 0 && !isBasicTrack) {
+        pool = shuffle([...resumeMainQuestions, ...pool])
+      }
+      // 실전 모드는 자기소개로 시작한다. 마무리는 기본 모드만 "마지막으로 하고 싶은 말"
+      // (final_word)로 끝내고, 소프트웨어/반도체 트랙은 그대로 역질문
+      // ("最後に、何か質問はありますか。")으로 마무리한다.
+      const closingQuestions = isRealMode
+        ? isBasicTrack
+          ? [getQuestionById('final_word')].filter((q): q is BankQuestion => !!q)
+          : getQuestionsByCategory(['reverse'])
+        : []
+      const finalQuestions = isRealMode ? [REAL_MODE_INTRO_QUESTION, ...pool, ...closingQuestions] : pool
 
       setQuestions(finalQuestions)
       setCurrentQuestion(finalQuestions[0] ?? null)
@@ -214,7 +268,7 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
     setLastFeedback({ questionTextJa: currentQuestion.textJa, analysis })
 
     if (!isGuestRef.current) {
-      await supabase.from('session_answers').insert({
+      const { error: saveError } = await supabase.from('session_answers').insert({
         session_id: sessionId,
         question_id: isFollowUp ? null : currentQuestion.id,
         follow_up_question_id: isFollowUp ? currentQuestion.id : null,
@@ -227,6 +281,13 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         filler_counts: analysis.fillerBreakdown,
         feedback_result: analysis,
       })
+      // 이 insert 실패를 그동안 아무 데도 표시하지 않아서, 저장이 실패해도 사용자는 계속
+      // 다음 질문으로 넘어가며 답변이 전혀 저장되지 않는 것을 전혀 알 수 없었다(2026-09-02
+      // 실제 배포본에서 발견 — Supabase 스키마 불일치로 매 답변이 조용히 실패하고 있었음).
+      // 면접 흐름 자체는 막지 않되, 화면에 눈에 띄는 경고를 남겨서 최소한 알아챌 수 있게 한다.
+      if (saveError) {
+        setError(`답변 저장에 실패했습니다 (진행은 계속됩니다): ${saveError.message}`)
+      }
 
       if (suggestion) {
         await supabase.from('user_custom_terms').upsert(
@@ -264,7 +325,11 @@ export function useInterviewMachine({ sessionId, mode }: { sessionId: string; mo
         // 포함되게 한다 — 이전에는 currentQuestion만 바꾸고 questions/queueIndex는 그대로라
         // 꼬리질문이 진행 표시에 전혀 반영되지 않았다.
         setQuestions((prev) => {
-          const next = [...prev]
+          // 꼬리질문의 대상이 대분류 질문(예: team_project)이라, 세션 시작 시 뽑힌 풀에
+          // 이미 예정되어 있을 수도 있다 — 그대로 두면 지금 꼬리질문으로 물어보고 나서
+          // 나중에 또 같은 질문이 나온다. 지금 물어볼 것이므로 이후 자리에 남아있는 같은
+          // id는 미리 제거해서 같은 질문이 세션에서 두 번 나오지 않게 한다.
+          const next = prev.filter((q) => q.id !== followUpQuestion.id)
           next.splice(queueIndex + 1, 0, followUpQuestion)
           return next
         })
