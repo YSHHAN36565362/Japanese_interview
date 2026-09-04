@@ -18,6 +18,9 @@ const MAX_RATE = 1.4
 const DEFAULT_PITCH = 1
 const MIN_PITCH = 0.5
 const MAX_PITCH = 1.5
+// VOICEVOX(외부 tts.quest) 합성이 이 시간 안에 재생을 시작하지 못하면 브라우저 기본
+// 음성으로 넘어간다 — 외부 서비스가 응답하지 않을 때 면접이 멈춰버리지 않게 하는 상한선.
+const VOICEVOX_TIMEOUT_MS = 8000
 
 export type VoiceOption = { id: string; name: string }
 export type SpeakingBoundary = { charIndex: number; charLength: number } | null
@@ -199,9 +202,32 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
       abortRef.current = controller
       setSpeakingBoundary(null)
       onStart?.()
+
+      // 이 controller가 아직 "현재 재생"인지 확인한다. 새 speak()가 시작돼서 밀려난
+      // 경우에는 그 새 호출이 onStart/onEnd를 책임지므로 여기서 아무것도 하면 안 된다.
+      const isCurrent = () => abortRef.current === controller
+
+      // 2026-09-04 발견한 버그: VOICEVOX(외부 tts.quest) 경로가 응답하지 않으면
+      // synthesizeVoicevox의 첫 fetch에 타임아웃이 없어 그대로 매달려 있고, 그동안
+      // onEnd가 영원히 호출되지 않아 phase가 'interviewerSpeaking'에 갇힌다 —
+      // 그러면 마이크/답변 완료/마지막 질문 버튼이 전부 비활성 상태로 남아 면접을
+      // 아예 진행할 수 없게 된다(실제 브라우저에서 재현됨). 전체 경로에 워치독을 걸어
+      // 일정 시간 안에 재생이 시작되지 않으면 브라우저 기본 음성으로 넘어간다.
+      let settled = false
+      const finishWithNative = () => {
+        if (settled || !isCurrent()) return
+        settled = true
+        controller.abort()
+        abortRef.current = null
+        speakNative(text)
+      }
+      const watchdog = window.setTimeout(finishWithNative, VOICEVOX_TIMEOUT_MS)
+
       synthesizeVoicevox(text, speakerId, controller.signal)
         .then((objectUrl) => {
-          if (controller.signal.aborted) return
+          if (settled || !isCurrent()) return
+          settled = true
+          window.clearTimeout(watchdog)
           const audio = new Audio(objectUrl)
           audio.volume = volumeRef.current
           audio.playbackRate = rate
@@ -215,8 +241,12 @@ export function useSpeechSynthesis({ onStart, onEnd }: Options) {
         .catch(() => {
           // 외부 음성 합성 실패(키리스 경로 불안정, 요청 제한 등) — 무음으로 넘어가는 대신
           // 브라우저 기본 음성(native TTS)으로 자동 대체한다. 질문이 안 들리고 그냥
-          // 답변 단계로 넘어가버리는 문제를 막기 위함.
-          if (!controller.signal.aborted) speakNative(text)
+          // 답변 단계로 넘어가버리는 문제를 막기 위함. 새 speak()에 밀려서 중단된
+          // 경우(isCurrent()가 false)에만 아무것도 하지 않는다.
+          if (settled || !isCurrent()) return
+          settled = true
+          window.clearTimeout(watchdog)
+          speakNative(text)
         })
     },
     [voiceURI, speakNative, onStart, onEnd, rate]

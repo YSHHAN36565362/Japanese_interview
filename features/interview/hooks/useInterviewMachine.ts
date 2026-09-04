@@ -205,6 +205,19 @@ export function useInterviewMachine({
     setPhase((p) => (p === 'interviewerSpeaking' ? (sttSupported ? 'listening' : 'questionReady') : p))
   }, [sttSupported])
 
+  // 안전망(2026-09-04): TTS가 어떤 이유로든 끝났다는 신호를 안 주면(외부 VOICEVOX 응답
+  // 없음, 브라우저가 onend를 안 쏘는 알려진 Web Speech 버그 등) phase가
+  // 'interviewerSpeaking'에 갇히고, 그 상태에서는 마이크·답변 완료·마지막 질문 버튼이
+  // 전부 비활성이라 면접을 아예 진행할 수 없게 된다(실제로 재현된 버그). 낭독이 이 시간을
+  // 넘기면 강제로 다음 단계로 넘겨서 사용자가 최소한 답변은 할 수 있게 한다.
+  useEffect(() => {
+    if (phase !== 'interviewerSpeaking') return
+    const timer = window.setTimeout(() => {
+      setPhase((p) => (p === 'interviewerSpeaking' ? (sttSupported ? 'listening' : 'questionReady') : p))
+    }, 15000)
+    return () => window.clearTimeout(timer)
+  }, [phase, sttSupported, currentQuestion?.id])
+
   const startListening = useCallback(() => {
     if (phase !== 'questionReady') return
     setPhase('listening')
