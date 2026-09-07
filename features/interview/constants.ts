@@ -25,7 +25,6 @@ export const PHASE_STATUS_TEXT: Record<string, string> = {
   interviewerSpeaking: '면접관이 질문을 읽고 있습니다.',
   listening: '답변을 듣고 있습니다. 말한 내용은 화면에 표시됩니다.',
   answerReview: '전사 내용을 확인하고 필요하면 고친 뒤 확정하세요.',
-  followUpReady: '꼬리 질문이 이어집니다.',
   saving: '답변을 저장하고 있습니다...',
   completed: '면접이 종료되었습니다.',
   fallbackText: '텍스트 모드로 답변을 입력해주세요.',

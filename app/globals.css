@@ -3538,6 +3538,48 @@ a {
   color: var(--fg);
 }
 
+/* 세션 시작 전 "연습할 주제 고르기" 체크박스 화면(CategoryPickerStep) — 카테고리가 많을
+   수 있어 preflight-card 기본 max-width보다 조금 넓게 쓴다. */
+.category-picker-card {
+  max-width: 640px;
+}
+
+.category-picker-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.category-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.category-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 13.5px;
+}
+
+.category-picker-item:hover {
+  border-color: var(--border-strong);
+}
+
+.category-picker-item input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 /* ============================================================
    실전 모드 — 일본어 질문 블러 처리 (듣기 연습용, hover 시 선명해짐)
    같은 처리를 한국어 대역(room-question-ko)에도 재사용한다 — 이쪽은 모드와
@@ -3558,7 +3600,7 @@ a {
 }
 
 /* ============================================================
-   RoomControls — 꼬리질문 종료 버튼
+   RoomControls — "마지막 질문하기" 버튼
    ============================================================ */
 .room-control-btn-dojo.end-followup {
   background: var(--warn-bg);

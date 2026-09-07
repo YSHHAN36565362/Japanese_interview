@@ -1,6 +1,6 @@
 // 실전 면접 시작 전, 사용자가 자기소개/이력서 텍스트를 붙여넣으면(선택, 스킵 가능) 그 안의
 // 키워드를 보고 관련 있는 대분류 질문을 세션 풀에 우선 포함시킨다. AI 호출 없이 순수
-// 문자열 포함 검사만 사용한다(0원 운영 원칙) — follow_ups.txt의 키워드 매칭과 같은 방식이다.
+// 문자열 포함 검사만 사용한다(0원 운영 원칙).
 import { getQuestionById, type BankQuestion } from './questionBank'
 
 export interface ResumeKeywordEntry {
@@ -37,7 +37,7 @@ export const RESUME_KEYWORD_MAP: ResumeKeywordEntry[] = [
   },
 ]
 
-// 대소문자 구분 없이 부분 문자열 포함 여부만 검사한다(AI 없이, follow_ups.txt와 같은 방식).
+// 대소문자 구분 없이 부분 문자열 포함 여부만 검사한다(AI 없이).
 // 매칭된 question id를 사전에 나열한 순서 그대로, 중복 없이 반환한다.
 export function matchResumeKeywords(resumeText: string): string[] {
   const normalized = resumeText.toLowerCase()

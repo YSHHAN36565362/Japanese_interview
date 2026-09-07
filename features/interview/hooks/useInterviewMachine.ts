@@ -11,21 +11,19 @@ import {
   getRandomClosingQuestion,
   sampleMainQuestions,
   shuffle,
-  type BankFollowUp,
   type BankQuestion,
   type JobTrack,
+  type TopicCategoryId,
 } from '@/lib/questionBank'
 import { applyResumePriority } from '@/lib/resumeKeywords'
 import { RESUME_PRIORITY_STORAGE_KEY } from '@/lib/resumePriorityStorage'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
 import { checkGrammar } from '../lib/grammarCheck'
-import { decideFollowUp } from '../lib/followUpEngine'
 import { loadUserCustomTerms, normalizeTranscript, findSuggestion, type CustomTerm } from '../lib/transcriptNormalizer'
 import { MODE_TO_CATEGORY } from '../constants'
 import type { InterviewPhase, LastFeedback } from '../types'
 import type { ParsedResume } from '@/lib/resume/types'
 import { buildResumeMainQuestions } from '@/lib/resume/resumeQuestions'
-import { buildResumeFollowUps } from '@/lib/resume/followUpSynth'
 
 const RESUME_STORAGE_KEY = 'kmove_resume'
 
@@ -33,10 +31,14 @@ export function useInterviewMachine({
   sessionId,
   mode,
   track,
+  topicCategories,
 }: {
   sessionId: string
   mode: string
   track?: JobTrack
+  // 세션 시작 전 카테고리 체크박스 화면(app/interview/page.tsx)에서 사용자가 고른 세부
+  // 주제 id 목록. 비어 있거나 안 넘기면(기본 트랙 등) 필터링 없이 전부 후보가 된다.
+  topicCategories?: TopicCategoryId[]
 }) {
   const router = useRouter()
 
@@ -48,11 +50,7 @@ export function useInterviewMachine({
   const [questions, setQuestions] = useState<BankQuestion[]>([])
   const [queueIndex, setQueueIndex] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState<BankQuestion | null>(null)
-  const [isFollowUp, setIsFollowUp] = useState(false)
   const [isFinalQuestion, setIsFinalQuestion] = useState(false)
-  const askedFollowUpsRef = useRef<Set<string>>(new Set())
-  const resumeExtraRulesRef = useRef<BankFollowUp[]>([])
-  const resumeExtraQuestionsRef = useRef<BankQuestion[]>([])
 
   const [interimTranscript, setInterimTranscript] = useState('')
   const [draftTranscript, setDraftTranscript] = useState('')
@@ -84,8 +82,8 @@ export function useInterviewMachine({
       setIsGuest(guest)
       customTermsRef.current = guest ? [] : await loadUserCustomTerms(data.user.id)
 
-      // 이력서 업로드(/interview/resume)를 거쳤다면 그 결과에서 뽑은 질문·꼬리질문을 기존
-      // 무작위 풀과 섞어 쓴다. 로그인 사용자는 Supabase(user_resumes)에서, 게스트는
+      // 이력서 업로드(/interview/resume)를 거쳤다면 그 결과에서 뽑은 질문을 기존 무작위
+      // 풀과 섞어 쓴다. 로그인 사용자는 Supabase(user_resumes)에서, 게스트는
       // sessionStorage에서만 읽는다(게스트 데이터는 Supabase에 절대 쓰지 않음).
       let parsedResume: ParsedResume | null = null
       if (guest) {
@@ -113,9 +111,6 @@ export function useInterviewMachine({
         // "기술 면접"(categories=['technical']) 모드에도 personality/culture_fit인 자소서
         // 질문이 섞여 들어와 모드 취지에 어긋난다.
         resumeMainQuestions = buildResumeMainQuestions(parsedResume).filter((q) => categories.includes(q.category))
-        const synth = buildResumeFollowUps(parsedResume)
-        resumeExtraRulesRef.current = synth.rules
-        resumeExtraQuestionsRef.current = synth.questions
       }
 
       // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독) 모드마다
@@ -141,7 +136,8 @@ export function useInterviewMachine({
             categories,
             randomPoolSize,
             isRealMode ? track : undefined,
-            isRealMode ? ['self_intro'] : undefined
+            isRealMode ? ['self_intro'] : undefined,
+            topicCategories
           )
       // 실전 모드(기본 트랙 제외) 시작 직전에 이력서/자기소개를 붙여넣었다면(ResumeInputStep,
       // app/interview/page.tsx), 그 키워드로 매칭된 질문을 세션 풀에 우선 포함시킨다.
@@ -252,7 +248,6 @@ export function useInterviewMachine({
   }
 
   function goToNextInQueue() {
-    setIsFollowUp(false)
     const nextIndex = queueIndex + 1
     if (nextIndex >= questions.length) {
       setPhase('completed')
@@ -264,9 +259,8 @@ export function useInterviewMachine({
     setPhase('questionReady')
   }
 
-  // 답변 확정: 정규화 → 규칙 기반 평가 → 저장 → 꼬리질문 판단 → 다음 질문
-  // skipFollowUp이 true면("꼬리질문 종료" 버튼) 꼬리질문 판단을 건너뛰고 바로 다음 대분류 질문으로 넘어간다.
-  const confirmAnswer = useCallback(async (opts?: { skipFollowUp?: boolean }) => {
+  // 답변 확정: 정규화 → 규칙 기반 평가 → 저장 → 다음 질문
+  const confirmAnswer = useCallback(async () => {
     if (!currentQuestion || !userId) return
     setPhase('saving')
     setSaving(true)
@@ -287,8 +281,7 @@ export function useInterviewMachine({
     if (!isGuestRef.current) {
       const { error: saveError } = await supabase.from('session_answers').insert({
         session_id: sessionId,
-        question_id: isFollowUp ? null : currentQuestion.id,
-        follow_up_question_id: isFollowUp ? currentQuestion.id : null,
+        question_id: currentQuestion.id,
         stt_raw_text: rawText,
         corrected_answer_text: finalText,
         question_text_snapshot: currentQuestion.textJa,
@@ -315,57 +308,17 @@ export function useInterviewMachine({
       }
     }
 
-    // "마지막 질문하기" 버튼으로 들어온 질문(final_word)에 답했다면, 꼬리질문 없이 바로 면접을 종료한다.
+    // "마지막 질문하기" 버튼으로 들어온 질문(final_word)에 답했다면 바로 면접을 종료한다.
     if (isFinalQuestion) {
       setSaving(false)
       setPhase('completed')
       return
     }
 
-    if (!opts?.skipFollowUp) {
-      // isFollowUp 여부와 무관하게 항상 꼬리질문을 우선 확인한다 (꼬리질문 체인이 계속 이어질 수 있음).
-      // 같은 대상 질문은 askedFollowUpsRef가 한 번만 나오도록 막아주므로 무한 루프 걱정은 없다.
-      const followUpQuestion = await decideFollowUp(
-        currentQuestion.id,
-        finalText,
-        durationSeconds,
-        currentQuestion.expectedDurationSec,
-        askedFollowUpsRef.current,
-        resumeExtraRulesRef.current,
-        resumeExtraQuestionsRef.current,
-        analysis
-      )
-      if (followUpQuestion) {
-        askedFollowUpsRef.current.add(followUpQuestion.id)
-        setIsFollowUp(true)
-        // 꼬리질문을 큐에 실제로 끼워 넣어서(현재 위치 바로 다음) "질문 X / Y"에 꼬리질문까지
-        // 포함되게 한다 — 이전에는 currentQuestion만 바꾸고 questions/queueIndex는 그대로라
-        // 꼬리질문이 진행 표시에 전혀 반영되지 않았다.
-        setQuestions((prev) => {
-          // 꼬리질문의 대상이 대분류 질문(예: team_project)이라, 세션 시작 시 뽑힌 풀에
-          // 이미 예정되어 있을 수도 있다 — 그대로 두면 지금 꼬리질문으로 물어보고 나서
-          // 나중에 또 같은 질문이 나온다. 지금 물어볼 것이므로 이후 자리에 남아있는 같은
-          // id는 미리 제거해서 같은 질문이 세션에서 두 번 나오지 않게 한다.
-          const next = prev.filter((q) => q.id !== followUpQuestion.id)
-          next.splice(queueIndex + 1, 0, followUpQuestion)
-          return next
-        })
-        setQueueIndex((idx) => idx + 1)
-        setCurrentQuestion(followUpQuestion)
-        resetForQuestion()
-        setSaving(false)
-        setPhase('questionReady')
-        return
-      }
-    }
-
     setSaving(false)
     goToNextInQueue()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestion, userId, draftTranscript, interimTranscript, isFollowUp, isFinalQuestion, suggestion, sessionId, queueIndex])
-
-  // "꼬리질문 종료" 버튼: 지금 답변은 저장하되, 꼬리질문 판단은 건너뛰고 바로 다음 대분류 질문으로.
-  const endFollowUp = useCallback(() => confirmAnswer({ skipFollowUp: true }), [confirmAnswer])
+  }, [currentQuestion, userId, draftTranscript, interimTranscript, isFinalQuestion, suggestion, sessionId])
 
   // "마지막 질문하기" 버튼: 'closing' 태그가 붙은 여러 마무리 질문(final_word 포함) 중
   // 하나를 무작위로 골라 등장시킨다 — 매번 다른 질문이 나온다. 이 태그가 붙은 질문들은
@@ -373,7 +326,6 @@ export function useInterviewMachine({
   const requestFinalQuestion = useCallback(() => {
     const finalQuestion = getRandomClosingQuestion()
     if (!finalQuestion) return
-    setIsFollowUp(false)
     setIsFinalQuestion(true)
     setCurrentQuestion(finalQuestion)
     resetForQuestion()
@@ -398,7 +350,6 @@ export function useInterviewMachine({
     questions,
     queueIndex,
     currentQuestion,
-    isFollowUp,
     interimTranscript,
     draftTranscript,
     setDraftTranscript,
@@ -418,7 +369,6 @@ export function useInterviewMachine({
     setInterimTranscript,
     handleSpeechError,
     confirmAnswer,
-    endFollowUp,
     requestFinalQuestion,
     requestEnd,
   }

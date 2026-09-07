@@ -6,7 +6,7 @@ import type { ParsedResume } from '@/lib/resume/types'
 // 이력서는 텍스트 붙여넣기가 아니라 K-Move 이력서·자기소개서 워드(.docx) 양식을 파일로
 // 업로드받는다. 서버(/api/resume/parse)가 그 파일을 파싱해서 경력·기술스택·자기소개서를
 // 뽑아내고, 로그인 사용자는 Supabase(user_resumes)에 저장하며(게스트는 sessionStorage에만),
-// useInterviewMachine이 세션 시작 시 그 결과를 읽어 맞춤 질문·꼬리질문을 섞어 낸다. 여기서는
+// useInterviewMachine이 세션 시작 시 그 결과를 읽어 맞춤 질문을 섞어 낸다. 여기서는
 // 업로드/파싱까지만 하고 "스킵하기"나 "이 이력서로 시작하기"를 누르면 실제로 세션이 시작된다.
 const RESUME_STORAGE_KEY = 'kmove_resume'
 
@@ -65,7 +65,7 @@ export default function ResumeInputStep({
         <h2 className="preflight-title">이력서 파일 업로드 (선택)</h2>
         <p className="preflight-subtitle">
           K-Move 이력서·자기소개서 워드(.docx) 양식을 업로드하면, 그 안의 경력·기술스택·자기소개서
-          내용에서 맞춤 질문과 꼬리질문이 자동으로 만들어져 이번 세션에 함께 출제됩니다. 업로드하지
+          내용에서 맞춤 질문이 자동으로 만들어져 이번 세션에 함께 출제됩니다. 업로드하지
           않아도 스킵하고 그대로 진행할 수 있습니다.
         </p>
 

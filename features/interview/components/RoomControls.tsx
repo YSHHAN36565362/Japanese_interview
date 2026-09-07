@@ -17,7 +17,6 @@ export default function RoomControls({
   onToggleAudioRecording,
   onPrimaryAction,
   onFinalQuestion,
-  onEndFollowUp,
   onEnd,
   saving,
 }: {
@@ -35,7 +34,6 @@ export default function RoomControls({
   onToggleAudioRecording: () => void
   onPrimaryAction: () => void
   onFinalQuestion: () => void
-  onEndFollowUp: () => void
   onEnd: () => void
   saving: boolean
 }) {
@@ -46,7 +44,6 @@ export default function RoomControls({
   const primaryDisabled = sttSupported
     ? phase !== 'listening' && phase !== 'answerReview'
     : phase !== 'questionReady' && phase !== 'answerReview'
-  const endFollowUpDisabled = phase !== 'answerReview' || saving
   const finalQuestionDisabled = phase !== 'answerReview' || saving
 
   return (
@@ -113,14 +110,6 @@ export default function RoomControls({
             title="지금까지의 질문을 마치고, 마지막으로 하고 싶은 말을 묻습니다"
           >
             마지막 질문하기
-          </button>
-          <button
-            className="room-control-btn-dojo end-followup"
-            onClick={onEndFollowUp}
-            disabled={endFollowUpDisabled}
-            title="지금까지의 꼬리질문을 마치고 다른 대분류 질문으로 넘어갑니다"
-          >
-            꼬리질문 종료
           </button>
         </div>
 

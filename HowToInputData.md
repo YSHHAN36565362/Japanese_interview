@@ -1,8 +1,12 @@
 # HowToInputData — data/ 폴더만 고치면 자동으로 반영되는 법
 
 `data/` 폴더 안에 질문 후보 파일을 넣고 `npm run merge-data` 한 번만 실행하면, 실제로 앱이
-쓰는 `data/questions.json`과 `public/data/follow_ups.txt`에 자동으로 합쳐집니다. **파일을 직접
-열어서 복사/붙여넣기 할 필요가 없습니다.**
+쓰는 `data/questions.json`에 자동으로 합쳐집니다. **파일을 직접 열어서 복사/붙여넣기 할 필요가
+없습니다.**
+
+2026-09-07부로 꼬리질문(답변 키워드로 자동으로 이어지는 후속 질문) 기능은 완전히
+제거되었습니다. 대신 세션 시작 전에 사용자가 "연습할 주제"를 체크박스로 직접 고르는 방식으로
+바뀌었습니다 — 그래서 새 질문마다 아래 §2의 `topicCategory` 필드가 **필수**입니다.
 
 ---
 
@@ -10,10 +14,7 @@
 
 1. `data/` 폴더 어딘가에 새 질문이 담긴 `.json` 파일(스키마는 §2 참고)을 둔다.
 2. 터미널에서 `npm run merge-data` 실행.
-3. `data/questions.json`이 자동으로 갱신된다. 뭐가 추가됐는지 터미널에 그대로 출력된다.
-
-방금 이 방식으로 `data/questions_ver1.json`에 있던 질문 45개가 실제로 `data/questions.json`에
-자동 병합되어, 지금 `data/questions.json`은 총 **59개** 질문을 가지고 있습니다 (기존 14개 + 새 45개).
+3. `data/questions.json`이 자동으로 갱신된다. 뭐가 추가/건너뛰어졌는지 터미널에 그대로 출력된다.
 
 ---
 
@@ -28,6 +29,7 @@
     {
       "id": "새로운_질문_id",
       "category": "personality",
+      "topicCategory": "self_personality",
       "expectedDurationSec": 60,
       "textJa": "일본어 질문 문장 (반드시 경어체)",
       "tags": ["선택사항"]
@@ -39,46 +41,26 @@
 | 필드 | 필수 | 설명 |
 |---|---|---|
 | `id` | ✅ | 영문 slug. `data/questions.json`에 이미 있는 id와 겹치면 **자동으로 건너뜁니다** (덮어쓰지 않음). |
-| `category` | ✅ | `personality` \| `technical` \| `culture_fit` \| `reverse` |
+| `category` | ✅ | `personality` \| `technical` \| `culture_fit` \| `reverse` (예전부터 있던 큰 분류, 지금은 주로 참고용) |
+| `topicCategory` | ✅ | 체크박스 화면에서 이 질문이 속할 세부 주제 id. `lib/questionBank.ts`의 `TOPIC_CATEGORIES` 배열에 있는 값 중 하나여야 하며, **없으면 병합 시 건너뜁니다**(체크박스 화면에 절대 안 나오게 되므로). 어느 카테고리가 있는지는 `data/Question/{日本,Software,半導体}/*.md`를 참고하세요. |
 | `textJa` | ✅ | 일본어 질문 문장. 항상 です・ます체(경어)로 작성. |
 | `expectedDurationSec` | ❌ (생략 시 60) | 권장 답변 시간(초) |
-| `tags` | ❌ | 자유 태그. 꼬리질문 대상이면 관례적으로 `"follow_up"` 포함 |
+| `group` | ❌ | 비슷한 주제의 질문끼리 묶는 그룹 id. 같은 그룹은 한 세션에 하나만 나옵니다. |
+| `track` | ❌ | `software` \| `semiconductor`. 특정 지원 직무 전용 질문이면 지정(공통이면 생략). |
+| `tags` | ❌ | 자유 태그. `"closing"`을 넣으면 "마지막 질문하기" 버튼 전용(무작위 첫 질문 풀에서 제외)이 됩니다. |
 
 파일 이름은 자유입니다 (`questions_ver2.json`, `my_new_questions.json` 등). **`data/questions.json`
 이라는 이름만 아니면** 스크립트가 찾아서 읽습니다.
 
 `npm run merge-data`를 실행하면:
 - 새 `id`는 `data/questions.json`에 추가됩니다.
-- 이미 있는 `id`, 혹은 `id`/`category`/`textJa` 중 하나라도 빠진 항목은 **건너뛰고 이유를
-  터미널에 출력**합니다 (조용히 무시하지 않습니다).
-- 원본 초안 파일(`questions_ver1.json` 등)은 그대로 남아있습니다. 지워지지 않습니다.
+- 이미 있는 `id`, `id`/`category`/`textJa` 중 하나라도 빠진 항목, 또는 `topicCategory`가 없는
+  항목은 **건너뛰고 이유를 터미널에 출력**합니다 (조용히 무시하지 않습니다).
+- 원본 초안 파일은 그대로 남아있습니다. 지워지지 않습니다.
 
 ---
 
-## 3. 꼬리질문 규칙을 추가하고 싶을 때 — `.txt` 파일
-
-파일 이름에 **`follow up`(또는 `follow_up`, `followup`, 대소문자 무관)이 들어간** `.txt` 파일을
-`data/` 폴더 아래 아무 곳에나 두면 됩니다. 예: `data/drafts/team_follow_ups.txt`
-
-```
-# 형식: 원래질문id | 감지할단어1,감지할단어2,... | 다음질문id | 우선순위(선택)
-why_this_company | 安定,安定性 | why_not_other_company | 1
-```
-
-- `#`으로 시작하는 줄, 빈 줄은 무시됩니다.
-- `원래질문id`와 `다음질문id`는 `data/questions.json`에 **이미 존재하는 id**여야 실제로 동작합니다
-  (스크립트가 id 존재 여부까지 검사하지는 않으니, 병합 후 오타가 없는지 직접 한 번 확인하세요).
-- `npm run merge-data`를 실행하면 이 줄들이 `public/data/follow_ups.txt` 맨 끝에 그대로
-  추가됩니다. **이미 똑같은 줄이 있으면 중복 추가하지 않습니다.**
-
-지금은 `data/` 안에 이런 `follow up` 이름이 붙은 `.txt` 파일이 없어서, 방금 실행에서는 꼬리질문
-쪽은 0개가 병합되었습니다. `data/questions_ver1.json`의 여러 질문에 `"follow_up"` 태그가 붙어
-있는데, 이 질문들을 실제로 어떤 메인 질문 뒤에 이어지게 할지는 아직 정해지지 않았기 때문에
-사람이 판단해서 위 형식으로 `.txt` 파일을 만들어야 합니다 (`readme_5.md` §7에 후보 목록이 있습니다).
-
----
-
-## 4. 실행 방법
+## 3. 실행 방법
 
 ```bash
 npm run merge-data
@@ -89,86 +71,36 @@ npm run merge-data
 
 ```
 [질문] 스캔한 초안 파일: 1개
-  - data/questions_ver1.json
-[질문] 새로 추가됨: 45개
-  + self_pr  (data/questions_ver1.json)
+  - data/drafts/my_new_questions.json
+[질문] 새로 추가됨: 3개
+  + self_pr_v2  (data/drafts/my_new_questions.json)
   ...
-[꼬리질문] 스캔한 초안 파일: 0개
-[꼬리질문] 새로 추가됨: 0개
 ```
 
 이 명령은 **로컬에서만** 실행하면 됩니다 — Vercel 배포 과정에는 포함되어 있지 않습니다. 즉,
-`npm run merge-data`로 `data/questions.json`을 갱신한 뒤 그 결과 파일을 GitHub Desktop으로
-커밋/푸시해야 실제 배포본에 반영됩니다.
+`npm run merge-data`로 `data/questions.json`을 갱신한 뒤 그 결과 파일을 커밋/푸시해야 실제
+배포본에 반영됩니다.
 
 ---
 
-## 5. 병합 후 확인할 것
+## 4. 병합 후 확인할 것
 
 1. `git status` / `git diff data/questions.json`으로 실제로 뭐가 추가됐는지 확인.
-2. 새로 추가된 질문에 개인정보·민감정보가 없는지 다시 한 번 확인 (`readme_5.md` §5 체크리스트).
-3. `"follow_up"` 태그가 붙은 질문은 §3 형식대로 `.txt` 파일을 만들어 한 번 더 `npm run merge-data`를
-   돌리거나, `public/data/follow_ups.txt`에 직접 한 줄 추가.
-4. 문제 없으면 `data/questions.json`(그리고 바뀌었다면 `public/data/follow_ups.txt`)만
-   커밋/푸시. `data/questions_ver1.json` 같은 초안 파일은 `.gitignore`에 이미 등록되어 있어
-   실수로 같이 올라가지 않습니다.
+2. 새로 추가된 질문에 개인정보·민감정보가 없는지 다시 한 번 확인.
+3. 새 질문이 속한 `data/Question/{日本,Software,半導体}/` 아래 해당 카테고리 `.md` 파일도 함께
+   손으로 갱신(선택이지만, 사람이 검토하기 쉬워집니다 — 자동 갱신되지 않습니다).
+4. 문제 없으면 `data/questions.json`만 커밋/푸시. `data/drafts/*.json` 같은 초안 파일은
+   `.gitignore`에 이미 등록되어 있어 실수로 같이 올라가지 않습니다.
 
 ---
 
-## 6. 이 자동화가 하지 않는 것 (알아두면 좋은 한계)
+## 5. 이 자동화가 하지 않는 것 (알아두면 좋은 한계)
 
 - **개인정보를 자동으로 걸러내지 않습니다.** 초안 파일에 실명·학교명 같은 민감한 내용이 있어도
-  스크립트는 그대로 병합합니다. 병합 *전에* 사람이 직접 걸러내야 합니다 (`readme_5.md` §5).
+  스크립트는 그대로 병합합니다. 병합 *전에* 사람이 직접 걸러내야 합니다.
 - **id 중복 외의 내용 검증은 하지 않습니다.** 예를 들어 같은 질문을 문구만 살짝 바꿔 다른 id로
   두 번 넣으면 중복으로 잡히지 않고 둘 다 들어갑니다.
-- **`missing_keyword`/`answer_length` 같은 다른 트리거 타입은 아직 `.txt` 파일로 못 씁니다.**
-  지금 `public/data/follow_ups.txt` 파서는 `keyword` 트리거 한 줄짜리 형식만 이해합니다
-  (`readme_5.md` §7 참고). 다른 트리거가 필요해지면 알려주시면 스크립트/파서를 함께 확장하겠습니다.
+- **`data/Question/*.md` 참고 문서는 자동 갱신되지 않습니다.** 병합 스크립트는 `data/questions.json`만
+  건드립니다 — 사람이 읽는 카테고리별 목록은 새 질문을 추가할 때 손으로 함께 갱신해주세요.
 - Supabase에 있는 개인별 실제 면접 기록(세션/답변)은 이 스크립트와 전혀 관계없습니다. 이 스크립트는
-  오직 "질문 은행"(`data/questions.json`, `public/data/follow_ups.txt`)만 다룹니다.
-
----
-
-## 7. 실전 예시 — "프로젝트"라는 단어가 나오면 특정 꼬리질문으로 이어지게 하기
-
-실제로 이번에 추가한 예시로 설명합니다: "team_project 질문에 답할 때 'プロジェクト'라는 단어가
-나오면, '그 경험을 살려 당사에서 어떤 일을 할 수 있다고 생각하나요?'라고 이어서 묻고 싶다."
-
-**1단계 — 꼬리질문 대상이 될 새 질문을 만든다** (`data/drafts/project_contribution_question.json`):
-```json
-{
-  "questions": [
-    {
-      "id": "project_contribution",
-      "category": "culture_fit",
-      "expectedDurationSec": 60,
-      "textJa": "その経験を活かして、当社ではどのようなことができると思いますか。",
-      "tags": ["follow_up"]
-    }
-  ]
-}
-```
-
-**2단계 — 어떤 질문 뒤에, 어떤 단어가 나오면 이어질지 규칙을 쓴다** (`data/drafts/followup_rules_batch2.txt`):
-```
-team_project | プロジェクト | project_contribution | 5
-```
-`team_project`에 답할 때 답변에 "プロジェクト"가 들리면 `project_contribution`으로 이어진다는
-뜻이고, 맨 뒤 `5`는 우선순위입니다.
-
-**3단계** — `npm run merge-data` 실행. 끝.
-
-### 우선순위(마지막 숫자)를 왜 신경 써야 하는가
-
-한 질문(parent id)에 여러 규칙이 걸려 있을 수 있습니다. 예를 들어 `team_project`에는 이미
-`team_project | チーム,プロジェクト,担当 | role_detail | 1`(담당 역할을 되묻는 규칙)이 있었는데,
-여기에 "プロジェクト" 키워드로 새 규칙(`project_contribution`, 우선순위 5)을 추가하면 **숫자가
-큰 규칙부터 먼저 검사**하므로, "プロジェクト"라는 단어만 나와도 새 규칙이 먼저 걸립니다.
-
-중요한 점: `project_contribution`이 **그 인터뷰 세션 안에서 이미 한 번 물어봤다면**, 엔진이
-자동으로 그 규칙을 건너뛰고 그 다음 우선순위 규칙(`role_detail`)으로 넘어갑니다. 즉 같은
-질문을 두 번 묻지 않으면서도 자연스럽게 다음 단계 꼬리질문으로 이어집니다 — 이 동작을 위해
-별도로 손댈 코드는 없고, 규칙에 우선순위만 잘 매겨주면 됩니다.
-
-**정리**: 여러 키워드가 겹칠 수 있는 상황이면, 더 구체적으로 물어보고 싶은 꼬리질문에 더 높은
-우선순위 숫자를 주세요. 겹치지 않는 키워드라면 순서는 상관없습니다.
+  오직 "질문 은행"(`data/questions.json`)만 다룹니다.

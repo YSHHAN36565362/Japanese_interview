@@ -1,4 +1,4 @@
-// 질문/꼬리질문 관련 타입은 lib/questionBank.ts (data/questions.json 기반)를 참고하세요.
+// 질문 관련 타입은 lib/questionBank.ts (data/questions.json 기반)를 참고하세요.
 // 이 파일에는 Supabase에 실제로 저장되는 사용자별 데이터 타입만 둡니다.
 export type JlptLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1'
 export type KeigoMode = 'forced' | 'flexible' | 'casual_allowed'
@@ -14,6 +14,8 @@ export interface SessionAnswer {
   id: string
   session_id: string
   question_id: string | null
+  // 레거시 컬럼 — 꼬리질문 기능이 있던 시절(~2026-09-07)의 과거 기록에만 값이 있고,
+  // 이제는 새 답변에 절대 채워지지 않는다. 결과 화면에서 과거 세션 표시용으로만 읽는다.
   follow_up_question_id: string | null
   stt_raw_text: string | null
   corrected_answer_text: string | null

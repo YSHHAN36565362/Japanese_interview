@@ -48,8 +48,7 @@ export function buildEssayQuestions(essays: ParsedResume['essays']): BankQuestio
     .map((key) => RESUME_ESSAY_QUESTIONS[key])
 }
 
-// followUpSynth.ts가 경력 질문의 부모 id를 그대로 참조하므로, id 생성 규칙을 한 곳에 모아
-// 두 파일이 서로 다른 id를 만들어내는 사고를 막는다.
+// id 생성 규칙을 한 곳에 모아둔다(buildCareerQuestions가 사용).
 export function careerQuestionId(index: number): string {
   return `resume_career_${index}`
 }

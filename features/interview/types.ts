@@ -8,7 +8,6 @@ export type InterviewPhase =
   | 'interviewerSpeaking'
   | 'listening' // 사용자의 답변 수집 중
   | 'answerReview' // 전사 편집 및 다음 질문 확인
-  | 'followUpReady'
   | 'saving'
   | 'completed'
   | 'fallbackText'
@@ -23,17 +22,10 @@ export type InterviewEvent =
   | { type: 'SET_INTERIM'; text: string }
   | { type: 'SET_DRAFT'; text: string }
   | { type: 'ANSWER_CONFIRMED' }
-  | { type: 'FOLLOW_UP_READY'; question: BankQuestion }
-  | { type: 'FOLLOW_UP_STARTED' }
   | { type: 'SAVE_STARTED' }
   | { type: 'SAVE_FINISHED'; hasNext: boolean; nextQuestion?: BankQuestion }
   | { type: 'DEVICE_UNAVAILABLE' }
   | { type: 'END_SESSION' }
-
-export interface QueueItem {
-  question: BankQuestion
-  isFollowUp: boolean
-}
 
 export interface LastFeedback {
   questionTextJa: string

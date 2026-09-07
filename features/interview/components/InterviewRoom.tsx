@@ -5,7 +5,7 @@ import { useMediaRecorder } from '@/lib/useMediaRecorder'
 import { useInterviewMachine } from '../hooks/useInterviewMachine'
 import { useMediaDevices } from '../hooks/useMediaDevices'
 import { useAudioLevel } from '../hooks/useAudioLevel'
-import type { JobTrack } from '@/lib/questionBank'
+import type { JobTrack, TopicCategoryId } from '@/lib/questionBank'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis'
 import { useSessionTimer } from '../hooks/useSessionTimer'
@@ -24,12 +24,14 @@ export default function InterviewRoom({
   sessionId,
   mode,
   track,
+  topicCategories,
 }: {
   sessionId: string
   mode: string
   track?: JobTrack
+  topicCategories?: TopicCategoryId[]
 }) {
-  const machine = useInterviewMachine({ sessionId, mode, track })
+  const machine = useInterviewMachine({ sessionId, mode, track, topicCategories })
   const media = useMediaDevices()
   const micLevel = useAudioLevel(media.micStream)
 
@@ -192,7 +194,6 @@ export default function InterviewRoom({
               <InterviewStage
                 question={machine.currentQuestion}
                 phase={machine.phase}
-                isFollowUp={machine.isFollowUp}
                 blurQuestion={mode === 'real'}
                 onReplay={handleReplay}
                 voices={tts.voices}
@@ -313,7 +314,6 @@ export default function InterviewRoom({
             onToggleAudioRecording={() => (audioRecorder.recording ? audioRecorder.stop() : audioRecorder.start())}
             onPrimaryAction={handlePrimaryAction}
             onFinalQuestion={machine.requestFinalQuestion}
-            onEndFollowUp={machine.endFollowUp}
             onEnd={handleEnd}
             saving={machine.saving}
           />

@@ -7,7 +7,6 @@ type AnswerRow = {
   duration_seconds: number | null
   politeness_score_ratio: number | null
   question?: { text_ja: string } | null
-  follow_up?: { text_ja: string } | null
 }
 
 type SessionRow = {
@@ -32,7 +31,7 @@ export default function MarkdownExportButton({
     lines.push('')
 
     answers.forEach((a, i) => {
-      const q = a.question?.text_ja ?? a.follow_up?.text_ja ?? ''
+      const q = a.question?.text_ja ?? ''
       lines.push(`## ${i + 1}. ${q}`)
       lines.push('')
       lines.push(a.corrected_answer_text ?? '')

@@ -11,7 +11,6 @@ import VoiceWaveform from './VoiceWaveform'
 export default function InterviewStage({
   question,
   phase,
-  isFollowUp,
   blurQuestion,
   onReplay,
   voices,
@@ -35,7 +34,6 @@ export default function InterviewStage({
 }: {
   question: BankQuestion
   phase: InterviewPhase
-  isFollowUp: boolean
   blurQuestion: boolean
   onReplay: () => void
   voices: VoiceOption[]
@@ -105,7 +103,7 @@ export default function InterviewStage({
 
       <div className="room-question-card">
         <div className="room-question-kicker">
-          <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
+          <span className="badge">질문</span>
           {voices.length > 0 && (
             <select
               className="room-voice-select"
