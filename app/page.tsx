@@ -3,6 +3,10 @@ import SupportBanner from '@/components/SupportBanner'
 import { createClient } from '@/lib/supabase/server'
 import { getMainQuestionCount } from '@/lib/questionBank'
 
+// 마지막으로 기능을 바꾸고 배포할 때마다 이 값을 손으로 갱신한다(자동화된 빌드 버전이
+// 아니라, "지금 보고 있는 화면이 최신인지" 눈으로 바로 확인하고 싶다는 요청으로 추가).
+const APP_VERSION = 'ver.2026.09.07.22:06'
+
 export default async function HomePage() {
   const supabase = await createClient()
   const {
@@ -14,6 +18,7 @@ export default async function HomePage() {
   return (
     <div className="home-hero">
       <div className="home-hero-main">
+        <span className="home-version-badge">{APP_VERSION}</span>
         <SupportBanner />
 
         <h1 className="home-headline">

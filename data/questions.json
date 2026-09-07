@@ -19,7 +19,8 @@
       "tags": [
         "self_intro"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "간단히 자기소개를 부탁드립니다."
     },
     {
       "id": "motivation",
@@ -30,7 +31,8 @@
         "motivation",
         "basic_track"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "지원 동기를 알려주세요."
     },
     {
       "id": "strength",
@@ -41,7 +43,8 @@
         "strength",
         "team"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "당신의 강점은 무엇인가요?"
     },
     {
       "id": "weakness",
@@ -52,7 +55,8 @@
         "weakness"
       ],
       "group": "strengths_weaknesses",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "당신의 약점은 무엇인가요?"
     },
     {
       "id": "team_project",
@@ -62,7 +66,8 @@
       "tags": [
         "team_project"
       ],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "팀으로 진행했던 프로젝트에 대해 알려주세요."
     },
     {
       "id": "problem_solving",
@@ -72,7 +77,8 @@
       "tags": [
         "problem_solving"
       ],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "업무나 개발 중에 마주한 문제와 그 해결 방법을 알려주세요."
     },
     {
       "id": "conflict",
@@ -83,7 +89,8 @@
         "conflict"
       ],
       "group": "team_opinion_conflict",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "팀 내에서 의견이 대립했을 때 어떻게 대처하나요?"
     },
     {
       "id": "stress",
@@ -94,7 +101,8 @@
       "tags": [
         "stress"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "스트레스를 느낄 때 어떻게 대처하나요?"
     },
     {
       "id": "reverse_question",
@@ -104,7 +112,8 @@
       "tags": [
         "reverse_question"
       ],
-      "topicCategory": "reverse"
+      "topicCategory": "reverse",
+      "textKo": "마지막으로, 궁금한 점이 있으신가요?"
     },
     {
       "id": "tech_trend",
@@ -115,7 +124,8 @@
         "tech_trend"
       ],
       "group": "recent_tech_news",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "본인의 전문 분야에서 최신 기술 트렌드에 대해 어떻게 생각하나요?"
     },
     {
       "id": "role",
@@ -123,7 +133,8 @@
       "expectedDurationSec": 60,
       "textJa": "チーム内でのあなた自身の役割は何でしたか。",
       "tags": [],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "팀 내에서 본인의 역할은 무엇이었나요?"
     },
     {
       "id": "self_pr",
@@ -133,7 +144,8 @@
       "tags": [
         "self_pr"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "자기 PR을 부탁드립니다."
     },
     {
       "id": "strengths_and_weaknesses",
@@ -145,7 +157,8 @@
         "basic_track"
       ],
       "group": "strengths_weaknesses",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "장점과 단점을 알려주세요."
     },
     {
       "id": "character_reputation",
@@ -155,7 +168,8 @@
       "tags": [
         "character_reputation"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "주변 사람들에게 어떤 성격이라는 말을 듣나요?"
     },
     {
       "id": "group_position",
@@ -165,7 +179,8 @@
       "tags": [
         "group_position"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "집단 안에서 어떤 위치(포지션)인가요?"
     },
     {
       "id": "hobby",
@@ -176,7 +191,8 @@
       "tags": [
         "hobby"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "취미를 알려주세요."
     },
     {
       "id": "stress_relief_method",
@@ -187,7 +203,8 @@
       "tags": [
         "stress_relief_method"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "스트레스 해소법을 알려주세요."
     },
     {
       "id": "motto",
@@ -197,7 +214,8 @@
       "tags": [
         "motto"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "좌우명은 무엇인가요? 그 이유도 알려주세요."
     },
     {
       "id": "respected_person",
@@ -207,7 +225,8 @@
       "tags": [
         "respected_person"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "존경하는 인물이 있나요? 그 이유를 알려주세요."
     },
     {
       "id": "effort_in_school_days",
@@ -220,7 +239,8 @@
         "gakuchika",
         "basic_track"
       ],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "학창 시절 가장 힘을 쏟았던 일은 무엇인가요?"
     },
     {
       "id": "major_study",
@@ -230,7 +250,8 @@
       "tags": [
         "major_study"
       ],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "학부나 전공 수업에서 배우고 있는 것을 알려주세요."
     },
     {
       "id": "setback_experience",
@@ -241,7 +262,8 @@
         "setback_experience"
       ],
       "group": "hardship_experience",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "좌절했던 경험이 있나요? 그 경험에서 무엇을 배웠나요?"
     },
     {
       "id": "leadership_experience",
@@ -251,7 +273,8 @@
       "tags": [
         "leadership_experience"
       ],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "리더십을 발휘했던 경험이 있나요?"
     },
     {
       "id": "opinion_conflict_communication",
@@ -262,7 +285,8 @@
         "opinion_conflict_communication"
       ],
       "group": "team_opinion_conflict",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "팀에서 의견이 다를 때 어떻게 소통하나요?"
     },
     {
       "id": "part_time_job",
@@ -273,7 +297,8 @@
         "part_time_job"
       ],
       "group": "extracurricular_activities",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "아르바이트 경험에 대해 알려주세요."
     },
     {
       "id": "childhood_effort",
@@ -284,7 +309,8 @@
       "tags": [
         "childhood_effort"
       ],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "초등학생·중학생 시절 열심히 했던 일은 무엇인가요?"
     },
     {
       "id": "why_japan",
@@ -296,7 +322,8 @@
         "why_japan",
         "basic_track"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "왜 일본에서 일하고 싶은가요?"
     },
     {
       "id": "why_this_company",
@@ -306,7 +333,8 @@
       "tags": [
         "why_this_company"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "왜 저희 회사에 지원하셨나요?"
     },
     {
       "id": "job_hunting_axis",
@@ -316,7 +344,8 @@
       "tags": [
         "job_hunting_axis"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "구직 활동의 기준(축)은 무엇인가요?"
     },
     {
       "id": "major_mismatch_reason",
@@ -327,7 +356,8 @@
         "major_mismatch_reason"
       ],
       "group": "major_mismatch",
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "전공과 다른 직종에 왜 지원하셨나요?"
     },
     {
       "id": "company_impression",
@@ -337,7 +367,8 @@
       "tags": [
         "company_impression"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "저희 회사에 대한 인상과 강점·약점에 대해 어떻게 생각하나요?"
     },
     {
       "id": "post_join_aspiration",
@@ -348,7 +379,8 @@
         "post_join_aspiration",
         "basic_track"
       ],
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "입사 후 포부를 알려주세요."
     },
     {
       "id": "career_vision_5_10",
@@ -358,7 +390,8 @@
       "tags": [
         "career_vision_5_10"
       ],
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "5년 후, 10년 후의 커리어 비전을 알려주세요."
     },
     {
       "id": "years_in_japan",
@@ -369,7 +402,8 @@
       "tags": [
         "years_in_japan"
       ],
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "일본에서 몇 년 정도 일하고 싶다고 생각하나요?"
     },
     {
       "id": "living_alone",
@@ -379,7 +413,8 @@
       "tags": [
         "living_alone"
       ],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "혼자 생활(자취)할 수 있나요?"
     },
     {
       "id": "japan_impression",
@@ -390,7 +425,8 @@
       "tags": [
         "japan_impression"
       ],
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "일본에 대한 인상을 알려주세요."
     },
     {
       "id": "adapt_japan_life",
@@ -401,7 +437,8 @@
       "tags": [
         "adapt_japan_life"
       ],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "일본 생활에 적응할 수 있나요? 일본 음식은 좋아하나요?"
     },
     {
       "id": "family_consent",
@@ -411,7 +448,8 @@
       "tags": [
         "family_consent"
       ],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "일본 취업에 대해 가족의 동의를 받았나요?"
     },
     {
       "id": "overtime_opinion",
@@ -421,7 +459,8 @@
       "tags": [
         "overtime_opinion"
       ],
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "야근(잔업)에 대해 어떻게 생각하나요?"
     },
     {
       "id": "preferred_location",
@@ -431,7 +470,8 @@
       "tags": [
         "preferred_location"
       ],
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "희망하는 근무지가 있나요? 지방 배치라도 괜찮은가요?"
     },
     {
       "id": "job_hunting_korea",
@@ -441,7 +481,8 @@
       "tags": [
         "job_hunting_korea"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "한국에서도 구직 활동을 하고 있나요?"
     },
     {
       "id": "desired_salary",
@@ -451,7 +492,8 @@
       "tags": [
         "desired_salary"
       ],
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "희망 급여는 얼마인가요?"
     },
     {
       "id": "jlpt_level",
@@ -461,7 +503,8 @@
       "tags": [
         "jlpt_level"
       ],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "JLPT 급수와 취득 시기를 알려주세요."
     },
     {
       "id": "programming_history",
@@ -483,7 +526,8 @@
       "tags": [
         "explain_tech_term_japanese"
       ],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "일본어로 기술 용어를 설명해 주시겠어요?"
     },
     {
       "id": "explain_oop",
@@ -505,7 +549,8 @@
       "tags": [
         "final_word",
         "closing"
-      ]
+      ],
+      "textKo": "마지막으로 한 말씀 부탁드립니다."
     },
     {
       "id": "non_negotiable_standard",
@@ -515,7 +560,8 @@
       "tags": [
         "non_negotiable_standard"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "회사 방침을 따르겠다는 답변이 많은데, 절대 양보할 수 없는 기준이 있나요?"
     },
     {
       "id": "opinion_split_decision",
@@ -526,7 +572,8 @@
         "opinion_split_decision"
       ],
       "group": "team_opinion_conflict",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "의견이 정반대로 갈릴 경우 어떻게 결정하나요?"
     },
     {
       "id": "long_term_reason_beyond_stability",
@@ -537,7 +584,8 @@
         "long_term_reason_beyond_stability"
       ],
       "group": "why_japan",
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "오래 일하고 싶은 이유가 안정성뿐인가요?"
     },
     {
       "id": "if_not_selected",
@@ -547,7 +595,8 @@
       "tags": [
         "if_not_selected"
       ],
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "이번에 만약 불합격한다면 앞으로 어떻게 하실 건가요?"
     },
     {
       "id": "company_research",
@@ -555,49 +604,56 @@
       "expectedDurationSec": 60,
       "textJa": "当社についてどの程度調べましたか。何を知っていますか。",
       "group": "company_research_detail",
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "저희 회사에 대해 얼마나 조사하셨나요? 무엇을 알고 계신가요?"
     },
     {
       "id": "team_vs_individual",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "チームで働くことと、個人で働くこと、どちらが得意ですか。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "팀으로 일하는 것과 개인으로 일하는 것, 어느 쪽이 더 잘 맞나요?"
     },
     {
       "id": "relocation_flexibility",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "転勤や異動の可能性について、どのようにお考えですか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "전근이나 부서 이동 가능성에 대해 어떻게 생각하나요?"
     },
     {
       "id": "work_style_expectation",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "当社に入社したら、どのような働き方をしたいですか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "저희 회사에 입사하면 어떤 방식으로 일하고 싶은가요?"
     },
     {
       "id": "long_term_commitment",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "一つの会社に長く勤めることについて、どのようにお考えですか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "한 회사에 오래 근무하는 것에 대해 어떻게 생각하나요?"
     },
     {
       "id": "cross_cultural_challenge",
       "category": "culture_fit",
       "expectedDurationSec": 90,
       "textJa": "文化の違いで困った経験はありますか。どのように対応しましたか。",
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "문화 차이로 곤란했던 경험이 있나요? 어떻게 대처했나요?"
     },
     {
       "id": "salary_negotiation",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "給与よりも重視することはありますか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "급여보다 더 중시하는 것이 있나요?"
     },
     {
       "id": "pressure_detail",
@@ -606,7 +662,8 @@
       "textJa": "具体的にどのような行動をとりましたか。",
       "tags": [],
       "group": "pressure_response",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "구체적으로 어떤 행동을 취했나요?"
     },
     {
       "id": "feedback_detail",
@@ -615,7 +672,8 @@
       "textJa": "印象に残っている指摘はありますか。",
       "tags": [],
       "group": "feedback_receiving_detail",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "인상에 남는 지적(피드백)이 있나요?"
     },
     {
       "id": "research_detail",
@@ -624,14 +682,16 @@
       "textJa": "具体的にどのような情報を調べましたか。",
       "tags": [],
       "group": "company_research_detail",
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "구체적으로 어떤 정보를 조사했나요?"
     },
     {
       "id": "decision_making_style",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "物事を決めるとき、何を基準に判断しますか。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "무언가를 결정할 때 무엇을 기준으로 판단하나요?"
     },
     {
       "id": "handling_pressure",
@@ -639,21 +699,24 @@
       "expectedDurationSec": 60,
       "textJa": "プレッシャーの大きい状況で、どのように対応しますか。",
       "group": "pressure_response",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "부담(프레셔)이 큰 상황에서 어떻게 대응하나요?"
     },
     {
       "id": "time_management",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "複数のタスクがあるとき、どのように優先順位をつけますか。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "여러 업무(태스크)가 있을 때 어떻게 우선순위를 정하나요?"
     },
     {
       "id": "communication_style",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "ご自身のコミュニケーションの特徴を教えてください。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "본인의 커뮤니케이션 특징을 알려주세요."
     },
     {
       "id": "failure_experience_general",
@@ -661,14 +724,16 @@
       "expectedDurationSec": 90,
       "textJa": "大きな失敗をした経験と、それをどう乗り越えたか教えてください。",
       "group": "hardship_experience",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "큰 실패를 했던 경험과 그것을 어떻게 극복했는지 알려주세요."
     },
     {
       "id": "long_term_goal",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "将来的にどのようなエンジニアになりたいですか。",
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "앞으로 어떤 엔지니어가 되고 싶은가요?"
     },
     {
       "id": "work_life_balance",
@@ -676,7 +741,8 @@
       "expectedDurationSec": 60,
       "textJa": "仕事とプライベートのバランスについて、どのようにお考えですか。",
       "group": "work_life_priority",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "일과 개인 생활의 균형(워라밸)에 대해 어떻게 생각하나요?"
     },
     {
       "id": "feedback_receiving",
@@ -684,7 +750,8 @@
       "expectedDurationSec": 60,
       "textJa": "上司や同僚からの指摘を、どのように受け止めますか。",
       "group": "feedback_receiving_detail",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "상사나 동료의 지적을 어떻게 받아들이나요?"
     },
     {
       "id": "tech_stack_choice",
@@ -794,7 +861,8 @@
       "expectedDurationSec": 60,
       "textJa": "新しい技術を学ぶとき、どのように学習していますか。",
       "group": "tech_catchup_habit",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "새로운 기술을 배울 때 어떻게 학습하나요?"
     },
     {
       "id": "code_quality_opinion",
@@ -819,7 +887,8 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "開発の際、ドキュメントや仕様書をどの程度重視していますか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "개발할 때 문서나 사양서를 어느 정도 중시하나요?"
     },
     {
       "id": "closing_last_word_regret",
@@ -828,7 +897,8 @@
       "textJa": "本日の面接を通じて、何か言い残したことはありますか。",
       "tags": [
         "closing"
-      ]
+      ],
+      "textKo": "오늘 면접을 통해 혹시 못다 한 말씀이 있으신가요?"
     },
     {
       "id": "closing_final_enthusiasm",
@@ -837,7 +907,8 @@
       "textJa": "最後に、当社への熱意を一言でお願いします。",
       "tags": [
         "closing"
-      ]
+      ],
+      "textKo": "마지막으로 저희 회사에 대한 열정을 한마디로 말씀해 주세요."
     },
     {
       "id": "closing_forgot_to_mention",
@@ -846,7 +917,8 @@
       "textJa": "面接を振り返って、伝え忘れたことがあれば教えてください。",
       "tags": [
         "closing"
-      ]
+      ],
+      "textKo": "면접을 돌아봤을 때 미처 전달하지 못한 내용이 있다면 알려주세요."
     },
     {
       "id": "closing_final_self_pr",
@@ -855,7 +927,8 @@
       "textJa": "最後に自己PRを一言でお願いします。",
       "tags": [
         "closing"
-      ]
+      ],
+      "textKo": "마지막으로 자기 PR을 한마디로 부탁드립니다."
     },
     {
       "id": "tp_role_tier1",
@@ -863,7 +936,8 @@
       "expectedDurationSec": 60,
       "textJa": "チーム内で公式な役割以外に、雰囲気作りやコミュニケーション面ではどのような役割を担うことが多いですか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "팀 내에서 공식적인 역할 외에, 분위기 조성이나 소통 측면에서는 주로 어떤 역할을 맡는 편인가요?"
     },
     {
       "id": "tp_role_tier2",
@@ -871,7 +945,8 @@
       "expectedDurationSec": 60,
       "textJa": "メンバーの力量が異なる場合、業務分担はどのような基準で決めましたか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "멤버들의 역량이 다를 경우, 업무 분담은 어떤 기준으로 정했나요?"
     },
     {
       "id": "tp_role_tier3",
@@ -879,7 +954,8 @@
       "expectedDurationSec": 60,
       "textJa": "入社後、ご自身が望まない役割を任された場合、どのように取り組みますか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "입사 후 본인이 원하지 않는 역할을 맡게 된다면 어떻게 임하시겠어요?"
     },
     {
       "id": "tp_conflict_tier1",
@@ -887,7 +963,8 @@
       "expectedDurationSec": 60,
       "textJa": "チームメンバーの意見が強く対立したとき、具体的にどのように解決しましたか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "팀원들의 의견이 강하게 대립했을 때, 구체적으로 어떻게 해결했나요?"
     },
     {
       "id": "tp_conflict_tier2",
@@ -895,7 +972,8 @@
       "expectedDurationSec": 60,
       "textJa": "もし相手が、ご自身の意見やデータに全く納得しない場合、どう対応しますか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "만약 상대방이 본인의 의견이나 데이터에 전혀 납득하지 않는다면 어떻게 대응하시겠어요?"
     },
     {
       "id": "tp_conflict_tier3",
@@ -903,7 +981,8 @@
       "expectedDurationSec": 60,
       "textJa": "同僚ではなく直属の上司や先輩の意見が、ご自身の考えと明らかに異なる場合はどう行動しますか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "동료가 아니라 직속 상사나 선배의 의견이 본인 생각과 확연히 다를 경우 어떻게 행동하시겠어요?"
     },
     {
       "id": "tp_freeride_tier1",
@@ -911,7 +990,8 @@
       "expectedDurationSec": 60,
       "textJa": "チームメンバーの一人が担当業務を期限通りに行わなかったとき、どのように対処しましたか。",
       "tags": [],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "팀원 중 한 명이 담당 업무를 기한 내에 처리하지 않았을 때 어떻게 대처했나요?"
     },
     {
       "id": "tp_freeride_tier2",
@@ -919,7 +999,8 @@
       "expectedDurationSec": 60,
       "textJa": "直接話し合っても態度が変わらない場合、プロジェクトを完成させるためにどのような決断をしますか。",
       "tags": [],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "직접 이야기해도 태도가 바뀌지 않을 경우, 프로젝트를 완성시키기 위해 어떤 결단을 내리시겠어요?"
     },
     {
       "id": "fail_pivot_tier1",
@@ -927,7 +1008,8 @@
       "expectedDurationSec": 60,
       "textJa": "既存のやり方を捨てて新しい方法を選ぶとき、もう少し試すか諦めるかの判断基準は何でしたか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "기존 방식을 버리고 새로운 방법을 택할 때, 조금 더 시도할지 포기할지의 판단 기준은 무엇이었나요?"
     },
     {
       "id": "fail_pivot_tier2",
@@ -935,7 +1017,8 @@
       "expectedDurationSec": 60,
       "textJa": "実務で納期が迫っているのに計画通りに進まない場合、完成度を下げても期限を守りますか、期限を延ばしてでも完成度を高めますか。",
       "tags": [],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "실무에서 납기가 임박했는데 계획대로 진행되지 않는다면, 완성도를 낮추더라도 기한을 지키시겠어요, 아니면 기한을 늦추더라도 완성도를 높이시겠어요?"
     },
     {
       "id": "weak_perfection_tier2",
@@ -943,7 +1026,8 @@
       "expectedDurationSec": 60,
       "textJa": "短所を補うために、ご自身で作った具体的な行動ルールはありますか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "단점을 보완하기 위해 스스로 만든 구체적인 행동 규칙이 있나요?"
     },
     {
       "id": "weak_perfection_tier3",
@@ -951,7 +1035,8 @@
       "expectedDurationSec": 60,
       "textJa": "スピードと正確さが同時に求められる実務環境で、二つの価値が衝突するときどうバランスを取りますか。",
       "tags": [],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "속도와 정확성이 동시에 요구되는 실무 환경에서 두 가치가 충돌할 때 어떻게 균형을 맞추나요?"
     },
     {
       "id": "weak_kindness_tier1",
@@ -959,7 +1044,8 @@
       "expectedDurationSec": 60,
       "textJa": "他人を助けるあまり、ご自身の業務スケジュールに支障が出たことはありませんか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "다른 사람을 돕느라 본인의 업무 일정에 지장이 생긴 적은 없나요?"
     },
     {
       "id": "weak_kindness_tier2",
@@ -967,7 +1053,8 @@
       "expectedDurationSec": 60,
       "textJa": "ご自身の業務量がすでに飽和状態のとき、同僚や上司から追加業務を頼まれたらどう対応しますか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "본인의 업무량이 이미 포화 상태일 때, 동료나 상사가 추가 업무를 부탁하면 어떻게 대응하나요?"
     },
     {
       "id": "motiv_strength_tier1",
@@ -975,7 +1062,8 @@
       "expectedDurationSec": 60,
       "textJa": "当社の強みは、競合他社と比べてどのような差別化点があると思いますか。",
       "tags": [],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "저희 회사의 강점은 경쟁사와 비교했을 때 어떤 차별점이 있다고 생각하나요?"
     },
     {
       "id": "major_mismatch_tier1",
@@ -984,7 +1072,8 @@
       "textJa": "非専攻者として、既存の専攻者と競争するために別途学習・準備したことは何ですか。",
       "tags": [],
       "group": "major_mismatch",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "비전공자로서 기존 전공자들과 경쟁하기 위해 별도로 학습·준비한 것은 무엇인가요?"
     },
     {
       "id": "adapt_person_tier1",
@@ -992,7 +1081,8 @@
       "expectedDurationSec": 60,
       "textJa": "ご自身と性向や価値観が正反対の人と協業しなければならなかったことはありますか。",
       "tags": [],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "본인과 성향이나 가치관이 정반대인 사람과 협업해야 했던 적이 있나요?"
     },
     {
       "id": "adapt_person_tier3",
@@ -1000,7 +1090,8 @@
       "expectedDurationSec": 60,
       "textJa": "非常に厳格、あるいは感情的な上司に出会った場合、どう対処しますか。",
       "tags": [],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "매우 엄격하거나 혹은 감정적인 상사를 만난다면 어떻게 대처하시겠어요?"
     },
     {
       "id": "adapt_rule_tier1",
@@ -1008,7 +1099,8 @@
       "expectedDurationSec": 60,
       "textJa": "マニュアルや原則を必ず守るべき状況と、素早い柔軟性が必要な状況、どちらをより重要だと考えますか。",
       "tags": [],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "매뉴얼과 원칙을 반드시 지켜야 하는 상황과 빠른 유연성이 필요한 상황 중 어느 쪽을 더 중요하게 생각하나요?"
     },
     {
       "id": "adapt_rule_tier2",
@@ -1016,14 +1108,16 @@
       "expectedDurationSec": 60,
       "textJa": "現場のマニュアルにない突発的な緊急事態が発生した場合、どのような手順で行動しますか。",
       "tags": [],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "현장 매뉴얼에 없는 돌발적인 긴급 상황이 발생하면 어떤 절차로 행동하시겠어요?"
     },
     {
       "id": "adapt_new_environment",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "新しい環境やチームに馴染むために、ご自身なりに工夫していることはありますか。",
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "새로운 환경이나 팀에 적응하기 위해 본인 나름대로 신경 쓰는 것이 있나요?"
     },
     {
       "id": "job_change_detail",
@@ -1031,7 +1125,8 @@
       "expectedDurationSec": 60,
       "textJa": "現職（前職）で改善が難しいと感じた点は具体的に何ですか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "현재 직장(이전 직장)에서 개선이 어렵다고 느낀 점은 구체적으로 무엇인가요?"
     },
     {
       "id": "mentoring_detail",
@@ -1039,98 +1134,112 @@
       "expectedDurationSec": 60,
       "textJa": "指導する際、相手のレベルに合わせてどのように教え方を変えましたか。",
       "tags": [],
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "지도할 때 상대방의 수준에 맞춰 가르치는 방식을 어떻게 바꿨나요?"
     },
     {
       "id": "reason_for_job_change",
       "category": "personality",
       "expectedDurationSec": 90,
       "textJa": "転職を考えたきっかけは何ですか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "이직을 생각하게 된 계기는 무엇인가요?"
     },
     {
       "id": "side_business_opinion",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "副業について、どのようにお考えですか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "부업에 대해 어떻게 생각하나요?"
     },
     {
       "id": "harassment_response",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "職場でハラスメントを見聞きした場合、どのように対応しますか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "직장에서 괴롭힘(하라스먼트)을 보거나 듣게 된다면 어떻게 대응하나요?"
     },
     {
       "id": "mental_health_management",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "ストレスやメンタルヘルスを、どのように管理していますか。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "스트레스와 정신 건강을 어떻게 관리하나요?"
     },
     {
       "id": "paid_leave_attitude",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "有給休暇の取得について、どのようにお考えですか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "유급 휴가 사용에 대해 어떻게 생각하나요?"
     },
     {
       "id": "evaluation_system_opinion",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "会社の評価制度について、どのような点を重視しますか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "회사의 평가 제도에서 어떤 점을 중시하나요?"
     },
     {
       "id": "mentoring_experience",
       "category": "personality",
       "expectedDurationSec": 90,
       "textJa": "後輩や新人の指導・育成をした経験はありますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "후배나 신입을 지도·육성한 경험이 있나요?"
     },
     {
       "id": "overseas_assignment_willingness",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "海外赴任や出向の可能性について、どのようにお考えですか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "해외 부임이나 파견 가능성에 대해 어떻게 생각하나요?"
     },
     {
       "id": "certification_motivation",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "資格取得やスキルアップへの取り組みについて教えてください。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "자격증 취득이나 스킬 향상을 위한 노력에 대해 알려주세요."
     },
     {
       "id": "japanese_learning_method",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "日本語をどのように学習しましたか。きっかけも教えてください。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "일본어를 어떻게 학습했나요? 계기도 알려주세요."
     },
     {
       "id": "visa_status_check",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "現在の在留資格と、就労可能な状況について教えてください。",
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "현재 체류 자격과 취업 가능한 상황을 알려주세요."
     },
     {
       "id": "boss_relationship_building",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "上司や先輩と、どのように信頼関係を築いていきますか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "상사나 선배와 어떻게 신뢰 관계를 쌓아가나요?"
     },
     {
       "id": "company_axis_alignment",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "就活の軸と、当社が一致すると思う点はどこですか。",
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "구직 활동의 기준과 저희 회사가 일치한다고 생각하는 부분은 어디인가요?"
     },
     {
       "id": "git_conflict_resolution",
@@ -1272,28 +1381,32 @@
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "名刺交換など、日本のビジネスマナーについてどの程度理解していますか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "명함 교환 등 일본의 비즈니스 매너에 대해 어느 정도 이해하고 있나요?"
     },
     {
       "id": "company_event_participation",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "飲み会や社内イベントへの参加について、どのようにお考えですか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "회식이나 사내 행사 참여에 대해 어떻게 생각하나요?"
     },
     {
       "id": "welfare_expectation",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "会社に期待する福利厚生はありますか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "회사에 기대하는 복리후생이 있나요?"
     },
     {
       "id": "long_term_career_plan",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "当社で長く働きたいとお考えですか。将来的な転職の可能性についても教えてください。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "저희 회사에서 오래 일하고 싶다고 생각하나요? 향후 이직 가능성에 대해서도 알려주세요."
     },
     {
       "id": "how_found_job_posting",
@@ -1303,56 +1416,64 @@
       "tags": [
         "basic_track"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "저희 회사의 채용 공고를 어떻게 알게 되셨나요?"
     },
     {
       "id": "team_meeting_experience",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "定例会議やスタンドアップミーティングに参加した経験はありますか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "정기 회의나 스탠드업 미팅에 참여한 경험이 있나요?"
     },
     {
       "id": "cross_team_collaboration",
       "category": "culture_fit",
       "expectedDurationSec": 90,
       "textJa": "他部署やチームと連携して仕事を進めた経験はありますか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "다른 부서나 팀과 협력해서 업무를 진행한 경험이 있나요?"
     },
     {
       "id": "keigo_mistake_recovery",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "面接や仕事の場で敬語を間違えてしまった場合、どのように対応しますか。",
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "면접이나 업무 자리에서 존댓말(경어)을 실수했을 때 어떻게 대처하나요?"
     },
     {
       "id": "self_development_plan",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "入社後、どのようにスキルアップしていきたいですか。",
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "입사 후 어떻게 스킬을 향상시켜 나가고 싶은가요?"
     },
     {
       "id": "unexpected_strength",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "履歴書には書いていないが、自分の強みだと思うことはありますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "이력서에는 적지 않았지만 스스로 강점이라고 생각하는 것이 있나요?"
     },
     {
       "id": "handling_multiple_deadlines",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "複数の締め切りが重なったとき、どのように対処しますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "여러 마감 기한이 겹쳤을 때 어떻게 대처하나요?"
     },
     {
       "id": "receiving_negative_feedback",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "厳しいフィードバックを受けたとき、どのように気持ちを切り替えますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "혹독한 피드백을 받았을 때 어떻게 마음을 다잡나요?"
     },
     {
       "id": "remote_work_detail",
@@ -1360,7 +1481,8 @@
       "expectedDurationSec": 60,
       "textJa": "リモートワークで工夫していたコミュニケーション方法はありますか。",
       "tags": [],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "재택근무(리모트 워크)를 하면서 신경 썼던 커뮤니케이션 방법이 있나요?"
     },
     {
       "id": "preferred_language_reason",
@@ -1376,7 +1498,8 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "リモートワークの経験はありますか。オフィス勤務とどう違うと感じますか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "재택근무 경험이 있나요? 사무실 근무와 어떻게 다르다고 느꼈나요?"
     },
     {
       "id": "tool_familiarity",
@@ -1401,14 +1524,16 @@
       "category": "technical",
       "expectedDurationSec": 90,
       "textJa": "複数のプロジェクトやタスクを同時に進める際、優先順位はどう決めますか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "여러 프로젝트나 업무를 동시에 진행할 때 우선순위를 어떻게 정하나요?"
     },
     {
       "id": "knowledge_sharing_experience",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "チーム内で知識共有（勉強会、社内発表など）をした経験はありますか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "팀 내에서 지식 공유(스터디, 사내 발표 등)를 한 경험이 있나요?"
     },
     {
       "id": "side_project_experience",
@@ -1424,7 +1549,8 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "仕事でミスをしたとき、どのように対応しますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "업무에서 실수했을 때 어떻게 대처하나요?"
     },
     {
       "id": "code_ownership_opinion",
@@ -1458,56 +1584,64 @@
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "複数の企業から内定をもらった場合、何を基準に選びますか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "여러 회사에서 합격 통보를 받았을 경우 무엇을 기준으로 선택하나요?"
     },
     {
       "id": "final_decision_criteria",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "最終的に入社する会社を決める際、最も重視する基準は何ですか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "최종적으로 입사할 회사를 결정할 때 가장 중시하는 기준은 무엇인가요?"
     },
     {
       "id": "pre_joining_preparation",
       "category": "culture_fit",
       "expectedDurationSec": 60,
       "textJa": "入社前に準備しておきたいことはありますか。",
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "입사 전에 미리 준비해두고 싶은 것이 있나요?"
     },
     {
       "id": "goal_setting_method",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "目標を設定するとき、どのような方法で計画を立てますか。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "목표를 세울 때 어떤 방식으로 계획을 세우나요?"
     },
     {
       "id": "time_management_method",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "時間管理のために、普段どのような工夫をしていますか。",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "시간 관리를 위해 평소 어떤 노력을 하고 있나요?"
     },
     {
       "id": "conflict_prevention_habit",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "チーム内での対立を未然に防ぐために、あらかじめ心がけていることはありますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "팀 내 갈등을 미연에 방지하기 위해 평소 유의하는 것이 있나요?"
     },
     {
       "id": "graduation_research_topic",
       "category": "technical",
       "expectedDurationSec": 90,
       "textJa": "卒業論文や卒業研究のテーマについて教えてください。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "졸업 논문이나 졸업 연구 주제에 대해 알려주세요."
     },
     {
       "id": "fear_of_failure_attitude",
       "category": "personality",
       "expectedDurationSec": 60,
       "textJa": "失敗を恐れずに挑戦するために、どのように考え方を切り替えていますか。",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "실패를 두려워하지 않고 도전하기 위해 어떻게 사고방식을 전환하나요?"
     },
     {
       "id": "internship_detail",
@@ -1515,7 +1649,8 @@
       "expectedDurationSec": 60,
       "textJa": "インターンシップで実際にどのような業務を担当しましたか。",
       "tags": [],
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "인턴십에서 실제로 어떤 업무를 담당했나요?"
     },
     {
       "id": "test_automation_experience",
@@ -1585,14 +1720,16 @@
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "上流工程と下流工程、どちらの経験が多いですか。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "상류 공정과 하류 공정 중 어느 쪽 경험이 더 많나요?"
     },
     {
       "id": "internship_experience",
       "category": "technical",
       "expectedDurationSec": 60,
       "textJa": "インターンシップの経験はありますか。そこで学んだことを教えてください。",
-      "topicCategory": "common_technical"
+      "topicCategory": "common_technical",
+      "textKo": "인턴십 경험이 있나요? 거기서 배운 점을 알려주세요."
     },
     {
       "id": "japan_worry",
@@ -1603,7 +1740,8 @@
       "tags": [
         "japan_worry"
       ],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "일본에서 일하거나 생활하는 것에 대해 불안하게 느끼는 부분이 있나요?"
     },
     {
       "id": "japan_like_point",
@@ -1614,7 +1752,8 @@
       "tags": [
         "japan_like_point"
       ],
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "일본의 어떤 점이 좋은가요?"
     },
     {
       "id": "company_choice_criteria",
@@ -1626,7 +1765,8 @@
         "company_choice_criteria",
         "basic_track"
       ],
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "취업할 회사를 고를 때 무엇을 기준으로 하나요?"
     },
     {
       "id": "life_in_japan_experience",
@@ -1637,7 +1777,8 @@
       "tags": [
         "life_in_japan_experience"
       ],
-      "topicCategory": "japan_life_adapt"
+      "topicCategory": "japan_life_adapt",
+      "textKo": "실제로 일본에서 생활해보니 어떤가요?"
     },
     {
       "id": "day_off_activity",
@@ -1648,7 +1789,8 @@
       "tags": [
         "day_off_activity"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "휴일에는 주로 어떻게 보내나요?"
     },
     {
       "id": "years_in_japan_career",
@@ -1659,7 +1801,8 @@
       "tags": [
         "years_in_japan_career"
       ],
-      "topicCategory": "career_future"
+      "topicCategory": "career_future",
+      "textKo": "일본에서의 커리어를 얼마나 오래 이어가고 싶다고 생각하나요?"
     },
     {
       "id": "work_meaning",
@@ -1669,7 +1812,8 @@
       "tags": [
         "work_meaning"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "당신에게 일이란 어떤 의미인가요?"
     },
     {
       "id": "money_meaning",
@@ -1679,7 +1823,8 @@
       "tags": [
         "money_meaning"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "당신에게 돈이란 어떤 의미인가요?"
     },
     {
       "id": "student_vs_worker_diff",
@@ -1689,7 +1834,8 @@
       "tags": [
         "student_vs_worker_diff"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "학생(혹은 지금까지의 입장)과 사회인의 차이는 무엇이라고 생각하나요?"
     },
     {
       "id": "work_family_priority",
@@ -1700,7 +1846,8 @@
         "work_family_priority"
       ],
       "group": "work_life_priority",
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "일과 가정 중 어느 쪽이 더 중요하다고 생각하나요?"
     },
     {
       "id": "work_fulfillment",
@@ -1710,7 +1857,8 @@
       "tags": [
         "work_fulfillment"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "일의 보람은 어떤 것이라고 생각하나요?"
     },
     {
       "id": "early_turnover_opinion",
@@ -1720,7 +1868,8 @@
       "tags": [
         "early_turnover_opinion"
       ],
-      "topicCategory": "japan_culture"
+      "topicCategory": "japan_culture",
+      "textKo": "입사하자마자 바로 퇴사하는 사람에 대해 어떻게 생각하나요?"
     },
     {
       "id": "organization_priority_value",
@@ -1730,7 +1879,8 @@
       "tags": [
         "organization_priority_value"
       ],
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "조직에서 일할 때 가장 중요하다고 생각하는 것은 무엇인가요?"
     },
     {
       "id": "self_metaphor_description",
@@ -1740,7 +1890,8 @@
       "tags": [
         "self_metaphor_description"
       ],
-      "topicCategory": "self_personality"
+      "topicCategory": "self_personality",
+      "textKo": "자신을 동물이나 색깔에 비유한다면 무엇인가요? 이유도 알려주세요."
     },
     {
       "id": "ml_project_experience",
@@ -1909,7 +2060,8 @@
         "job_role_desired",
         "basic_track"
       ],
-      "topicCategory": "company_fit"
+      "topicCategory": "company_fit",
+      "textKo": "저희 회사에서 어떤 일을 하고 싶은가요?"
     },
     {
       "id": "why_this_industry",
@@ -1920,7 +2072,8 @@
         "why_this_industry",
         "basic_track"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "왜 이 업계에 관심을 갖게 되었나요?"
     },
     {
       "id": "extracurricular_activities",
@@ -1932,7 +2085,8 @@
         "basic_track"
       ],
       "group": "extracurricular_activities",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "동아리 활동·아르바이트 경험 등 학업 외 활동에 대해 알려주세요."
     },
     {
       "id": "hardship_experience",
@@ -1944,7 +2098,8 @@
         "basic_track"
       ],
       "group": "hardship_experience",
-      "topicCategory": "episodes"
+      "topicCategory": "episodes",
+      "textKo": "지금까지 가장 고생했던 일은 무엇인가요?"
     },
     {
       "id": "it_training_reason",
@@ -1955,7 +2110,8 @@
         "it_training_reason",
         "basic_track"
       ],
-      "topicCategory": "japan_motivation"
+      "topicCategory": "japan_motivation",
+      "textKo": "일본 IT 연수에 참가한 이유를 알려주세요."
     }
   ]
 }

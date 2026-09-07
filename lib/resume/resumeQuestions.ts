@@ -9,6 +9,7 @@ export const RESUME_ESSAY_QUESTIONS: Record<keyof ParsedResume['essays'], BankQu
     category: 'personality',
     expectedDurationSec: 90,
     textJa: '成長過程について教えてください。',
+    textKo: '성장 과정에 대해 알려주세요.',
     tags: ['resume_derived'],
   },
   personality: {
@@ -16,6 +17,7 @@ export const RESUME_ESSAY_QUESTIONS: Record<keyof ParsedResume['essays'], BankQu
     category: 'personality',
     expectedDurationSec: 90,
     textJa: 'ご自身の性格の長所と短所について教えてください。',
+    textKo: '본인 성격의 장점과 단점에 대해 알려주세요.',
     tags: ['resume_derived'],
   },
   whyJapan: {
@@ -23,6 +25,7 @@ export const RESUME_ESSAY_QUESTIONS: Record<keyof ParsedResume['essays'], BankQu
     category: 'culture_fit',
     expectedDurationSec: 90,
     textJa: '日本で就職したい理由を教えてください。',
+    textKo: '일본에서 취업하고 싶은 이유를 알려주세요.',
     tags: ['resume_derived'],
   },
   whyProgram: {
@@ -30,6 +33,7 @@ export const RESUME_ESSAY_QUESTIONS: Record<keyof ParsedResume['essays'], BankQu
     category: 'culture_fit',
     expectedDurationSec: 90,
     textJa: 'このK-MOVE日本IT研修に参加された理由を教えてください。',
+    textKo: '이번 K-MOVE 일본 IT 연수에 참가하신 이유를 알려주세요.',
     tags: ['resume_derived'],
   },
   aspiration: {
@@ -37,6 +41,7 @@ export const RESUME_ESSAY_QUESTIONS: Record<keyof ParsedResume['essays'], BankQu
     category: 'personality',
     expectedDurationSec: 90,
     textJa: '入社後の抱負や今後の計画について教えてください。',
+    textKo: '입사 후 포부와 앞으로의 계획에 대해 알려주세요.',
     tags: ['resume_derived'],
   },
 }

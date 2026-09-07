@@ -95,6 +95,7 @@ export const REAL_MODE_INTRO_QUESTION: BankQuestion = {
   category: 'personality',
   expectedDurationSec: 60,
   textJa: '簡単に自己紹介をお願いします。',
+  textKo: '간단히 자기소개를 부탁드립니다.',
   tags: ['fixed_intro'],
 }
 
