@@ -71,8 +71,15 @@ export default function InterviewModeSelectPage() {
   const [resumeStepTrack, setResumeStepTrack] = useState<JobTrack | null>(null)
 
   useEffect(() => {
-    setUserId('preview-only')
-    setIsGuest(true)
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) {
+        router.replace('/login')
+        return
+      }
+      setUserId(data.user.id)
+      setIsGuest(data.user.is_anonymous ?? false)
+    })
   }, [router])
 
   async function startSession(mode: string, track?: JobTrack) {

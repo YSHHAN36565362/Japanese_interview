@@ -71,7 +71,7 @@ export function useInterviewMachine({
   // 세션 사용자 확인 + 질문 큐 구성 (data/questions.json에서 로컬 로딩, 매번 셔플)
   useEffect(() => {
     const supabase = createClient()
-    Promise.resolve({ data: { user: { id: 'preview-guest', is_anonymous: true } } } as any).then(async ({ data }: any) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) {
         router.replace('/login')
         return

@@ -1809,7 +1809,7 @@ a {
 }
 
 .room-page-inner {
-  max-width: 1180px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 20px 20px 40px;
 }
@@ -1976,7 +1976,7 @@ a {
 
 @media (min-width: 1280px) {
   .room-body {
-    grid-template-columns: minmax(0, 1fr) 352px;
+    grid-template-columns: minmax(0, 1fr) 400px;
   }
 }
 
@@ -2010,8 +2010,8 @@ a {
 }
 
 .room-avatar {
-  width: 128px;
-  height: 128px;
+  width: 152px;
+  height: 152px;
   border-radius: 50%;
   background: var(--surface);
   border: 3px solid var(--primary);
@@ -2063,7 +2063,7 @@ a {
 
 .room-question-card {
   width: 100%;
-  max-width: 560px;
+  max-width: 760px;
   padding: 22px 24px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -2118,6 +2118,13 @@ a {
   font-weight: 500;
   color: var(--room-text-primary);
   line-height: 1.55;
+}
+
+.room-question-ko {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .room-answer-goal {
@@ -3533,15 +3540,20 @@ a {
 
 /* ============================================================
    실전 모드 — 일본어 질문 블러 처리 (듣기 연습용, hover 시 선명해짐)
+   같은 처리를 한국어 대역(room-question-ko)에도 재사용한다 — 이쪽은 모드와
+   무관하게 항상 블러 처리해서, 뜻을 미리 안 보고 일본어부터 이해해보게 유도한다.
    ============================================================ */
-.room-question-ja.blurred {
+.room-question-ja.blurred,
+.room-question-ko.blurred {
   filter: blur(9px);
   transition: filter 0.2s ease;
   cursor: pointer;
 }
 
 .room-question-ja.blurred:hover,
-.room-question-ja.blurred:focus {
+.room-question-ja.blurred:focus,
+.room-question-ko.blurred:hover,
+.room-question-ko.blurred:focus {
   filter: blur(0);
 }
 

@@ -15,6 +15,9 @@ export interface BankQuestion {
   category: QuestionCategory
   expectedDurationSec: number
   textJa: string
+  // (선택) 한국어 대역. 면접실에서 블러 처리된 채로 질문 아래에 따로 보여준다(어휘가 어려운
+  // 트랙 질문 위주로 채워져 있음). 없으면 그 줄 자체를 렌더링하지 않는다.
+  textKo?: string
   tags?: string[]
   // (선택) 비슷한 주제/거의 같은 질문끼리 묶는 그룹 id. sampleMainQuestions()가 세션 풀을
   // 뽑을 때 같은 group의 질문은 절대 함께 뽑지 않고, 그 그룹 중 하나만 무작위로 고른다.

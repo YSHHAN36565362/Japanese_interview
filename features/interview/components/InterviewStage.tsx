@@ -143,6 +143,11 @@ export default function InterviewStage({
         >
           {questionNode}
         </p>
+        {question.textKo && (
+          <p className="room-question-ko blurred" tabIndex={0} title="마우스를 올리면 한국어 뜻이 보입니다">
+            {question.textKo}
+          </p>
+        )}
       </div>
 
       <div className="room-stage-controls-row">
