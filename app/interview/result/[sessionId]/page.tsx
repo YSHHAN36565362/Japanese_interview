@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import MarkdownExportButton from '@/components/MarkdownExportButton'
 import MacWindow from '@/components/MacWindow'
-import LikeButton from '@/components/LikeButton'
 import { getQuestionById } from '@/lib/questionBank'
 import { formatKST } from '@/lib/formatDate'
 import { computeSessionScore, computeCompositeScore } from '@/lib/sessionScore'
@@ -67,21 +66,20 @@ export default async function ResultPage({ params }: { params: Promise<{ session
   // 적정성은 질문별로 이미 배지(길어요/짧아요/적당해요)로 보여주고 있어 중복으로 넣지 않았다.
   const composite = computeCompositeScore(score.toneScorePercent, totalFillers, totalChars)
 
+  // 문법 교정 모드(GrammarPanel)와 동일한 규칙 기반 검사 결과를 저장 시점에 feedback_result에
+  // 얹어두었으므로(useInterviewMachine.ts), 여기서는 다시 계산하지 않고 그대로 합산만 한다.
+  const totalGrammarIssues = rows.reduce((sum, r) => sum + ((r.feedback_result as { grammarIssueCount?: number } | null)?.grammarIssueCount ?? 0), 0)
+
   const scoreBand = (percent: number | null) =>
     percent == null ? '' : percent >= 80 ? 'score-card-good' : percent >= 50 ? 'score-card-mid' : 'score-card-bad'
   const politenessPercent = score.politenessRatio != null ? Math.round(score.politenessRatio * 100) : null
 
   return (
     <MacWindow title="mensetsu-dojo — result">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-        <div>
-          <h1 style={{ marginTop: 0 }}>세션 리포트</h1>
-          <p className="muted">
-            모드: {session.mode} · {formatKST(session.created_at)}
-          </p>
-        </div>
-        <LikeButton />
-      </div>
+      <h1 style={{ marginTop: 0 }}>세션 리포트</h1>
+      <p className="muted">
+        모드: {session.mode} · {formatKST(session.created_at)}
+      </p>
 
       <div className="stat-row">
         <div className="stat-card">
@@ -95,6 +93,10 @@ export default async function ResultPage({ params }: { params: Promise<{ session
         <div className="stat-card">
           <strong>{totalFillers}</strong>
           <span>필러 총합</span>
+        </div>
+        <div className="stat-card">
+          <strong>{totalGrammarIssues}</strong>
+          <span>문법 교정 이슈 총합</span>
         </div>
       </div>
 

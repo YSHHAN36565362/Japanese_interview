@@ -31,11 +31,12 @@ export const PHASE_STATUS_TEXT: Record<string, string> = {
   fallbackText: '텍스트 모드로 답변을 입력해주세요.',
 }
 
-export const AUX_TABS = ['transcript', 'star', 'notes'] as const
+export const AUX_TABS = ['transcript', 'star', 'grammar', 'notes'] as const
 export type AuxTab = (typeof AUX_TABS)[number]
 
 export const AUX_TAB_LABEL: Record<AuxTab, string> = {
   transcript: '대화',
   star: 'STAR',
+  grammar: '문법 교정',
   notes: '메모',
 }

@@ -24,3 +24,11 @@ export function idNumberToEmail(id: string): string {
 export function idNumberToPassword(id: string): string {
   return `vij-${id}-pw-2026`
 }
+
+// idNumberToEmail의 역변환 — 마이페이지에 "지금 저장된 번호"를 보여줄 때 쓴다. 이 형식과
+// 안 맞는 이메일(게스트의 익명 세션 등)이면 null을 돌려준다.
+export function emailToIdNumber(email: string | null | undefined): string | null {
+  if (!email) return null
+  const match = email.match(new RegExp(`^id-(.+)@${EMAIL_DOMAIN.replace('.', '\\.')}$`))
+  return match ? match[1] : null
+}

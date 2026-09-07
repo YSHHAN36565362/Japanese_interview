@@ -84,65 +84,66 @@ export default function InterviewStage({
 
   return (
     <section className="room-stage" data-testid="room-stage">
-      <div className={`room-avatar${speaking ? ' speaking' : ''}`}>
-        {photoFailed ? (
-          '面'
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src="/interviewer.jpg"
-            alt="면접관"
-            className="room-avatar-photo"
-            onError={() => setPhotoFailed(true)}
-          />
-        )}
-      </div>
-      <div className="room-speaker-name">
-        面接官
-        {speaking && <span className="room-speaking-indicator"> · 発話中…</span>}
-      </div>
-
-      <div className="room-question-row">
-        {voices.length > 0 && (
-          <select
-            className="room-voice-select"
-            value={voiceURI}
-            onChange={(e) => onVoiceChange(e.target.value)}
-            aria-label="면접관 목소리 선택"
-            title="면접관 목소리 선택 (브라우저 제공, 무료)"
-          >
-            {voices.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name}
-              </option>
-            ))}
-          </select>
-        )}
-        <div className="room-volume-control" title="면접관 목소리 크기">
-          <span aria-hidden="true">{volume === 0 ? '🔇' : '🔊'}</span>
-          <input
-            type="range"
-            className="room-volume-slider"
-            min={0}
-            max={1}
-            step={0.05}
-            value={volume}
-            onChange={(e) => onVolumeChange(Number(e.target.value))}
-            aria-label="면접관 목소리 크기"
-          />
-          <span className="room-volume-value">{Math.round(volume * 100)}%</span>
+      <div className="room-avatar-block">
+        <div className={`room-avatar${speaking ? ' speaking' : ''}`}>
+          {photoFailed ? (
+            '面'
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/interviewer.jpg"
+              alt="면접관"
+              className="room-avatar-photo"
+              onError={() => setPhotoFailed(true)}
+            />
+          )}
         </div>
-        <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
+        <div className="room-speaker-name">
+          面接官{speaking && <span className="room-speaking-indicator"> · 発話中…</span>}
+        </div>
       </div>
-      <p
-        className={`room-question-ja${blurQuestion ? ' blurred' : ''}`}
-        tabIndex={blurQuestion ? 0 : undefined}
-        title={blurQuestion ? '마우스를 올리면 질문이 보입니다 (듣기 연습)' : undefined}
-      >
-        {questionNode}
-      </p>
 
-      <p className="room-answer-goal">목표 답변 시간: 약 {question.expectedDurationSec}초</p>
+      <div className="room-question-card">
+        <div className="room-question-kicker">
+          <span className="badge">{isFollowUp ? '꼬리 질문' : '질문'}</span>
+          {voices.length > 0 && (
+            <select
+              className="room-voice-select"
+              value={voiceURI}
+              onChange={(e) => onVoiceChange(e.target.value)}
+              aria-label="면접관 목소리 선택"
+              title="면접관 목소리 선택 (브라우저 제공, 무료)"
+            >
+              {voices.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="room-volume-control" title="면접관 목소리 크기">
+            <span aria-hidden="true">{volume === 0 ? '🔇' : '🔊'}</span>
+            <input
+              type="range"
+              className="room-volume-slider"
+              min={0}
+              max={1}
+              step={0.05}
+              value={volume}
+              onChange={(e) => onVolumeChange(Number(e.target.value))}
+              aria-label="면접관 목소리 크기"
+            />
+            <span className="room-volume-value">{Math.round(volume * 100)}%</span>
+          </div>
+        </div>
+        <p
+          className={`room-question-ja${blurQuestion ? ' blurred' : ''}`}
+          tabIndex={blurQuestion ? 0 : undefined}
+          title={blurQuestion ? '마우스를 올리면 질문이 보입니다 (듣기 연습)' : undefined}
+        >
+          {questionNode}
+        </p>
+      </div>
 
       <div className="room-stage-controls-row">
         <button className="btn" onClick={onReplay}>
@@ -210,6 +211,7 @@ export default function InterviewStage({
             ＋
           </button>
         </div>
+        <span className="room-answer-goal">목표 답변 시간 약 {question.expectedDurationSec}초</span>
       </div>
 
       {listeningPhase ? (

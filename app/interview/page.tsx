@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import MacWindow from '@/components/MacWindow'
 import LoadingDots from '@/components/LoadingDots'
 import ResumeInputStep from '@/components/ResumeInputStep'
 import type { JobTrack } from '@/lib/questionBank'
@@ -15,26 +14,49 @@ const JOB_TRACKS: { id: JobTrack; label: string }[] = [
   { id: 'semiconductor', label: '반도체' },
 ]
 
+// 카드에 적는 상세 정보는 실제 코드 동작과 어긋나지 않는 것만 적는다 — "역질문 있음",
+// "예상 소요 25분" 같은 값은 실전 모드에만 해당하거나 실측치가 없어서 다른 모드에는 못 씀.
 const MODES = [
   {
     id: 'practice',
     label: '연습 모드',
-    desc: '질문 미리보기·다시 듣기 가능, 시간 제한 없음',
-    img: '/mode-practice.png',
+    labelJa: '練習モード',
+    badge: '처음이면 여기',
+    desc: '질문을 미리 보고, 몇 번이든 다시 듣고, 시간 제한 없이 답변을 다듬습니다.',
+    illustration: '/mode-practice.svg',
+    details: [
+      { label: '질문 수', value: '최대 30문항' },
+      { label: '질문 미리보기', value: '가능' },
+      { label: '지원 직무 선택', value: '없음' },
+    ],
   },
   {
     id: 'real',
     label: '실전 모드',
-    desc: '제한 시간 안에 답변, 마지막엔 역질문까지',
-    img: '/mode-real.png',
+    labelJa: '本番モード',
+    badge: '지원 직무 선택',
+    desc: '지원 직무(소프트웨어/반도체/기본)를 고르고, 마지막엔 역질문까지 이어집니다.',
+    illustration: '/mode-real.svg',
+    details: [
+      { label: '질문 수', value: '최대 28문항 + 역질문' },
+      { label: '질문 미리보기', value: '블러 처리 (듣기 연습)' },
+      { label: '지원 직무 선택', value: '소프트웨어 / 반도체 / 기본' },
+    ],
   },
   {
     id: 'technical',
     label: '기술 면접',
-    desc: '프로젝트 경험·기술 선택 이유 중심',
-    img: '/mode-tech.png',
+    labelJa: '技術面接',
+    badge: '프로젝트 중심',
+    desc: '프로젝트 경험과 기술 선택 이유를 파고듭니다. 답변마다 꼬리질문이 붙을 수 있습니다.',
+    illustration: '/mode-tech.svg',
+    details: [
+      { label: '질문 수', value: '최대 24문항' },
+      { label: '질문 미리보기', value: '가능' },
+      { label: '지원 직무 선택', value: '없음' },
+    ],
   },
-]
+] as const
 
 export default function InterviewModeSelectPage() {
   const router = useRouter()
@@ -102,16 +124,56 @@ export default function InterviewModeSelectPage() {
   if (!userId) return <LoadingDots label="확인 중입니다..." />
 
   return (
-    <MacWindow title="mensetsu-dojo — select mode">
-      <h1 style={{ marginTop: 0 }}>면접 모드 선택</h1>
+    <div className="mode-page">
+      <div className="step-indicator">
+        <span className="step-indicator-current">01 MODE</span>
+        <span className="step-indicator-line" />
+        <span>02 CHECK</span>
+        <span className="step-indicator-line step-indicator-line-short" />
+        <span>03 INTERVIEW</span>
+      </div>
+
+      <div className="mode-page-head">
+        <div>
+          <h1 className="mode-page-title">면접 모드 선택</h1>
+          <p className="mode-page-subtitle">面接モードを選んでください · 입장 후에도 바꿀 수 있습니다.</p>
+        </div>
+      </div>
+
       {starting ? (
         <LoadingDots label="세션을 준비하고 있습니다..." />
       ) : (
-        <div className="mode-grid mode-grid-3d">
+        <div className="mode-card-grid">
           {MODES.map((m) => (
-            <div key={m.id} className="mode-3d-item">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={m.img} alt="" aria-hidden="true" className="mode-illustration" />
+            <div key={m.id} className={`mode-card-dojo${m.id === 'real' ? ' is-featured' : ''}`}>
+              <div className="mode-card-dojo-head">
+                <span className="mode-card-dojo-kicker">
+                  {m.id === 'practice' ? '01' : m.id === 'real' ? '02' : '03'} · {m.labelJa}
+                </span>
+                <span className={`mode-card-dojo-badge${m.id === 'real' ? ' is-featured' : ''}`}>{m.badge}</span>
+              </div>
+
+              <div className="mode-card-dojo-illustration">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={m.illustration} alt={`${m.label} 일러스트`} className="mode-card-dojo-illustration-img" />
+              </div>
+
+              <div>
+                <div className="mode-card-dojo-title">{m.label}</div>
+                <div className="mode-card-dojo-title-ja">{m.labelJa}</div>
+              </div>
+
+              <p className="mode-card-dojo-desc">{m.desc}</p>
+
+              <div className="mode-card-dojo-details">
+                {m.details.map((d) => (
+                  <div className="mode-card-dojo-detail-row" key={d.label}>
+                    <span>{d.label}</span>
+                    <span className="mode-card-dojo-detail-value">{d.value}</span>
+                  </div>
+                ))}
+              </div>
+
               {m.id === 'real' && pickingTrackFor === 'real' ? (
                 <div className="mode-track-picker">
                   <p className="muted small mode-track-picker-label">지원 직무를 골라주세요</p>
@@ -120,7 +182,7 @@ export default function InterviewModeSelectPage() {
                       <button
                         key={t.id}
                         type="button"
-                        className="btn-3d btn-3d-track"
+                        className="btn-dojo-track"
                         disabled={starting}
                         onClick={() => setResumeStepTrack(t.id)}
                       >
@@ -128,22 +190,31 @@ export default function InterviewModeSelectPage() {
                       </button>
                     ))}
                   </div>
-                  <button
-                    type="button"
-                    className="mode-track-picker-cancel"
-                    onClick={() => setPickingTrackFor(null)}
-                  >
+                  <button type="button" className="mode-track-picker-cancel" onClick={() => setPickingTrackFor(null)}>
                     ← 취소
                   </button>
                 </div>
               ) : (
-                <button className="btn-3d" disabled={starting} onClick={() => handleModeClick(m.id)}>
-                  {m.label}
+                <button
+                  className={`mode-card-dojo-btn${m.id === 'real' ? ' is-primary' : ''}`}
+                  disabled={starting}
+                  onClick={() => handleModeClick(m.id)}
+                >
+                  {m.label}로 시작
                 </button>
               )}
-              <p className="muted small mode-3d-desc">{m.desc}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {isGuest && (
+        <div className="mode-guest-notice">
+          <span className="home-guest-dot" aria-hidden="true" />
+          <span>지금은 게스트입니다. 고유번호를 저장하면 이 세션이 기록으로 남습니다.</span>
+          <a href="/dashboard" className="mode-guest-link">
+            고유번호 저장하기 →
+          </a>
         </div>
       )}
 
@@ -156,6 +227,6 @@ export default function InterviewModeSelectPage() {
           }}
         />
       )}
-    </MacWindow>
+    </div>
   )
 }

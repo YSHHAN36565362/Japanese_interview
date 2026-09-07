@@ -83,7 +83,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
       <MacWindow title="mensetsu-dojo — enter">
         <form onSubmit={handleSubmit} className="auth-form">
           <p className="auth-form-title">

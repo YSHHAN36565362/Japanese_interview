@@ -10,7 +10,13 @@ type SessionRow = {
   id: string
   created_at: string
   mode: string
-  session_answers?: { count: number }[]
+  session_answers?: { duration_seconds: number | null }[]
+}
+
+const MODE_LABEL_KO: Record<string, string> = {
+  practice: '연습 모드',
+  real: '실전 모드',
+  technical: '기술 면접',
 }
 
 export default function SessionList({ sessions }: { sessions: SessionRow[] }) {
@@ -57,13 +63,13 @@ export default function SessionList({ sessions }: { sessions: SessionRow[] }) {
   }
 
   if (sessions.length === 0) {
-    return <p className="muted">아직 완료한 세션이 없습니다.</p>
+    return <p className="muted mypage-list-empty">아직 완료한 세션이 없습니다.</p>
   }
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+      <div className="session-list-toolbar">
+        <label className="session-list-select-all">
           <input type="checkbox" checked={allSelected} onChange={toggleAll} />
           전체 선택
         </label>
@@ -72,19 +78,37 @@ export default function SessionList({ sessions }: { sessions: SessionRow[] }) {
         </button>
       </div>
       <ul className="session-list">
-        {sessions.map((s) => (
-          <li key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggleOne(s.id)} />
-              <Link href={`/interview/result/${s.id}`}>
-                {formatKST(s.created_at)} · {s.mode} · 답변 {s.session_answers?.[0]?.count ?? 0}개
+        {sessions.map((s) => {
+          const count = s.session_answers?.length ?? 0
+          const totalDuration = (s.session_answers ?? []).reduce((sum, a) => sum + (a.duration_seconds ?? 0), 0)
+          const minutes = Math.round(totalDuration / 60)
+          return (
+            <li key={s.id} className="session-list-row">
+              <input
+                type="checkbox"
+                checked={selected.has(s.id)}
+                onChange={() => toggleOne(s.id)}
+                aria-label="이 세션 선택"
+              />
+              <div className="session-list-row-main">
+                <div className="session-list-row-title">
+                  {MODE_LABEL_KO[s.mode] ?? s.mode} · {count}문항
+                </div>
+                <div className="session-list-row-meta">
+                  {formatKST(s.created_at)}
+                  {minutes > 0 && <> · {minutes}분</>}
+                </div>
+              </div>
+              <span className="session-list-count-pill">답변 {count}개</span>
+              <Link href={`/interview/result/${s.id}`} className="btn btn-small">
+                리포트 보기
               </Link>
-            </label>
-            <button className="btn btn-small" onClick={() => handleDeleteOne(s.id)} disabled={busy}>
-              삭제
-            </button>
-          </li>
-        ))}
+              <button className="btn btn-small" onClick={() => handleDeleteOne(s.id)} disabled={busy}>
+                삭제
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )

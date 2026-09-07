@@ -18,6 +18,7 @@ import {
 import { applyResumePriority } from '@/lib/resumeKeywords'
 import { RESUME_PRIORITY_STORAGE_KEY } from '@/lib/resumePriorityStorage'
 import { evaluateAnswer } from '../lib/evaluateAnswer'
+import { checkGrammar } from '../lib/grammarCheck'
 import { decideFollowUp } from '../lib/followUpEngine'
 import { loadUserCustomTerms, normalizeTranscript, findSuggestion, type CustomTerm } from '../lib/transcriptNormalizer'
 import { MODE_TO_CATEGORY } from '../constants'
@@ -279,6 +280,9 @@ export function useInterviewMachine({
       : null
     const analysis = evaluateAnswer(finalText)
     setLastFeedback({ questionTextJa: currentQuestion.textJa, analysis })
+    // 문법 교정 모드(GrammarPanel)와 같은 규칙 기반 검사기를 재사용해, 원문 텍스트는 다시
+    // 저장하지 않고 유형별 건수만 feedback_result에 얹어서 결과 리포트에서 집계할 수 있게 한다.
+    const grammar = checkGrammar(finalText)
 
     if (!isGuestRef.current) {
       const { error: saveError } = await supabase.from('session_answers').insert({
@@ -292,7 +296,7 @@ export function useInterviewMachine({
         latency_to_first_speech_sec: latency,
         politeness_score_ratio: analysis.politenessRatio,
         filler_counts: analysis.fillerBreakdown,
-        feedback_result: analysis,
+        feedback_result: { ...analysis, grammarIssueCount: grammar.issues.length, grammarIssueCountsByType: grammar.countsByType },
       })
       // 이 insert 실패를 그동안 아무 데도 표시하지 않아서, 저장이 실패해도 사용자는 계속
       // 다음 질문으로 넘어가며 답변이 전혀 저장되지 않는 것을 전혀 알 수 없었다(2026-09-02

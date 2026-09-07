@@ -1,7 +1,6 @@
 import './globals.css'
 import type { ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import MatrixBackground from '@/components/MatrixBackground'
 import SiteChrome from '@/components/SiteChrome'
 
 export const metadata = {
@@ -20,10 +19,17 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="ko">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <div className="page-bg-fill" aria-hidden="true" />
-        <MatrixBackground />
-        <SiteChrome userEmail={user?.email ?? null} isLoggedIn={!!user}>
+        <SiteChrome userEmail={user?.email ?? null} isLoggedIn={!!user} isGuest={user?.is_anonymous ?? false}>
           {children}
         </SiteChrome>
       </body>

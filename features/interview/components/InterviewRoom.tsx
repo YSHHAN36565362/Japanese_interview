@@ -16,6 +16,7 @@ import InterviewStage from './InterviewStage'
 import SelfPreview from './SelfPreview'
 import TranscriptPanel from './TranscriptPanel'
 import CoachingPanel from './CoachingPanel'
+import GrammarPanel from './GrammarPanel'
 import RoomControls from './RoomControls'
 import LoadingDots from '@/components/LoadingDots'
 
@@ -156,15 +157,35 @@ export default function InterviewRoom({
       )}
 
       {machine.currentQuestion && machine.phase !== 'preflight' && (
-        <>
+        <div className="room-page-inner">
+        <div className="room-card">
           <RoomHeader
             mode={mode}
             track={track}
             questionIndex={machine.queueIndex + 1}
             totalQuestions={machine.questions.length}
             timerFormatted={timer.formatted}
+            recording={videoRecorder.recording || audioRecorder.recording}
             onExit={handleEnd}
           />
+
+          <div className="room-progress-track" aria-hidden="true">
+            <div
+              className="room-progress-fill"
+              style={{ width: `${Math.round(((machine.queueIndex + 1) / Math.max(1, machine.questions.length)) * 100)}%` }}
+            />
+            <div className="room-progress-current-track">
+              <div
+                className="room-progress-current-fill"
+                style={{
+                  width: `${Math.min(
+                    100,
+                    Math.round((timer.elapsedSeconds / Math.max(1, machine.currentQuestion.expectedDurationSec)) * 100)
+                  )}%`,
+                }}
+              />
+            </div>
+          </div>
 
           <div className="room-body">
             <div className="room-stage-wrap">
@@ -253,6 +274,13 @@ export default function InterviewRoom({
                   />
                 )}
 
+                {activeTab === 'grammar' && (
+                  <GrammarPanel
+                    draftText={machine.draftTranscript || machine.interimTranscript}
+                    onChangeText={machine.setDraftTranscript}
+                  />
+                )}
+
                 {activeTab === 'notes' && (
                   <div className="room-notes-panel">
                     <textarea
@@ -279,7 +307,6 @@ export default function InterviewRoom({
             onToggleCamera={media.toggleCamera}
             panelOpen={panelOpen}
             onTogglePanel={() => setPanelOpen((v) => !v)}
-            onReplay={handleReplay}
             videoRecording={videoRecorder.recording}
             onToggleVideoRecording={() => (videoRecorder.recording ? videoRecorder.stop() : videoRecorder.start())}
             audioRecording={audioRecorder.recording}
@@ -290,7 +317,8 @@ export default function InterviewRoom({
             onEnd={handleEnd}
             saving={machine.saving}
           />
-        </>
+        </div>
+        </div>
       )}
     </div>
   )
