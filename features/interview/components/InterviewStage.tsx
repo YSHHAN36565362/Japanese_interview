@@ -12,6 +12,8 @@ export default function InterviewStage({
   question,
   phase,
   blurQuestion,
+  score,
+  onHintRevealed,
   onReplay,
   voices,
   voiceURI,
@@ -35,6 +37,8 @@ export default function InterviewStage({
   question: BankQuestion
   phase: InterviewPhase
   blurQuestion: boolean
+  score: number
+  onHintRevealed: () => void
   onReplay: () => void
   voices: VoiceOption[]
   voiceURI: string
@@ -59,6 +63,7 @@ export default function InterviewStage({
   const speaking = phase === 'interviewerSpeaking'
   const [photoFailed, setPhotoFailed] = useState(false)
   const listeningPhase = phase === 'listening'
+  const scoreTier = score >= 70 ? 'good' : score >= 40 ? 'warn' : 'bad'
 
   // 지금 낭독 중인 글자를 요미가나 점처럼 짚어준다 — TTS가 어디를 읽고 있는지 실시간으로
   // 보여주면, 질문이 길 때 사용자가 청취 타이밍을 놓쳐서 늦게 반응하는 문제가 줄어든다.
@@ -104,6 +109,12 @@ export default function InterviewStage({
       <div className="room-question-card">
         <div className="room-question-kicker">
           <span className="badge">질문</span>
+          <span
+            className={`room-interview-score room-interview-score-${scoreTier}`}
+            title="힌트를 보거나, 다시 듣기를 누르거나, 답변이 늦어지면 면접 점수가 깎입니다."
+          >
+            면접 점수 {score}점
+          </span>
           {voices.length > 0 && (
             <select
               className="room-voice-select"
@@ -120,7 +131,32 @@ export default function InterviewStage({
             </select>
           )}
           <div className="room-volume-control" title="면접관 목소리 크기">
-            <span aria-hidden="true">{volume === 0 ? '🔇' : '🔊'}</span>
+            <svg
+              className="room-volume-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <polygon points="10,5 5,9 2,9 2,15 5,15 10,19" fill="currentColor" />
+              {volume === 0 ? (
+                <path
+                  d="M16 9l6 6M22 9l-6 6"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              ) : (
+                <path
+                  d="M15 8.2a5.6 5.6 0 0 1 0 7.6"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              )}
+            </svg>
             <input
               type="range"
               className="room-volume-slider"
@@ -137,12 +173,20 @@ export default function InterviewStage({
         <p
           className={`room-question-ja${blurQuestion ? ' blurred' : ''}`}
           tabIndex={blurQuestion ? 0 : undefined}
-          title={blurQuestion ? '마우스를 올리면 질문이 보입니다 (듣기 연습)' : undefined}
+          title={blurQuestion ? '마우스를 올리면 질문이 보입니다 (듣기 연습, 면접 점수가 깎입니다)' : undefined}
+          onMouseEnter={blurQuestion ? onHintRevealed : undefined}
+          onFocus={blurQuestion ? onHintRevealed : undefined}
         >
           {questionNode}
         </p>
         {question.textKo && (
-          <p className="room-question-ko blurred" tabIndex={0} title="마우스를 올리면 한국어 뜻이 보입니다">
+          <p
+            className="room-question-ko blurred"
+            tabIndex={0}
+            title="마우스를 올리면 한국어 뜻이 보입니다 (면접 점수가 깎입니다)"
+            onMouseEnter={onHintRevealed}
+            onFocus={onHintRevealed}
+          >
             {question.textKo}
           </p>
         )}

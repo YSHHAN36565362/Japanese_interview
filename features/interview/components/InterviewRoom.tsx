@@ -5,7 +5,7 @@ import { useMediaRecorder } from '@/lib/useMediaRecorder'
 import { useInterviewMachine } from '../hooks/useInterviewMachine'
 import { useMediaDevices } from '../hooks/useMediaDevices'
 import { useAudioLevel } from '../hooks/useAudioLevel'
-import type { JobTrack, TopicCategoryId } from '@/lib/questionBank'
+import type { BankQuestion, JobTrack, TopicCategoryId } from '@/lib/questionBank'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis'
 import { useSessionTimer } from '../hooks/useSessionTimer'
@@ -66,6 +66,41 @@ export default function InterviewRoom({
 
   const timer = useSessionTimer(machine.currentQuestion?.id ?? 'none')
 
+  // "면접 점수" — 질문마다 리셋되지 않고 세션 전체를 100점에서 시작해 깎아나간다. 힌트(블러
+  // 공개)는 질문 하나당 한 번만 깎이도록 id를 모아두고, 다시 듣기는 세션 내내 누적, 답변
+  // 시간 초과는 질문을 벗어날 때(questionStartRef 기준 실제 경과 시간) 확정해서 더한다.
+  // 어디에도 저장하지 않는다 — 화면을 벗어나면 사라지는 그 자리 지표.
+  const [hintRevealedIds, setHintRevealedIds] = useState<Set<string>>(new Set())
+  const [replayCount, setReplayCount] = useState(0)
+  const [committedTimePenalty, setCommittedTimePenalty] = useState(0)
+  const questionStartRef = useRef<number>(Date.now())
+  const prevQuestionRef = useRef<BankQuestion | null>(null)
+
+  useEffect(() => {
+    const prev = prevQuestionRef.current
+    if (prev) {
+      const elapsedOnPrev = (Date.now() - questionStartRef.current) / 1000
+      const overtime = Math.max(0, elapsedOnPrev - prev.expectedDurationSec)
+      setCommittedTimePenalty((p) => p + Math.floor(overtime / 3))
+    }
+    questionStartRef.current = Date.now()
+    prevQuestionRef.current = machine.currentQuestion
+  }, [machine.currentQuestion?.id])
+
+  function handleHintRevealed() {
+    const id = machine.currentQuestion?.id
+    if (!id) return
+    setHintRevealedIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)))
+  }
+
+  const liveOvertime = machine.currentQuestion
+    ? Math.max(0, timer.elapsedSeconds - machine.currentQuestion.expectedDurationSec)
+    : 0
+  const interviewScore = Math.max(
+    0,
+    100 - hintRevealedIds.size * 20 - replayCount * 10 - committedTimePenalty - Math.floor(liveOvertime / 3)
+  )
+
   // 질문마다 딱 한 번만 자동 낭독한다. TTS 종료 후 phase가 다시 questionReady로
   // 돌아오더라도 같은 질문이면 재생하지 않는다 (무한 재생 방지). 반복 재생은
   // "다시 듣기" 버튼(handleReplay)으로만 한다.
@@ -109,6 +144,7 @@ export default function InterviewRoom({
 
   function handleReplay() {
     if (!machine.currentQuestion) return
+    setReplayCount((c) => c + 1)
     tts.speak(machine.currentQuestion.textJa)
   }
 
@@ -195,6 +231,8 @@ export default function InterviewRoom({
                 question={machine.currentQuestion}
                 phase={machine.phase}
                 blurQuestion={mode === 'real'}
+                score={interviewScore}
+                onHintRevealed={handleHintRevealed}
                 onReplay={handleReplay}
                 voices={tts.voices}
                 voiceURI={tts.voiceURI}

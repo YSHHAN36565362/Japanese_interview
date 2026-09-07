@@ -237,24 +237,47 @@ a {
   flex-shrink: 0;
 }
 
-.theme-toggle-btn {
+/* 다크모드 토글 — iOS 설정 앱 스위치 스타일. 트랙 색이 꺼짐/켜짐으로 바뀌고, 흰 원(엄지)이
+   좌우로 미끄러진다(components/ThemeToggle.tsx). */
+.theme-toggle-switch {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--card-bg);
-  font-size: 14px;
-  line-height: 1;
+  padding: 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
 }
 
-.theme-toggle-btn:hover {
-  background: var(--bg);
-  border-color: var(--border-strong);
+.theme-toggle-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 26px;
+  padding: 2px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: background-color 0.2s ease;
+}
+
+.theme-toggle-switch.is-on .theme-toggle-track {
+  background: var(--primary);
+}
+
+.theme-toggle-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transform: translateX(0);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-toggle-switch.is-on .theme-toggle-thumb {
+  transform: translateX(22px);
 }
 
 .topbar-account-dot.is-guest {
@@ -2183,6 +2206,33 @@ a {
   gap: 10px;
 }
 
+/* 면접 점수 배지 — 세션 전체를 100점에서 시작해, 힌트(블러) 공개/다시 듣기/시간 초과로
+   깎이는 그 자리 지표(질문마다 리셋되지 않는다 — features/interview/components/InterviewRoom.tsx
+   참고). 점수대별로 색만 다르고 구조는 .badge와 동일하다. */
+.room-interview-score {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.room-interview-score-good {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.room-interview-score-warn {
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+}
+
+.room-interview-score-bad {
+  background: var(--error-bg);
+  color: var(--error-fg);
+}
+
 .room-voice-select {
   background: var(--card-bg);
   color: var(--room-text-primary);
@@ -2200,6 +2250,11 @@ a {
   font-size: 12px;
   color: var(--room-text-primary);
   margin-left: auto;
+}
+
+.room-volume-icon {
+  flex-shrink: 0;
+  color: var(--muted-2);
 }
 
 .room-volume-slider {
@@ -2827,15 +2882,18 @@ a {
   padding: 11px 24px;
   border: 0;
   border-radius: 8px;
+  /* --fg/--bg는 다크모드에서 서로 뒤바뀌므로(html[data-theme='dark']), 배경을 --fg로 채우고
+     글자색을 --bg로 하면 라이트/다크 어느 쪽에서도 반전된 고대비 조합이 그대로 유지된다.
+     예전엔 글자색이 #f7f4ed로 고정이라 다크모드에서 밝은 배경 위에 밝은 글자가 겹쳐 안 보였다. */
   background: var(--fg);
-  color: #f7f4ed;
+  color: var(--bg);
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .room-primary-btn:hover:not(:disabled) {
-  background: #2e2e2a;
+  opacity: 0.82;
 }
 
 .room-primary-btn:disabled {

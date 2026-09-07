@@ -7,6 +7,17 @@ export interface ParsedResumeCareer {
   endYm?: string
 }
 
+export interface ParsedResumeEducation {
+  school: string
+  major?: string
+  degree?: string
+}
+
+export interface ParsedResumeCertification {
+  name: string
+  date?: string
+}
+
 export interface ParsedResume {
   personal: {
     nameKanji?: string
@@ -17,6 +28,8 @@ export interface ParsedResume {
     desiredDuty?: string
   }
   careers: ParsedResumeCareer[]
+  education: ParsedResumeEducation[]
+  certifications: ParsedResumeCertification[]
   techStack: string[]
   essays: {
     growth: string

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 const THEME_STORAGE_KEY = 'theme'
 
 // layout.tsx의 인라인 스크립트가 페인트 전에 <html data-theme>를 이미 정해두므로, 마운트
-// 시점에 그 값을 그대로 읽어와 버튼 아이콘만 맞춘다(서버 렌더링 결과와 다를 수 있어 useEffect에서 동기화).
+// 시점에 그 값을 그대로 읽어와 스위치 위치만 맞춘다(서버 렌더링 결과와 다를 수 있어 useEffect에서 동기화).
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false)
 
@@ -27,12 +27,16 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
-      className="theme-toggle-btn"
+      role="switch"
+      aria-checked={isDark}
+      className={`theme-toggle-switch${isDark ? ' is-on' : ''}`}
       onClick={toggle}
       aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
       title={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
     >
-      {isDark ? '☀️' : '🌙'}
+      <span className="theme-toggle-track">
+        <span className="theme-toggle-thumb" aria-hidden="true" />
+      </span>
     </button>
   )
 }

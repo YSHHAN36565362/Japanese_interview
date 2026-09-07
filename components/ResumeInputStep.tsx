@@ -103,10 +103,18 @@ export default function ResumeInputStep({
             <p>
               <strong>{parsed.personal.nameKanji ?? parsed.personal.nameRomaji ?? '이름 미인식'}</strong>
             </p>
+            {parsed.education.length > 0 && (
+              <p className="muted small">
+                학력: {parsed.education.map((e) => [e.school, e.major].filter(Boolean).join(' · ')).join(', ')}
+              </p>
+            )}
             {parsed.careers.length > 0 && (
               <p className="muted small">
                 경력 {parsed.careers.length}건: {parsed.careers.map((c) => c.company).join(', ')}
               </p>
+            )}
+            {parsed.certifications.length > 0 && (
+              <p className="muted small">자격증: {parsed.certifications.map((c) => c.name).join(', ')}</p>
             )}
             {parsed.techStack.length > 0 && <p className="muted small">기술스택: {parsed.techStack.join(', ')}</p>}
             <p className="muted small">

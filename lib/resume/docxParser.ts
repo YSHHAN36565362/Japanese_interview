@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { XMLParser } from 'fast-xml-parser'
-import type { ParsedResume, ParsedResumeCareer } from './types'
+import type { ParsedResume, ParsedResumeCareer, ParsedResumeCertification, ParsedResumeEducation } from './types'
 
 // K-Move 고정 워드 양식 전용 파서. 양식이 임의라면 이 파서는 쓰지 않는다(resume_upload_feature_plan.md 참고).
 // mammoth 같은 범용 docx→HTML 변환기를 쓰지 않고, word/document.xml의 표 구조를 직접 순회한다 —
@@ -229,6 +229,45 @@ function extractCareers(rows: Row[]): ParsedResumeCareer[] {
     })
 }
 
+// 학력 표 — 예전엔 KNOWN_HEADER_KEYWORDS에 入学/卒業/学校/教育機関/専攻/学位만 있고 이 표
+// 자체를 실제로 읽어들이는 함수가 없어서(경력/기술표 헤더를 못 찾고 지나치는 용도로만 쓰임),
+// 이력서에 학력이 있어도 질문에 전혀 반영되지 않았다. 학교/전공 둘 다 있는 행만 채택한다.
+function extractEducation(rows: Row[]): ParsedResumeEducation[] {
+  const table = extractHeaderTable(rows, [
+    { key: 'school', keywords: ['学校', '教育機関'] },
+    { key: 'major', keywords: ['専攻'] },
+    { key: 'degree', keywords: ['学位', '卒業区分'] },
+  ])
+  if (!table) return []
+
+  return table.dataRows
+    .filter((r) => r.school)
+    .map((r) => {
+      const edu: ParsedResumeEducation = { school: r.school }
+      if (r.major) edu.major = r.major
+      if (r.degree) edu.degree = r.degree
+      return edu
+    })
+}
+
+// 자격증 표 — 학력과 마찬가지로 헤더 키워드(資格/取得)만 표 경계 판정에 쓰이고 내용은
+// 버려지고 있었다. 자격명이 있는 행만 채택한다.
+function extractCertifications(rows: Row[]): ParsedResumeCertification[] {
+  const table = extractHeaderTable(rows, [
+    { key: 'name', keywords: ['資格'] },
+    { key: 'date', keywords: ['取得'] },
+  ])
+  if (!table) return []
+
+  return table.dataRows
+    .filter((r) => r.name)
+    .map((r) => {
+      const cert: ParsedResumeCertification = { name: r.name }
+      if (r.date) cert.date = r.date
+      return cert
+    })
+}
+
 function extractTechStack(rows: Row[]): string[] {
   const table = extractHeaderTable(rows, [
     { key: 'category', keywords: ['区分'] },
@@ -333,7 +372,9 @@ export async function parseResumeDocx(input: Buffer | ArrayBuffer): Promise<Pars
   }
 
   const careers = extractCareers(rows)
+  const education = extractEducation(rows)
+  const certifications = extractCertifications(rows)
   const techStack = extractTechStack(rows)
 
-  return { personal, careers, techStack, essays }
+  return { personal, careers, education, certifications, techStack, essays }
 }

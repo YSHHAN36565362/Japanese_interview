@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { MODE_LABEL, TRACK_LABEL } from '../constants'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function RoomHeader({
   mode,
@@ -55,6 +56,7 @@ export default function RoomHeader({
           </span>
         )}
         <span className="room-header-timer">{timerFormatted}</span>
+        <ThemeToggle />
       </div>
     </header>
   )

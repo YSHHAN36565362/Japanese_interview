@@ -107,10 +107,18 @@ export function useInterviewMachine({
 
       let resumeMainQuestions: BankQuestion[] = []
       if (parsedResume) {
+        // education/certifications는 이번에 새로 추가된 필드라, 그 전에 저장된(Supabase
+        // user_resumes 또는 게스트 sessionStorage) 옛 이력서 데이터에는 아예 키가 없을 수
+        // 있다 — buildResumeMainQuestions가 .length를 그대로 읽다가 죽지 않도록 기본값을 채운다.
+        const normalizedResume: ParsedResume = {
+          ...parsedResume,
+          education: parsedResume.education ?? [],
+          certifications: parsedResume.certifications ?? [],
+        }
         // 이력서 질문도 다른 메인 풀과 똑같이 모드의 카테고리 필터를 따라야 한다 — 그렇지 않으면
         // "기술 면접"(categories=['technical']) 모드에도 personality/culture_fit인 자소서
         // 질문이 섞여 들어와 모드 취지에 어긋난다.
-        resumeMainQuestions = buildResumeMainQuestions(parsedResume).filter((q) => categories.includes(q.category))
+        resumeMainQuestions = buildResumeMainQuestions(normalizedResume).filter((q) => categories.includes(q.category))
       }
 
       // "기본 모드"(general)는 무작위 추출이 아니라, 실제 면접에서 거의 항상 나오는 대표
