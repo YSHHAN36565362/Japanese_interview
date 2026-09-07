@@ -264,7 +264,11 @@ export function useInterviewMachine({
   }
 
   // 답변 확정: 정규화 → 규칙 기반 평가 → 저장 → 다음 질문
-  const confirmAnswer = useCallback(async () => {
+  // interviewScore: InterviewRoom이 계산해 둔 이 질문의 "면접 점수"(힌트 공개/다시 듣기/시간
+  // 초과 감점, 0~100). 여기서 새로 계산하지 않고 그대로 받아서 feedback_result에 얹기만
+  // 한다 — 계산 로직 자체는 InterviewRoom 쪽 화면에 실시간으로 보여주는 것과 항상 같아야
+  // 하므로 한 곳(InterviewRoom.scoreFor)에만 둔다.
+  const confirmAnswer = useCallback(async (interviewScore?: number) => {
     if (!currentQuestion || !userId) return
     setPhase('saving')
     setSaving(true)
@@ -293,7 +297,12 @@ export function useInterviewMachine({
         latency_to_first_speech_sec: latency,
         politeness_score_ratio: analysis.politenessRatio,
         filler_counts: analysis.fillerBreakdown,
-        feedback_result: { ...analysis, grammarIssueCount: grammar.issues.length, grammarIssueCountsByType: grammar.countsByType },
+        feedback_result: {
+          ...analysis,
+          grammarIssueCount: grammar.issues.length,
+          grammarIssueCountsByType: grammar.countsByType,
+          ...(interviewScore != null ? { interviewScore } : {}),
+        },
       })
       // 이 insert 실패를 그동안 아무 데도 표시하지 않아서, 저장이 실패해도 사용자는 계속
       // 다음 질문으로 넘어가며 답변이 전혀 저장되지 않는 것을 전혀 알 수 없었다(2026-09-02

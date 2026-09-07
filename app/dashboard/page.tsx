@@ -47,7 +47,7 @@ export default async function DashboardPage() {
 
   const { data: sessions } = await supabase
     .from('sessions')
-    .select('*, session_answers(duration_seconds)')
+    .select('*, session_answers(duration_seconds, feedback_result)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 

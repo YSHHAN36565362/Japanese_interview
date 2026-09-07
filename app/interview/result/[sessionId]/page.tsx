@@ -43,8 +43,19 @@ export default async function ResultPage({ params }: { params: Promise<{ session
       isFollowUp,
       questionTextJa: r.question_text_snapshot ?? question?.textJa ?? '(삭제되었거나 알 수 없는 질문)',
       expectedDurationSec: question?.expectedDurationSec ?? null,
+      // 힌트 공개/다시 듣기/시간 초과로 깎이는 "면접 점수"(0~100, features/interview/components/
+      // InterviewRoom.tsx가 답변 확정 시점에 계산해 feedback_result에 같이 저장해 둔 값). 이 기능
+      // 이전에 저장된 답변에는 없어서 null일 수 있다 — 평균/최저점 계산에서 자연히 빠진다.
+      interviewScore: (r.feedback_result as { interviewScore?: number } | null)?.interviewScore ?? null,
     }
   })
+  const scoredRows = rows.filter((r): r is typeof rows[number] & { interviewScore: number } => r.interviewScore != null)
+  const avgInterviewScore =
+    scoredRows.length > 0
+      ? Math.round(scoredRows.reduce((sum, r) => sum + r.interviewScore, 0) / scoredRows.length)
+      : null
+  const worstScoredRow =
+    scoredRows.length > 0 ? scoredRows.reduce((min, r) => (r.interviewScore < min.interviewScore ? r : min)) : null
 
   const avgDuration = rows.length
     ? (rows.reduce((sum, r) => sum + (r.duration_seconds ?? 0), 0) / rows.length).toFixed(1)
@@ -117,13 +128,30 @@ export default async function ResultPage({ params }: { params: Promise<{ session
             말투 정확도 {score.toneScorePercent ?? '—'}점(70%) + 필러 적음 정도 {composite.fillerScorePercent}점(30%)
           </p>
         </div>
+        <div className={`score-card ${scoreBand(avgInterviewScore)}`}>
+          <strong>{avgInterviewScore != null ? `${avgInterviewScore}점` : '—'}</strong>
+          <span>면접 점수(평균)</span>
+          <p className="score-card-detail">
+            {scoredRows.length > 0
+              ? `질문 ${scoredRows.length}개 평균 · 힌트 공개/다시 듣기/시간 초과로 감점`
+              : '이 세션에는 기록된 면접 점수가 없습니다'}
+          </p>
+        </div>
       </div>
+
+      {worstScoredRow && (
+        <p className="muted small">
+          가장 점수가 많이 깎인 질문: <strong>{worstScoredRow.interviewScore}점</strong> ·{' '}
+          {worstScoredRow.questionTextJa}
+        </p>
+      )}
 
       <p className="muted small">
         경어 오류(반말 종결) {score.casualSentenceCount}회 · 장음 인식 오류 {score.choonDefectCount}회 · 전체{' '}
         {score.totalSentences}문장 중 {score.wellSaidCount}문장 양호. 정중체 비율은 질문마다 따로 평균 내지 않고
-        세션의 모든 문장을 한 번에 모아 계산합니다. 이 점수는 이 화면에서만 계산되며 어디에도 저장되지
-        않습니다 — 텍스트 전체는 아래 Markdown 다운로드나 마이페이지에서 언제든 다시 볼 수 있습니다.
+        세션의 모든 문장을 한 번에 모아 계산합니다. 정중체 비율·종합 점수는 이 화면에서만 계산되며 어디에도
+        저장되지 않습니다(면접 점수는 답변마다 저장되어 마이페이지 목록에서도 보입니다) — 텍스트 전체는 아래
+        Markdown 다운로드나 마이페이지에서 언제든 다시 볼 수 있습니다.
       </p>
 
       <MarkdownExportButton
@@ -140,6 +168,11 @@ export default async function ResultPage({ params }: { params: Promise<{ session
         {rows.map((r) => (
           <div key={r.id} className="card">
             <span className={`badge${r.isFollowUp ? ' badge-followup' : ''}`}>{r.isFollowUp ? '꼬리 질문' : '질문'}</span>
+            {r.interviewScore != null && (
+              <span className={`room-interview-score room-interview-score-${r.interviewScore >= 70 ? 'good' : r.interviewScore >= 40 ? 'warn' : 'bad'}`}>
+                면접 점수 {r.interviewScore}점
+              </span>
+            )}
             <p className="question-ja">{r.questionTextJa}</p>
             <p>{r.corrected_answer_text}</p>
             {r.duration_seconds != null && (
