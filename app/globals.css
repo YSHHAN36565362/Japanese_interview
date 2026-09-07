@@ -32,6 +32,88 @@
   --accent-speaking: #b8412b;
   --accent-warning: #c98a2e;
   --room-danger: #b8412b;
+
+  color-scheme: light;
+}
+
+/* 다크모드 — 상단바의 수동 토글(components/ThemeToggle.tsx)이 <html data-theme="dark">를
+   붙이면 적용된다. 같은 변수 이름을 그대로 덮어써서, var()를 쓰는 나머지 CSS는 손댈 필요가
+   없게 했다. 따뜻한 크림/테라코타 톤은 유지하되 명도만 반전시켰다. */
+html[data-theme='dark'] {
+  --bg: #17140f;
+  --fg: #f0ece3;
+  --muted: #a89f92;
+  --muted-2: #8a8175;
+  --muted-3: #6f675d;
+  --card-bg: #221d18;
+  --surface: #1d1914;
+  --border: #3a332b;
+  --border-strong: #4a4136;
+  --primary: #e2703f;
+  --primary-hover: #c85f34;
+  --primary-fg: #ffffff;
+  --ok-bg: #1e2a1f;
+  --ok-fg: #7cc088;
+  --warn-bg: #2b2318;
+  --warn-fg: #d9ab52;
+  --error-bg: #2c1a17;
+  --error-fg: #e2703f;
+
+  --surface-room: #1d1914;
+  --surface-panel: #191510;
+  --room-text-primary: #f0ece3;
+  --accent-listening: #7cc088;
+  --accent-speaking: #e2703f;
+  --accent-warning: #d9ab52;
+  --room-danger: #e2703f;
+
+  color-scheme: dark;
+}
+
+/* 아래는 var()가 아니라 색상을 직접 박아둔 곳들이라, 다크모드에서는 선택자별로 따로
+   덮어써야 한다(위 변수 재정의만으로는 안 바뀜). */
+html[data-theme='dark'] .topbar-account-pill,
+html[data-theme='dark'] .preflight-notice-list,
+html[data-theme='dark'] .home-lede,
+html[data-theme='dark'] .home-step-row,
+html[data-theme='dark'] .home-guest-notice,
+html[data-theme='dark'] .mode-card-dojo-desc,
+html[data-theme='dark'] .mode-guest-notice {
+  color: #cfc8ba;
+}
+
+html[data-theme='dark'] .room-progress-track {
+  background: #3a332b;
+}
+
+html[data-theme='dark'] .room-progress-current-track {
+  background: #5a3327;
+}
+
+html[data-theme='dark'] .room-end-btn:hover {
+  background: #3a2420;
+}
+
+html[data-theme='dark'] .home-steps-illustration-img {
+  background: repeating-linear-gradient(135deg, #2a251f 0 10px, #241f1a 10px 20px);
+}
+
+html[data-theme='dark'] .home-guest-notice,
+html[data-theme='dark'] .mode-guest-notice {
+  border-color: #4a4136;
+  background: #241f1a;
+}
+
+html[data-theme='dark'] .mode-card-dojo-badge {
+  background: #2e2822;
+}
+
+html[data-theme='dark'] .mode-card-dojo-illustration {
+  background: repeating-linear-gradient(135deg, #2a251f 0 9px, #241f1a 9px 18px);
+}
+
+html[data-theme='dark'] .room-control-btn-dojo.end-followup:hover:not(:disabled) {
+  background: #3a2f1c;
 }
 
 * {
@@ -153,6 +235,26 @@ a {
   border-radius: 999px;
   background: var(--ok-fg);
   flex-shrink: 0;
+}
+
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg);
+  border-color: var(--border-strong);
 }
 
 .topbar-account-dot.is-guest {
@@ -1802,19 +1904,26 @@ a {
 
 .room-shell {
   position: relative;
-  min-height: 100dvh;
-  min-height: 100vh;
+  height: 100dvh;
+  height: 100vh;
+  overflow: hidden;
   background: var(--bg);
   color: var(--room-text-primary);
 }
 
 .room-page-inner {
-  max-width: 1600px;
+  max-width: none;
+  height: 100%;
   margin: 0 auto;
-  padding: 20px 20px 40px;
+  padding: 20px 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .room-card {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
@@ -1969,7 +2078,7 @@ a {
 
 @media (min-width: 1280px) {
   .room-body {
-    grid-template-columns: minmax(0, 1fr) 400px;
+    grid-template-columns: minmax(0, 1fr) 440px;
   }
 }
 
@@ -2003,8 +2112,8 @@ a {
 }
 
 .room-avatar {
-  width: 152px;
-  height: 152px;
+  width: 172px;
+  height: 172px;
   border-radius: 50%;
   background: var(--surface);
   border: 3px solid var(--primary);
@@ -2056,7 +2165,7 @@ a {
 
 .room-question-card {
   width: 100%;
-  max-width: 760px;
+  max-width: 980px;
   padding: 22px 24px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -2107,7 +2216,7 @@ a {
 .room-question-ja {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 21px;
+  font-size: 23px;
   font-weight: 500;
   color: var(--room-text-primary);
   line-height: 1.55;
@@ -2115,7 +2224,7 @@ a {
 
 .room-question-ko {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 14.5px;
   color: var(--muted);
   line-height: 1.5;
 }

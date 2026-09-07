@@ -66,11 +66,15 @@ export function buildCareerQuestions(careers: ParsedResume['careers']): BankQues
     const textJa = career.role
       ? `履歴書によると、${career.company}で${career.role}として勤務されていたとのことですが、そこでの業務について具体的に教えてください。`
       : `履歴書によると、${career.company}での勤務経験があるとのことですが、そこでの業務について具体的に教えてください。`
+    const textKo = career.role
+      ? `이력서에 따르면 ${career.company}에서 ${career.role}로 근무하셨다고 되어 있는데, 그곳에서의 업무에 대해 구체적으로 알려주세요.`
+      : `이력서에 따르면 ${career.company}에서 근무하신 경험이 있다고 되어 있는데, 그곳에서의 업무에 대해 구체적으로 알려주세요.`
     return {
       id: careerQuestionId(i),
       category: 'technical' as const,
       expectedDurationSec: 90,
       textJa,
+      textKo,
       tags: ['resume_derived'],
     }
   })
@@ -84,6 +88,7 @@ export function buildDesiredJobQuestion(personal: ParsedResume['personal']): Ban
     category: 'culture_fit',
     expectedDurationSec: 90,
     textJa: `履歴書で希望職種として「${personal.desiredJob}」を挙げていらっしゃいますが、これまでの経験の中でその職種に関連する具体的な経験を教えてください。`,
+    textKo: `이력서에 희망 직종으로 "${personal.desiredJob}"을(를) 적어주셨는데, 지금까지의 경험 중 그 직종과 관련된 구체적인 경험을 알려주세요.`,
     tags: ['resume_derived'],
   }
 }

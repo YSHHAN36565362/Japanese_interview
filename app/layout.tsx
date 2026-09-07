@@ -17,9 +17,18 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     .then(({ data }) => data.user)
     .catch(() => null)
 
+  // 아래 인라인 스크립트가 페인트 전에 data-theme 속성을 바로 붙이므로, 서버가 렌더링한
+  // 속성 없는 <html>과는 항상 다를 수 있다 — 이 불일치만 React가 무시하게 한다.
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <head>
+        {/* 페인트 전에 저장된 다크모드 설정을 적용해 첫 화면이 밝은 테마로 잠깐 번쩍이는 것을 막는다. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();",
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
