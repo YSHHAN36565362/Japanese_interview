@@ -1900,13 +1900,6 @@ a {
   white-space: nowrap;
 }
 
-.room-header-bank-total {
-  font-family: var(--font-sans);
-  color: var(--muted-2);
-  font-weight: 400;
-  font-size: 11.5px;
-}
-
 .room-header-status {
   display: flex;
   align-items: center;
@@ -2783,11 +2776,6 @@ a {
 
 @media (max-width: 480px) {
   .room-header-meta {
-    display: none;
-  }
-  /* "(전체 210개)" 부분까지 더하면 좁은 화면에서 질문 진행 줄이 가로로 넘친다 —
-     모바일에서는 은행 전체 개수는 생략하고 "질문 X/Y · 시간"만 보여준다. */
-  .room-header-bank-total {
     display: none;
   }
 }

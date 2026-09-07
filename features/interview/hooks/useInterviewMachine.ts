@@ -113,31 +113,27 @@ export function useInterviewMachine({
         resumeMainQuestions = buildResumeMainQuestions(parsedResume).filter((q) => categories.includes(q.category))
       }
 
-      // 모드별로 실제 이용 가능한 풀 크기가 다르므로(기술 면접은 technical 단독) 모드마다
-      // poolSize를 다르게 둔다 — 풀 크기에 너무 가까우면 세션마다 거의 같은 조합만 나오게 된다.
-      // 2026-09-02: "16개는 너무 적다, 꼬리질문 제외 30개 정도는 되어야 한다"는 요청으로
-      // 세 모드 모두 상당히 늘렸다(대분류 총량이 149→170개로 늘어난 것도 반영).
-      const poolSize = isRealMode ? 28 : mode === 'technical' ? 24 : 30
-      // 비슷한 주제의 질문(예: 스트레스 해소법 여러 버전)이 한 세션에 같이 나오지 않도록,
-      // group이 같은 질문 중 하나만 무작위로 골라서 풀을 구성한다. 실전 모드에서 지원 직무
-      // (소프트웨어/반도체)를 골랐다면 그 track과 안 맞는 전용 질문은 애초에 후보에서 뺀다.
       // "기본 모드"(general)는 무작위 추출이 아니라, 실제 면접에서 거의 항상 나오는 대표
-      // 질문 12개를 정해진 순서 그대로 쓴다(getBasicTrackQuestions).
+      // 질문을 정해진 순서 그대로 쓴다(getBasicTrackQuestions). 그 외에는 카테고리 체크박스
+      // 화면에서 고른 주제(topicCategories)에 해당하는 질문을 개수 제한 없이 전부 보여준다
+      // (2026-09-07: 예전엔 poolSize만큼만 무작위로 뽑아서, 헤더에 표시되던 "대분류 총 Z개"와
+      // 실제 세션 질문 수가 달라 혼란스럽다는 피드백으로 캡을 없앴다 — 이제 화면에 뜨는
+      // 개수가 곧 선택한 주제의 실제 후보 전체다. dedupeGroups:false라 "스트레스 해소법"
+      // 처럼 그룹이 같은 질문도 전부 남긴다 — "선택한 만큼 다 보여준다"는 기대를 그대로
+      // 충족시키기 위함).
       const isBasicTrack = isRealMode && track === 'general'
       // 실전 모드는 REAL_MODE_INTRO_QUESTION이 이미 자기소개 역할을 하므로, 대분류 풀에
       // 있는 self_intro("自己紹介をお願いします。")가 무작위로 또 뽑혀서 자기소개를 두 번
       // 묻는 일이 없도록 실전 모드에서만 제외한다.
-      // (docx 이력서) 질문 개수만큼 무작위 풀에서 뺀 나머지로 채워 세션 총 질문 수는 그대로
-      // 유지한다 — 기본 트랙은 고정 12개라 이 크기 조정 대상이 아니다.
-      const randomPoolSize = Math.max(poolSize - resumeMainQuestions.length, 0)
       let pool = isBasicTrack
         ? getBasicTrackQuestions()
         : sampleMainQuestions(
             categories,
-            randomPoolSize,
+            Infinity,
             isRealMode ? track : undefined,
             isRealMode ? ['self_intro'] : undefined,
-            topicCategories
+            topicCategories,
+            { dedupeGroups: false }
           )
       // 실전 모드(기본 트랙 제외) 시작 직전에 이력서/자기소개를 붙여넣었다면(ResumeInputStep,
       // app/interview/page.tsx), 그 키워드로 매칭된 질문을 세션 풀에 우선 포함시킨다.

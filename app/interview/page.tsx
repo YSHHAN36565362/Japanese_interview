@@ -6,8 +6,11 @@ import { createClient } from '@/lib/supabase/client'
 import LoadingDots from '@/components/LoadingDots'
 import ResumeInputStep from '@/components/ResumeInputStep'
 import CategoryPickerStep from '@/components/CategoryPickerStep'
-import type { JobTrack, TopicCategoryId } from '@/lib/questionBank'
+import { getModeQuestionCount, getTrackQuestionCount, type JobTrack, type TopicCategoryId } from '@/lib/questionBank'
 
+// 2026-09-07: 버튼 글자 옆에 실제 문제 개수를 보여달라는 요청으로, 지원 직무별 실제 후보
+// 개수(getTrackQuestionCount)를 라벨에 그대로 붙인다 — 소프트웨어/반도체는 공통 카테고리
+// 전부 + 그 트랙 전용 카테고리 전부를 더한 값, 기본은 고정 목록 개수.
 const JOB_TRACKS: { id: JobTrack; label: string }[] = [
   { id: 'general', label: '기본' },
   { id: 'software', label: '소프트웨어' },
@@ -16,6 +19,9 @@ const JOB_TRACKS: { id: JobTrack; label: string }[] = [
 
 // 카드에 적는 상세 정보는 실제 코드 동작과 어긋나지 않는 것만 적는다 — "역질문 있음",
 // "예상 소요 25분" 같은 값은 실전 모드에만 해당하거나 실측치가 없어서 다른 모드에는 못 씀.
+// "질문 수"는 카테고리 체크박스를 전부 선택했을 때 나오는 최대치를 getModeQuestionCount()로
+// 매번 계산한다 — 2026-09-07부로 poolSize 캡을 없애고 선택한 주제의 질문을 전부 보여주게
+// 바뀌어서, 고정된 숫자를 적어두면 실제 동작과 금방 어긋나기 때문이다.
 const MODES = [
   {
     id: 'practice',
@@ -25,7 +31,7 @@ const MODES = [
     desc: '질문을 미리 보고, 몇 번이든 다시 듣고, 시간 제한 없이 답변을 다듬습니다.',
     illustration: '/mode-practice.svg',
     details: [
-      { label: '질문 수', value: '최대 30문항' },
+      { label: '질문 수', value: `선택한 주제 전체 (최대 ${getModeQuestionCount('practice')}문항)` },
       { label: '질문 미리보기', value: '가능' },
       { label: '지원 직무 선택', value: '없음' },
     ],
@@ -38,7 +44,7 @@ const MODES = [
     desc: '지원 직무(소프트웨어/반도체/기본)를 고르고, 마지막엔 역질문까지 이어집니다.',
     illustration: '/mode-real.svg',
     details: [
-      { label: '질문 수', value: '최대 28문항 + 역질문' },
+      { label: '질문 수', value: '선택한 주제 전체 + 역질문 (직무별 개수는 아래 참고)' },
       { label: '질문 미리보기', value: '블러 처리 (듣기 연습)' },
       { label: '지원 직무 선택', value: '소프트웨어 / 반도체 / 기본' },
     ],
@@ -51,7 +57,7 @@ const MODES = [
     desc: '프로젝트 경험과 기술 선택 이유를 파고듭니다. 시작 전에 원하는 기술 주제를 직접 고를 수 있습니다.',
     illustration: '/mode-tech.svg',
     details: [
-      { label: '질문 수', value: '최대 24문항' },
+      { label: '질문 수', value: `선택한 주제 전체 (최대 ${getModeQuestionCount('technical')}문항)` },
       { label: '질문 미리보기', value: '가능' },
       { label: '지원 직무 선택', value: '없음' },
     ],
@@ -221,7 +227,7 @@ export default function InterviewModeSelectPage() {
                         disabled={starting}
                         onClick={() => handleTrackChosen(t.id)}
                       >
-                        {t.label}
+                        {t.label}({getTrackQuestionCount(t.id)}문제)
                       </button>
                     ))}
                   </div>

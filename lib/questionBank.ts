@@ -135,9 +135,11 @@ export function getMainQuestionsByCategory(categories: string[]): BankQuestion[]
 }
 
 // "기본 모드" 전용 — 실제 면접에서 거의 항상 나오는 대표 질문만 정해진 순서로 고정한
-// 목록. 다른 트랙(소프트웨어/반도체)처럼 큰 풀에서 무작위로 뽑지 않고, 이 12개를 그대로
+// 목록. 다른 트랙(소프트웨어/반도체)처럼 큰 풀에서 무작위로 뽑지 않고, 이 11개를 그대로
 // 순서대로 쓴다(자기소개는 REAL_MODE_INTRO_QUESTION이, 마무리는 final_word가 별도로 앞뒤에
-// 붙는다 — useInterviewMachine.ts 참고).
+// 붙는다 — useInterviewMachine.ts 참고). '기본' 트랙은 지원 직무를 특정하지 않는 일반
+// 지원자용이라, IT 연수 참가 이유를 묻는 it_training_reason(소프트웨어/반도체 지망생 전용
+// 느낌이 강한 질문)은 2026-09-07에 목록에서 뺐다.
 const BASIC_TRACK_QUESTION_IDS = [
   'job_role_desired',
   'motivation',
@@ -149,7 +151,6 @@ const BASIC_TRACK_QUESTION_IDS = [
   'extracurricular_activities',
   'hardship_experience',
   'strengths_and_weaknesses',
-  'it_training_reason',
   'post_join_aspiration',
 ]
 
@@ -159,28 +160,34 @@ export function getBasicTrackQuestions(): BankQuestion[] {
   )
 }
 
-// 세션 질문 풀을 뽑을 때 "거의 같은 질문"(예: 스트레스 해소법 vs 스트레스 대처법, 학창시절
-// 힘쓴 일 vs 어린 시절 힘쓴 일)이 한 세션에 함께 나오지 않도록, group이 같은 질문들 중
-// 하나만 무작위로 골라 뽑는다. group이 없는 질문은 자기 자신의 id를 그룹으로 취급한다.
-// topicCategories가 주어지면(체크박스 화면에서 사용자가 고른 세부 주제), 그 목록에 속한
-// 질문만 후보로 남긴다 — 비어 있거나 안 넘기면 필터링 없이 전부 후보가 된다.
+// 세션 질문 풀을 뽑을 때 쓴다. topicCategories가 주어지면(체크박스 화면에서 사용자가 고른
+// 세부 주제), data/questions.json 전체에서 그 topicCategory에 속한 질문만 후보로 남긴다 —
+// 이때는 옛 대분류(categories, personality/technical/culture_fit 같은 굵은 분류)는 무시한다.
+// topicCategory가 이미 208개 질문 전부를 빠짐없이 13종으로 정확히 나눠두고 있어서, 굵은
+// 분류로 한 번 더 거르면 오히려 특정 카테고리(예: 반도체 현장 적응 — culture_fit/personality로
+// 태깅된 질문이 섞여 있음)의 질문이 부당하게 걸러지는 버그가 있었다(2026-09-07 발견).
+// topicCategories를 안 넘기면(비어있으면) 기존처럼 categories로만 거른다.
 export function sampleMainQuestions(
   categories: string[],
   poolSize: number,
   track?: JobTrack,
   excludeIds?: string[],
-  topicCategories?: TopicCategoryId[]
+  topicCategories?: TopicCategoryId[],
+  // dedupeGroups: false면 group이 같은 질문도 전부 후보에 남긴다 — "선택한 주제의 질문을
+  // 전부 보여준다"(2026-09-07 개편)는 모드에서, 화면에 표시되는 개수가 실제 선택한 후보
+  // 개수와 정확히 일치하게 하려고 기본값을 true(기존처럼 그룹당 1개만)로 둔다.
+  opts?: { dedupeGroups?: boolean }
 ): BankQuestion[] {
-  const all = getMainQuestionsByCategory(categories)
+  const all =
+    topicCategories && topicCategories.length > 0
+      ? questions.filter((q) => q.topicCategory && topicCategories.includes(q.topicCategory))
+      : getMainQuestionsByCategory(categories)
   // track이 주어지면, 다른 track 전용으로 태깅된 질문만 제외한다(track이 없는 공통 질문은
   // 그대로 포함). track을 아예 안 넘기면(연습/기술 면접 모드) 필터링 없이 전부 후보가 된다.
   const trackFiltered = track ? all.filter((q) => !q.track || q.track === track) : all
-  const topicFiltered =
-    topicCategories && topicCategories.length > 0
-      ? trackFiltered.filter((q) => q.topicCategory && topicCategories.includes(q.topicCategory))
-      : trackFiltered
   const excludeSet = new Set(excludeIds ?? [])
-  const candidates = excludeSet.size ? topicFiltered.filter((q) => !excludeSet.has(q.id)) : topicFiltered
+  const candidates = excludeSet.size ? trackFiltered.filter((q) => !excludeSet.has(q.id)) : trackFiltered
+  if (opts?.dedupeGroups === false) return shuffle(candidates).slice(0, poolSize)
   const groups = new Map<string, BankQuestion[]>()
   for (const q of candidates) {
     const key = q.group ?? q.id
@@ -192,6 +199,26 @@ export function sampleMainQuestions(
     (members) => members[Math.floor(Math.random() * members.length)]
   )
   return shuffle(representatives).slice(0, poolSize)
+}
+
+// 실전 모드에서 특정 지원 직무를 골랐을 때 실제로 나올 수 있는 대분류 질문 총 개수 —
+// app/interview/page.tsx의 지원 직무 버튼에 "(N문제)"로 보여줄 때 쓴다. 세션에 항상 붙는
+// 자기소개(REAL_MODE_INTRO_QUESTION)와 마무리(역질문/final_word)는 세지 않는다(대분류 풀과
+// 별개로 항상 고정으로 붙기 때문). '기본' 트랙은 무작위 풀이 아니라 고정 목록이므로 그 개수를
+// 그대로 반환한다.
+export function getTrackQuestionCount(track: JobTrack): number {
+  if (track === 'general') return getBasicTrackQuestions().length
+  return questions.filter(
+    (q) => q.topicCategory && q.topicCategory !== 'reverse' && q.id !== 'self_intro' && (!q.track || q.track === track)
+  ).length
+}
+
+// '연습 모드'/'기술 면접'처럼 지원 직무를 안 묻는 모드의 카드에 "최대 N문항"을 보여줄 때 쓴다
+// — 체크박스를 전부 선택했을 때 나올 수 있는 최대 개수(getSelectableTopicCategories가 그
+// 모드에서 보여주는 카테고리 전부에 속한 질문 수)를 그대로 계산한다.
+export function getModeQuestionCount(mode: string): number {
+  const ids = new Set(getSelectableTopicCategories(mode).map((c) => c.id))
+  return questions.filter((q) => q.topicCategory && ids.has(q.topicCategory)).length
 }
 
 // "마지막 질문하기" 버튼용 — 'closing' 태그가 붙은 질문 중 하나를 무작위로 고른다.

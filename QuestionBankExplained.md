@@ -11,6 +11,13 @@
 목록을 `data/Question/{日本,Software,半導体}/*.md`에 정리해 두었습니다. 자세한 내용은 아래
 §1, §3.
 
+**2026-09-07 추가 개편**: "대분류 총 208개라면서 왜 세션엔 30개만 나오냐"는 혼란으로,
+세션 시작 시 무작위로 일부만 뽑던 `poolSize` 캡을 **완전히 없앴습니다** — 이제 체크박스로
+고른 주제에 해당하는 질문은 **전부** 나옵니다(그룹 중복 제거도 함께 껐습니다 — "고른 만큼
+다 나온다"는 기대를 정확히 지키기 위해서입니다). 면접방 헤더의 "(대분류 총 Z개)" 표시도
+헷갈림의 원인이라 제거했습니다. 자세한 내용은 아래 §2. 실전 모드 "기본" 트랙의 고정 목록에서는
+IT 연수 참가 이유를 묻는 `it_training_reason`을 뺐습니다(§6).
+
 ---
 
 ## 1. 질문 은행(213개)은 두 종류로 나뉩니다
@@ -28,22 +35,27 @@
 
 ## 2. 화면에 "질문 X / Y"로 보이는 Y는 어떻게 정해지나요
 
-세션이 시작될 때, 사용자가 체크박스로 고른 `topicCategory`에 속한 질문들만 후보로 남기고
-그중 **모드마다 정해진 개수만큼** 무작위로 뽑습니다(`features/interview/hooks/useInterviewMachine.ts`의
-`poolSize`, 실제로는 `lib/questionBank.ts`의 `sampleMainQuestions()`가 그룹 중복·지원 직무(track)
-불일치·선택한 topicCategory까지 걸러서 뽑습니다).
+세션이 시작될 때, 사용자가 체크박스로 고른 `topicCategory`에 속한 질문 중 지원 직무(track)와
+안 맞는 것만 제외하고 **전부** 세션 풀에 들어갑니다 — 예전처럼 일부만 무작위로 뽑지
+않습니다(2026-09-07 이전에는 모드마다 `poolSize`만큼만 뽑았는데, "대분류 총 Z개인데 왜
+세션엔 30개만 나오냐"는 혼란으로 캡을 없앴습니다). `lib/questionBank.ts`의
+`sampleMainQuestions()`가 `topicCategory` 일치 → 지원 직무(track) 일치까지만 거르고,
+순서만 무작위로 섞습니다(`dedupeGroups: false`로 호출해서, §4의 group 중복 제거도 이때는
+끕니다 — "고른 만큼 다 나온다"는 기대를 정확히 지키기 위해서입니다).
 
-| 모드 | 뽑는 범위 | poolSize(최소) |
-|---|---|---|
-| 연습 모드 | personality+technical+culture_fit 중 체크한 topicCategory, 트랙 필터 없음 | 30 |
-| 기술 면접 | technical 중 체크한 topicCategory, 트랙 필터 없음 | 24 |
-| 실전 모드(소프트웨어) | 위 중 소프트웨어 트랙에 맞는 것 | 자기소개(1) + 28 + 역질문(1) |
-| 실전 모드(반도체) | 위 중 반도체 트랙에 맞는 것 | 자기소개(1) + 28 + 역질문(1) |
-| 실전 모드(기본) | 무작위 아님 — `basic_track` 태그 12개 고정(§6), 체크박스 화면 자체를 건너뜀 | 자기소개(1) + 12 + 마지막 한마디(1) |
+| 모드 | 뽑는 범위 |
+|---|---|
+| 연습 모드 | 체크한 topicCategory 전부, 트랙 필터 없음 |
+| 기술 면접 | 체크한 topicCategory 전부, 트랙 필터 없음 |
+| 실전 모드(소프트웨어) | 체크한 topicCategory 중 소프트웨어 트랙에 맞는 것 전부 |
+| 실전 모드(반도체) | 체크한 topicCategory 중 반도체 트랙에 맞는 것 전부 |
+| 실전 모드(기본) | 무작위 아님 — 고정 목록 11개(§6), 체크박스 화면 자체를 건너뜀 |
 
-체크박스에서 아무것도 빼지 않고 전체 선택한 채로 시작하면, 예전(꼬리질문 도입 전)과 똑같이
-전체 후보 풀에서 무작위로 뽑힙니다. 체크박스에서 일부 주제를 뺀 경우에는 그 주제에 속한
-질문은 애초에 후보에서 제외됩니다.
+체크박스에서 일부 주제를 빼면 그 주제에 속한 질문은 애초에 후보에서 제외되므로, Y(세션
+질문 수)는 그만큼 줄어듭니다 — 체크박스 화면에 "N / 전체개수 선택됨"으로 미리 보여주므로
+시작 전에 대략 몇 개가 나올지 가늠할 수 있습니다. 모드 선택 카드와 지원 직무 버튼에도
+`getModeQuestionCount()`/`getTrackQuestionCount()`로 계산한 실제 최대 개수를 표시합니다
+(`app/interview/page.tsx`).
 
 세션 도중 질문이 늘어나는 일은 이제 없습니다 — 꼬리질문이 제거되면서 세션 시작 시 뽑힌
 개수(Y)가 끝까지 고정됩니다("마지막 질문하기"를 누르면 +1개만 늘어납니다).
@@ -109,7 +121,7 @@
 
 실전 모드를 시작할 때 "지원 직무를 골라주세요" 화면에서 소프트웨어/반도체 중 하나를 고르면
 (`app/interview/page.tsx`), 그 선택이 URL 쿼리(`?mode=real&track=software`)로 면접 화면에
-전달되고, `useInterviewMachine`이 `sampleMainQuestions(categories, poolSize, track, ...)`을
+전달되고, `useInterviewMachine`이 `sampleMainQuestions(categories, Infinity, track, ...)`를
 호출할 때 그대로 넘어갑니다.
 
 질문마다 선택적 `track` 필드(`'software' | 'semiconductor'`)를 가질 수 있습니다:
@@ -127,11 +139,13 @@
 
 ## 6. "기본 모드"는 왜 다르게 동작하나요
 
-소프트웨어/반도체 트랙은 체크한 카테고리 안에서 매번 무작위로 뽑지만, **기본 모드는
-무작위가 아닙니다.** 실제 면접에서 거의 항상 나오는 대표 질문 12개를 `lib/questionBank.ts`의
+소프트웨어/반도체 트랙은 체크한 카테고리에 해당하는 질문을 전부 보여주지만, **기본 모드는
+그렇지 않습니다.** 실제 면접에서 거의 항상 나오는 대표 질문 11개를 `lib/questionBank.ts`의
 `BASIC_TRACK_QUESTION_IDS`에 정해진 순서 그대로 고정해뒀고, `getBasicTrackQuestions()`가
-이 순서 그대로 반환합니다. 카테고리 체크박스 화면도 건너뜁니다 — 고정 목록이라 주제 선택이
-의미가 없기 때문입니다(`app/interview/page.tsx`의 `handleTrackChosen` 참고).
+이 순서 그대로 반환합니다(2026-09-07: IT 연수 참가 이유를 묻는 `it_training_reason`은
+소프트웨어/반도체 지망생 전용 느낌이 강해 "기본" 목록에서 뺐습니다 — 12개→11개). 카테고리
+체크박스 화면도 건너뜁니다 — 고정 목록이라 주제 선택이 의미가 없기 때문입니다
+(`app/interview/page.tsx`의 `handleTrackChosen` 참고).
 
 앞뒤로는 다른 트랙과 마찬가지로 자기소개(`REAL_MODE_INTRO_QUESTION`, 항상 첫 질문)가
 붙지만, **마무리는 역질문이 아니라 "最後に一言お願いします。"(`final_word`)로 끝납니다** —
@@ -147,7 +161,5 @@
 ## 7. 질문을 더 추가하고 싶다면
 
 `HowToInputData.md`를 참고하세요 — `data/` 폴더에 초안 파일을 만들고 `topicCategory`를
-반드시 지정한 뒤 `npm run merge-data`만 실행하면 자동으로 병합됩니다.
-
-세션당 보이는 개수(poolSize) 자체를 더 늘리거나 줄이고 싶다면
-`features/interview/hooks/useInterviewMachine.ts`의 `poolSize` 값만 바꾸면 됩니다.
+반드시 지정한 뒤 `npm run merge-data`만 실행하면 자동으로 병합됩니다. 추가한 질문은 별도
+캡 없이 해당 topicCategory를 체크박스로 고른 모든 세션에 바로 포함됩니다(§2).

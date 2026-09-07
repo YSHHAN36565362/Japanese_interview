@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { getMainQuestionCount } from '@/lib/questionBank'
 import { MODE_LABEL, TRACK_LABEL } from '../constants'
 
 export default function RoomHeader({
@@ -46,7 +45,6 @@ export default function RoomHeader({
 
       <div className="room-header-progress">
         질문 {questionIndex} / {totalQuestions}
-        <span className="room-header-bank-total"> (대분류 총 {getMainQuestionCount()}개)</span>
       </div>
 
       <div className="room-header-right">
