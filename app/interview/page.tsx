@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import LoadingDots from '@/components/LoadingDots'
 import ResumeInputStep from '@/components/ResumeInputStep'
 import type { JobTrack } from '@/lib/questionBank'
-import { RESUME_PRIORITY_STORAGE_KEY } from '@/lib/resumePriorityStorage'
 
 const JOB_TRACKS: { id: JobTrack; label: string }[] = [
   { id: 'general', label: '기본' },
@@ -72,25 +71,14 @@ export default function InterviewModeSelectPage() {
   const [resumeStepTrack, setResumeStepTrack] = useState<JobTrack | null>(null)
 
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace('/login')
-        return
-      }
-      setUserId(data.user.id)
-      setIsGuest(data.user.is_anonymous ?? false)
-    })
+    setUserId('preview-only')
+    setIsGuest(true)
   }, [router])
 
-  async function startSession(mode: string, track?: JobTrack, resumePriorityIds?: string[]) {
+  async function startSession(mode: string, track?: JobTrack) {
     if (!userId) return
     setStarting(true)
     const trackQuery = track ? `&track=${track}` : ''
-
-    if (resumePriorityIds && resumePriorityIds.length > 0 && typeof window !== 'undefined') {
-      window.sessionStorage.setItem(RESUME_PRIORITY_STORAGE_KEY, JSON.stringify(resumePriorityIds))
-    }
 
     // 게스트("번호 없이 시작하기")는 sessions 행 자체를 만들지 않는다 — 로컬에서만 쓰는
     // id로 진행하고, 답변도 Supabase에 저장하지 않는다(useInterviewMachine.ts 참고).
@@ -220,10 +208,11 @@ export default function InterviewModeSelectPage() {
 
       {resumeStepTrack && (
         <ResumeInputStep
-          onContinue={(matchedIds) => {
+          isGuest={isGuest}
+          onContinue={() => {
             const track = resumeStepTrack
             setResumeStepTrack(null)
-            startSession('real', track, matchedIds)
+            startSession('real', track)
           }}
         />
       )}

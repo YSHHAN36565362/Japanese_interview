@@ -1,50 +1,126 @@
 'use client'
 
-import { useState } from 'react'
-import { matchResumeKeywords } from '@/lib/resumeKeywords'
+import { useState, type ChangeEvent } from 'react'
+import type { ParsedResume } from '@/lib/resume/types'
 
-// 실전 면접(소프트웨어/반도체 트랙) 시작 직전에 한 번 보여주는 선택 단계. 이력서/자기소개
-// 텍스트를 붙여넣으면 그 안의 키워드(팀 프로젝트, 머신러닝, 반도체 등)를 보고 관련 있는
-// 질문을 세션 풀에 우선 포함시킨다 — AI 호출 없이 단순 키워드 매칭만 쓴다(0원 운영 원칙).
-// 원하지 않으면 "스킵하기"로 그냥 넘어갈 수 있다.
+// 이력서는 텍스트 붙여넣기가 아니라 K-Move 이력서·자기소개서 워드(.docx) 양식을 파일로
+// 업로드받는다. 서버(/api/resume/parse)가 그 파일을 파싱해서 경력·기술스택·자기소개서를
+// 뽑아내고, 로그인 사용자는 Supabase(user_resumes)에 저장하며(게스트는 sessionStorage에만),
+// useInterviewMachine이 세션 시작 시 그 결과를 읽어 맞춤 질문·꼬리질문을 섞어 낸다. 여기서는
+// 업로드/파싱까지만 하고 "스킵하기"나 "이 이력서로 시작하기"를 누르면 실제로 세션이 시작된다.
+const RESUME_STORAGE_KEY = 'kmove_resume'
+
 export default function ResumeInputStep({
   onContinue,
+  isGuest,
 }: {
-  onContinue: (matchedQuestionIds: string[]) => void
+  onContinue: () => void
+  isGuest: boolean
 }) {
-  const [text, setText] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [parsed, setParsed] = useState<ParsedResume | null>(null)
+  const [fileName, setFileName] = useState<string | null>(null)
 
-  function handleSubmit() {
-    onContinue(matchResumeKeywords(text))
-  }
+  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
 
-  function handleSkip() {
-    onContinue([])
+    setError(null)
+    setParsed(null)
+    setFileName(file.name)
+    setUploading(true)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/resume/parse', { method: 'POST', body: formData })
+      const body = await res.json()
+
+      if (!res.ok) {
+        setError(body.message ?? '이력서를 처리하는 중 오류가 발생했습니다.')
+        return
+      }
+
+      setParsed(body.parsed as ParsedResume)
+      if (isGuest) {
+        try {
+          sessionStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(body.parsed))
+        } catch {
+          // sessionStorage를 못 쓰는 환경이면 조용히 무시 — 이 세션에서만 이력서 질문이 안 나올 뿐
+          // 나머지 기능에는 영향 없다.
+        }
+      }
+    } catch {
+      setError('이력서를 업로드하는 중 오류가 발생했습니다. 다시 시도해주세요.')
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
     <div className="preflight-overlay">
       <div className="preflight-card">
-        <h2>이력서 / 자기소개 붙여넣기 (선택)</h2>
-        <p className="muted small">
-          장단점, 프로젝트 경험 등이 담긴 이력서나 자기소개 텍스트를 붙여넣으면, 그 안의
-          키워드(예: 팀 프로젝트, 머신러닝, 반도체, 리더십 등)와 관련된 질문을 이번 세션에
-          우선 포함시킵니다. AI가 내용을 읽는 것이 아니라 정해진 키워드 목록과 단순
-          문자열 매칭만 합니다. 원하지 않으면 그냥 스킵해도 됩니다.
+        <h2 className="preflight-title">이력서 파일 업로드 (선택)</h2>
+        <p className="preflight-subtitle">
+          K-Move 이력서·자기소개서 워드(.docx) 양식을 업로드하면, 그 안의 경력·기술스택·자기소개서
+          내용에서 맞춤 질문과 꼬리질문이 자동으로 만들어져 이번 세션에 함께 출제됩니다. 업로드하지
+          않아도 스킵하고 그대로 진행할 수 있습니다.
         </p>
-        <textarea
-          className="answer-box"
-          rows={8}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="여기에 이력서나 자기소개 내용을 붙여넣어주세요 (선택 사항)"
-        />
+
+        <label className="resume-upload-dropzone">
+          <span className="resume-upload-dropzone-icon" aria-hidden="true">
+            📄
+          </span>
+          <span className="resume-upload-dropzone-text">
+            {uploading ? '처리 중...' : fileName ? '다른 파일로 다시 선택' : 'K-Move 이력서(.docx) 파일 선택'}
+          </span>
+          <input
+            type="file"
+            accept=".docx"
+            onChange={handleFileChange}
+            disabled={uploading}
+            style={{ display: 'none' }}
+          />
+        </label>
+
+        {fileName && !error && !uploading && (
+          <p className="muted small">선택한 파일: {fileName}</p>
+        )}
+
+        {error && (
+          <p className="badge badge-error" style={{ display: 'block', whiteSpace: 'pre-wrap' }}>
+            {error}
+          </p>
+        )}
+
+        {parsed && (
+          <div className="resume-upload-summary">
+            <span className="badge badge-ok" style={{ width: 'fit-content' }}>
+              분석 완료
+            </span>
+            <p>
+              <strong>{parsed.personal.nameKanji ?? parsed.personal.nameRomaji ?? '이름 미인식'}</strong>
+            </p>
+            {parsed.careers.length > 0 && (
+              <p className="muted small">
+                경력 {parsed.careers.length}건: {parsed.careers.map((c) => c.company).join(', ')}
+              </p>
+            )}
+            {parsed.techStack.length > 0 && <p className="muted small">기술스택: {parsed.techStack.join(', ')}</p>}
+            <p className="muted small">
+              자기소개서 항목 {Object.values(parsed.essays).filter(Boolean).length}/5개 인식됨
+            </p>
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-          <button type="button" className="btn" onClick={handleSkip}>
+          <button type="button" className="btn" onClick={onContinue} disabled={uploading}>
             스킵하기
           </button>
-          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={!text.trim()}>
-            반영하고 시작하기
+          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={uploading || !parsed}>
+            이 이력서로 시작하기
           </button>
         </div>
       </div>
